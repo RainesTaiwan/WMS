@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+  <display-name>Archetype Created Web Application</display-name>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>com.fw.wcs.console.Application</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.boot.legacy.context.web.SpringBootContextLoaderListener</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>appServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextAttribute</param-name>
+      <param-value>org.springframework.web.context.WebApplicationContext.ROOT</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>appServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>fileServlet</servlet-name>
+    <servlet-class>com.fw.wcs.core.servlet.FileServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>fileServlet</servlet-name>
+    <url-pattern>/fileservice/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>cxfServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cxfServlet</servlet-name>
+    <url-pattern>/webservice/*</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>SAP ME</web-resource-name>
+      <description>SAP ME</description>
+
+      <url-pattern>*.html</url-pattern>
+
+      <url-pattern>*.jsf</url-pattern>
+      <url-pattern>*.jsp</url-pattern>
+      <url-pattern>/about</url-pattern>
+      <url-pattern>/application/*</url-pattern>
+      <url-pattern>/report/*</url-pattern>
+      <url-pattern>/RichPodLauncher/*</url-pattern>
+      <url-pattern>/router/*</url-pattern>
+      <url-pattern>/SFCBrowse</url-pattern>
+      <url-pattern>/com/sap/me/nonconformance/client/NCCodeHandler</url-pattern>
+      <url-pattern>/Pod</url-pattern>
+      <url-pattern>/rted/*</url-pattern>
+      <url-pattern>/vizkit/resources/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <description>Need this Access</description>
+      <role-name>SAP_ME_USER</role-name>
+      <role-name>SAP_ME_READONLY</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <description>no description</description>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <security-role>
+    <role-name>AllowedUser</role-name>
+  </security-role>
+  <security-role>
+    <role-name>SAP_ME_USER</role-name>
+  </security-role>
+  <security-role>
+    <role-name>SAP_ME_READONLY</role-name>
+  </security-role>
+
+</web-app>

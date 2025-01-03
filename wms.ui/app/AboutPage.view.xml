@@ -1,0 +1,16 @@
+<mvc:View
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:html="http://www.w3.org/1999/xhtml"
+        xmlns:mvc="sap.ui.core.mvc">
+    <html:style>
+        .page {
+            background-color: rgb(234, 241, 246);
+        }
+    </html:style>
+    <Page class="page" showHeader="false">
+    <core:HTML content='&lt;div style=&quot;position:absolute;top:25%;left:30%;width:100%&quot;&gt;
+                        &lt;img style=&quot;position:absolute;width: 412px; height: 255px;&quot; src=&quot;image/EWMWelcome.png&quot;&gt;'>
+    </core:HTML>
+    </Page>
+</mvc:View>

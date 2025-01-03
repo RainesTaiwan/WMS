@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ShelfOffLogMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.ShelfOffLog">
+        <id column="HANDLE" property="handle" />
+        <result column="MESSAGE_ID" property="messageId" />
+        <result column="CORRELATION_ID" property="correlationId" />
+        <result column="ACTION_CODE" property="actionCode" />
+        <result column="CARRIER" property="carrier" />
+        <result column="STORAGE_LOCATION" property="storageLocation" />
+        <result column="STORAGE_BIN" property="storageBin" />
+        <result column="INVENTORY_BO" property="inventoryBo" />
+        <result column="QTY" property="qty" />
+        <result column="SPLIT" property="split" />
+        <result column="EXECUTE_RESULT" property="executeResult" />
+        <result column="CREATE_TIME" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, MESSAGE_ID, CORRELATION_ID, ACTION_CODE, CARRIER, STORAGE_LOCATION, STORAGE_BIN, INVENTORY_BO, QTY, SPLIT, EXECUTE_RESULT, CREATE_TIME
+    </sql>
+
+    <select id="findShelfOffLogByMessageId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM SHELF_OFF_LOG
+        WHERE 1 = 1
+        <if test="messageId != null and messageId != ''">
+            AND MESSAGE_ID = #{messageId}
+        </if>
+        ORDER BY CREATE_TIME ASC
+    </select>
+
+</mapper>

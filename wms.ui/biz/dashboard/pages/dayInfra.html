@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <title>EWM</title>
+    <link rel="stylesheet" href="../css/dhbd.css" />
+</head>
+
+<body>
+<div class="header">
+    <h1 class="header-title">倉庫管理</h1>
+    <div class="header-info header-info-l">第xxx倉儲</div>
+    <div class="header-info header-info-r">資料日期：<span id="updateTime"></span></div>
+</div>
+<div class="wrapper">
+    <div class="content">
+        <div class="col col-l">
+            <div class="xpanel-wrapper xpanel-wrapper-50">
+                <div class="xpanel xpanel-l-t">
+                    <div class="title">今日入庫物料</div>
+                    <div class="grid" id="material_in"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-50">
+                <div class="xpanel xpanel-l-b">
+                    <div class="title">今日出庫物料</div>
+                    <div class="grid" id="material_out"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col col-c">
+            <div class="xpanel-wrapper xpanel-wrapper-100">
+                <div class="xpanel xpanel-c-b">
+                    <div class="title">待入/出庫物料</div>
+                    <div class="grid" id="to_do_task">
+                        <dv-scroll-board :config="config" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-r">
+            <div class="xpanel-wrapper xpanel-wrapper-40">
+                <div class="xpanel xpanel-r-m">
+                    <div class="title">棧板使用狀況</div>
+                    <div class="grid" id="carrier_rate"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-60">
+                <div class="xpanel xpanel-r-b">
+                    <div class="title">倉位使用狀況</div>
+                    <div class="grid" id="occupy_rate"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../scripts/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../scripts/echarts.min.js"></script>
+<script src="../scripts/vue.min.js"></script>
+<script src="../scripts/datav.min.vue.js"></script>
+<script src="../scripts/wrUtil.js"></script>
+<script type="text/javascript">
+    $(window).resize(function() {
+        window.location.reload();
+    })
+    $(function() {
+        $("#updateTime").html( wrUtil.coverTime( new Date() ) );
+        //--------------------------------------------------------------------------------------------------------------
+        var inMaterialChart = echarts.init(document.getElementById("material_in"), "shine");
+        const inMaterialOpt = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐標軸指示器，坐標軸觸發有效
+                    type: 'shadow'        // 預設為直線，可選為：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: 10,
+                top: 30,
+                right:10,
+                bottom: 5,
+                show:false,
+                containLabel: true
+            },
+            legend: {
+                textStyle:{
+                    fontSize: 12,
+                    color: "#b0c2f9"
+                },
+                data: ['入庫', '庫存']
+            },
+            xAxis: {
+                type: 'category',
+                axisLabel: {
+                    fontSize: 12,
+                    interval: 0,
+                    rotate:60,
+                    color: "#b0c2f9"
+                },
+                axisLine:{
+                    show: true
+                },
+                data:[]
+            } ,
+            yAxis: [
+                {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 12,
+                        color: "#b0c2f9"
+                    },
+                    axisLine:{
+                        show: true
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '入庫',
+                    type: 'bar',
+                    itemStyle: {
+                        color:"#1AE66B"
+                    },
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    }
+                },{
+                    name: '庫存',
+                    type: 'line',
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'top'
+                        }
+                    },
+                    itemStyle: {
+                        color:"#F7F709"
+                    }
+                }
+            ]
+        };
+        inMaterialChart.setOption(inMaterialOpt);
+        //--------------------------------------------------------------------------------------------------------------
+        var outMaterialChart = echarts.init(document.getElementById("material_out"), "shine");
+        const outMaterialOpt = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐標軸指示器，坐標軸觸發有效
+                    type: 'shadow'        // 預設為直線，可選為：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: 10,
+                top: 30,
+                right:10,
+                bottom: 5,
+                show:false,
+                containLabel: true
+            },
+            legend: {
+                textStyle:{
+                    fontSize: 12,
+                    color: "#b0c2f9"
+                },
+                data: ['出庫', '庫存']
+            },
+            xAxis: {
+                type: 'category',
+                axisLabel: {
+                    fontSize: 12,
+                    interval: 0,
+                    rotate:60,
+                    color: "#b0c2f9"
+                },
+                axisLine:{
+                    show: true
+                },
+                data:[]
+            } ,
+            yAxis: [
+                {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 12,
+                        color: "#b0c2f9"
+                    },
+                    axisLine:{
+                        show: true
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '出庫',
+                    type: 'bar',
+                    itemStyle: {
+                        color:"#7EC0EE"
+                    },
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    }
+                },{
+                    name: '庫存',
+                    type: 'line',
+                    itemStyle: {
+                        color:"#F7F709"
+                    },
+                    label: {
+                        normal: {
+                            show: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            ]
+        };
+        outMaterialChart.setOption(outMaterialOpt);
+        //--------------------------------------------------------------------------------------------------------------
+        var orderPlan = new Vue({
+            el: '#to_do_task',
+            data: {
+                config:  {
+                    header: ['棧板', '物料', '操作', '狀態'],
+                    columnWidth:[150],
+                    headerBGC:'#0B0F34',
+                    rowNum:10,
+                    data: []
+                }
+            },
+            created: function () {
+               this.loadData();
+            },
+            methods: {
+                loadData: function () {
+                    var me = this;
+
+                    //me.analysisData( _data );
+                    //ajaxGetService( "../data/21-orderPlan-01.json", me.analysisData,{ "factory": "ddj-vcp"} )
+                },
+                analysisData: function( data ) {
+                    var fixData = [];
+                    for( var i = 0; i < data.length; i++ ) {
+                        var _row = data[i];
+                        var _fixRow = [];
+                        var _color = "#FF6600";
+                        //----------------------------------------------------------------------------------------------
+                        if( _row[3] == "入庫中" || _row[3] == "出庫中"  ){
+                            _color = "#FF6600";
+                        }else if( _row[2] == "出庫" ){
+                            _color = "#7EC0EE";
+                        }else if( _row[2] == "入庫" ){
+                            _color = "#4DB361";
+                        }
+                        //----------------------------------------------------------------------------------------------
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[0] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[1] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[2] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[3] + "</span>" );
+                        //----------------------------------------------------------------------------------------------
+                        fixData.push(_fixRow)
+                    }
+                    this.config = {
+                        header: ['棧板', '物料', '操作', '狀態'],
+                        headerBGC:'#0B0F34',
+                        rowNum:10,
+                        waitTime:5000,
+                        columnWidth:[150],
+                        data: fixData
+                    };
+                }
+            }
+        });
+        //--------------------------------------------------------------------------------------------------------------
+        var carrierRateChart = echarts.init(document.getElementById("carrier_rate"), "shine");
+        var carrierOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: ['使用', '空餘'],
+                textStyle:{
+                    fontSize: 12,
+                    color: "#b0c2f9"
+                }
+            },
+            series: [
+                {
+                    name: '棧板',
+                    type: 'pie',
+                    radius: '80%',
+                    center: ['60%', '50%'],
+                    label: {
+                        normal: {
+                            formatter: '{c}',
+                            position: 'inside'
+                        }
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        carrierRateChart.setOption(carrierOption);
+        //--------------------------------------------------------------------------------------------------------------
+        var occupyRateChart = echarts.init(document.getElementById("occupy_rate"), "shine");
+        var occupyOption = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐標軸指示器，坐標軸觸發有效
+                    type: 'shadow'        // 預設為直線，可選為：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data: ['佔用', '空餘'],
+                textStyle:{
+                    fontSize: 12,
+                    color: "#b0c2f9"
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    fontSize: 12,
+                    interval: 0,
+                    color: "#b0c2f9"
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: ['A','B','C','D','E','F','J','H','I','J','K','L','M'],
+                axisLabel: {
+                    fontSize: 12,
+                    interval: 0,
+                    color: "#b0c2f9"
+                }
+            },
+            series: [
+                {
+                    name: '佔用',
+                    type: 'bar',
+                    stack: '總量',
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    }
+                },
+                {
+                    name: '空餘',
+                    type: 'bar',
+                    stack: '總量',
+                    itemStyle: {
+                        color:"#1AE66B"
+                    },
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    }
+                }
+            ]
+        };
+        occupyRateChart.setOption(occupyOption);
+        //--------------------------------------------------------------------------------------------------------------
+        inMaterialChart.setOption({
+            series: [
+                {
+                    name: "入庫",
+                    data:[100,230,235,120]
+                },{
+                    name: "庫存",
+                    data:[1300,830,1056,1200]
+                }
+            ]
+        });
+        outMaterialChart.setOption({
+            series: [
+                {
+                    name: "出庫",
+                    data:[400,130,335,220]
+                },{
+                    name: "庫存",
+                    data:[800,330,856,700]
+                }
+            ]
+        });
+/*
+        var _data = [
+            ['XM2000123', 'M20007', '入庫', '入庫中'],
+            ['XM2100123', 'M20017', '入庫', '待入庫'],
+            ['XM2200123', 'M20027', '入庫', '待入庫'],
+            ['XM2400123', 'M20037', '入庫', '待入庫'],
+            ['XM2020123', 'M20047', '入庫', '待入庫'],
+            ['XM2004123', 'M20057', '入庫', '待入庫'],
+            ['XM2060123', 'M20067', '出庫', '出庫中'],
+            ['XM2080123', 'M20037', '出庫', '出庫中'],
+            ['XM2120123', 'M20047', '出庫', '待出庫'],
+            ['XM2450123', 'M20057', '出庫', '待出庫'],
+            ['XM2740123', 'M20067', '出庫', '待出庫'],
+            ['XM2560123', 'M20047', '出庫', '待出庫'],
+            ['XM2150123', 'M20057', '出庫', '待出庫'],
+            ['XM2940123', 'M20067', '出庫', '待出庫']
+        ];
+        orderPlan.analysisData(_data);
+ */
+        carrierRateChart.setOption({
+            series:[
+                {
+                    name: '棧板',
+                    data: [
+                        {value: 200, name: '使用'},
+                        {value: 340, name: '空餘'}
+                    ],
+                }
+            ]
+        });
+       
+        occupyRateChart.setOption({
+            series: [
+                {
+                    name: "佔用",
+                    data: [30, 40, 60, 55, 20, 40, 30,10, 30, 10, 60, 40, 40]
+                },{
+                    name: "空餘",
+                    data: [70, 60, 50, 55, 90, 70, 80,100, 80, 100, 50, 70, 70]
+                }
+            ]
+        });
+        //--------------------------------------------------------------------------------------------------------------
+        var websocket = wrWebSocketUtil.createWebSocket( "channel=dayInfra&delay=10&date=" );
+        function resultAction( msg ){
+            var jsonData = $.parseJSON( msg  );
+            var _data = jsonData["message"];
+            //----------------------------------------------------------------------------------------------------------
+            if( !_data )return;
+            //----------------------------------------------------------------------------------------------------------
+            if( jsonData["messageType"] == "inventory_daily_summary" ){
+                var inboundItems = [], inboundQty = [], inboundTotalQty = [];
+                var outboundItems = [], outboundQty = [], outboundTotalQty = [];
+                for(var i = 0; i < jsonData["message"].length; i++) {
+                    var record = jsonData["message"][i];
+                    if(record["inboundQty"] && record["inboundQty"] > 0) {
+                        inboundItems.push(record["item"]);
+                        inboundQty.push(record["inboundQty"]);
+                        inboundTotalQty.push(record["totalQty"] || 0);
+                    }
+                    if(record["outboundQty"] && record["outboundQty"] > 0) {
+                        outboundItems.push(record["item"]);
+                        outboundQty.push(record["outboundQty"]);
+                        outboundTotalQty.push(record["totalQty"] || 0);
+                    }
+                }
+                inMaterialChart.setOption({
+                    xAxis: {
+                        data: inboundItems
+                    },
+                    series: [
+                        {
+                            name: "入庫",
+                            data: inboundQty
+                        },{
+                            name: "庫存",
+                            data: inboundTotalQty
+                        }
+                    ]
+                });
+                outMaterialChart.setOption({
+                    xAxis: {
+                        data: outboundItems
+                    },
+                    series: [
+                        {
+                            name: "出庫",
+                            data: outboundQty
+                        },{
+                            name: "庫存",
+                            data: outboundTotalQty
+                        }
+                    ]
+                });
+            }else if( jsonData["messageType"] == "carrier_status_change" ){
+                var _data = [];
+                for(var i = 0; i < jsonData["message"].length; i++) {
+                    var record = jsonData["message"][i];
+                    var operation = record["operation"] == "IN_STORAGE" ? "In Storage" : record["operation"] == "OUT_STORAGE" ? "Out Storage" : record["operation"] == "EXCHANGE" ? "Exchange" : "";
+                    var status = record["status"];
+                    var showStatus = status;
+                    switch (status) {
+                        case "WAIT_IN_STORAGE" :
+                            showStatus = "Wait In";
+                            break;
+                        case "WAIT_OUT_STORAGE" :
+                            showStatus = "Wait Out";
+                            break;
+                        case "IN_STORAGE" :
+                            showStatus = "In Storage";
+                            break;
+                        case "OUT_STORAGE" :
+                            showStatus = "Out Storage";
+                            break;
+                        case "EXCHANGE" :
+                            showStatus = "Exchange";
+                            break;
+                        default:
+                            break;
+                    }
+                    _data.push([record["carrier"], record["item"], operation, showStatus]);
+                }
+                orderPlan.analysisData(_data);
+            }else if( jsonData["messageType"] == "carrier_usage" ){
+                var totalCount = jsonData["message"]["totalCount"], usedCount = jsonData["message"]["usedCount"];
+                carrierRateChart.setOption({
+                    series:[
+                        {
+                            name: 'Pallet',
+                            data: [
+                                {value: usedCount, name: 'Used'},
+                                {value: Number(totalCount) - Number(usedCount), name: 'Empty'}
+                            ],
+                        }
+                    ]
+                });
+            }else if( jsonData["messageType"] == "storage_location_usage" ){
+                var storageLocationList = [], used = [], idle = [];
+                for(var i = 0; i < jsonData["message"].length; i++) {
+                    var record = jsonData["message"][i];
+                    storageLocationList.push(record.storageLocation);
+                    used.push(record.usedQty);
+                    idle.push(record.totalQty - record.usedQty);
+                }
+                occupyRateChart.setOption({
+                    xAxis: {
+                        data: storageLocationList
+                    },
+                    series: [
+                        {
+                            name: "佔用",
+                            data: used
+                        },{
+                            name: "空餘",
+                            data: idle
+                        }
+                    ]
+                });
+            }
+
+        }
+        if( websocket ){
+            wrWebSocketUtil.receiveAction = resultAction;
+        }
+    })
+</script>
+
+</body>
+</html>

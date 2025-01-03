@@ -1,0 +1,320 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.operations.InventoryReceive"
+        xmlns:m="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:t="sap.ui.table"
+        xmlns:tnt="sap.tnt"
+        xmlns:f="sap.f"
+        xmlns:l="sap.ui.layout"
+        xmlns:fm="sap.ui.layout.form"
+        xmlns:ewm="com.sap.ewm.control"
+        displayBlock="true">
+    <f:FlexibleColumnLayout
+            id="fcLayout"
+            layout="OneColumn"
+            backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                    title="{i18n>庫存接收}"
+                    showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                            id="createButton"
+                            type="Transparent"
+                            text="{i18n>新增}"
+                            icon="sap-icon://add"
+                            tooltip="{i18n>新增}"
+                            press="onCreate" />
+                    <m:Button
+                            id="editButton"
+                            type="Transparent"
+                            text="{i18n>重新整理}"
+                            icon="sap-icon://refresh"
+                            tooltip="{i18n>重新整理}"
+                            press="onRetrieve" />
+                </m:headerContent>
+                <m:content>
+                    <ewm:PaginatorTable
+                            id="inventoryList"
+                            rows="{/inventoryList}"
+                            selectionBehavior="RowOnly"
+                            selectionMode="Single"
+                            editable="false"
+                            columnHeaderHeight="30px"
+                            enableSelectAll="true"
+                            visibleRowCountMode="Auto"
+                            rowActionCount="1"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            class="sapUiSizeCondensed">
+                        <ewm:extension>
+                            <m:OverflowToolbar>
+                                <m:Title id="title" text="{i18n>庫存批次清單}"/>
+                                <m:ToolbarSpacer/>
+                                <m:Button
+                                        icon="sap-icon://decline"
+                                        tooltip="Clear all filters"
+                                        press="clearAllFilters"/>
+                                <m:ToolbarSeparator/>
+                                <m:SearchField
+                                        placeholder="Filter"
+                                        value="{ui>/globalFilter}"
+                                        search="filterGlobally"
+                                        width="15rem"/>
+                            </m:OverflowToolbar>
+                        </ewm:extension>
+                        <ewm:rowActionTemplate>
+                            <t:RowAction visible="true">
+                                <!--<t:RowActionItem type="Custom" tootip="修改" icon="sap-icon://edit" press="onEdit"/>-->
+                                <t:RowActionItem type="Custom" tootip="刪除" icon="sap-icon://delete" press="onDelete"/>
+                            </t:RowAction>
+                        </ewm:rowActionTemplate>
+                        <ewm:columns>
+                            <t:Column width="10em" filterProperty="batchNo">
+                                <m:Label text="{i18n>庫存批號}" />
+                                <t:template>
+                                    <m:Label text="{batchNo}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column filterProperty="vendorBatchNo">
+                                <m:Label text="{i18n>供應商批號}" />
+                                <t:template>
+                                    <m:Label text="{vendorBatchNo}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column filterProperty="itemBo">
+                                <m:Label text="物料編號" />
+                                <t:template>
+                                    <m:Label text="{path: 'itemBo', formatter: '.itemBoFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>狀態}" />
+                                <t:template>
+                                    <m:Label text="{path: 'status', formatter: '.statusFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>原有數量}" />
+                                <t:template>
+                                    <m:Label text="{originalQty}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>現有數量}" />
+                                <t:template>
+                                    <m:Label text="{qtyOnHand}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>測量單位}" />
+                                <t:template>
+                                    <m:Label text="{unitOfMeasure}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>生產日期}" />
+                                <t:template>
+                                    <m:Label text="{path: 'productionDate', formatter: '.dateFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>失效日期}" />
+                                <t:template>
+                                    <m:Label text="{path: 'expireDate', formatter: '.dateFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                        </ewm:columns>
+                    </ewm:PaginatorTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <!--<core:Fragment fragmentName="com.sap.ewm.sys.fragment.RoleEdit" type="XML" />-->
+            <m:Page
+                    id="editPage"
+                    title="建立庫存">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>庫存批號}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <ewm:Input
+                                        id="batchNoField"
+                                        type="Text"
+                                        editable="{=${edit>/create}===true ? true : false}"
+                                        required="true"
+                                        value="{path: 'edit>/row/batchNo'}">
+                                    <ewm:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </ewm:layoutData>
+                                </ewm:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>供應商批號}：" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:Input
+                                        id="vendorBatchNoField"
+                                        type="Text"
+                                        editable="true"
+                                        value="{edit>/row/vendorBatchNo}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="物料編號：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <ewm:Input
+                                        type="Text"
+                                        id="itemField"
+                                        required="true"
+                                        value="{path: 'edit>/row/item'}"
+                                        upperCase="true"
+                                        showValueHelp="true"
+                                        browsePageMode="true"
+                                        browseUrl="item/page"
+                                        browseKeyColumn="item"
+                                        browseTitle="item.Code"
+                                        browseConfirm="onItemBrowseConfirm"
+                                        change="onItemChange">
+                                    <ewm:browseColumns>
+                                        <t:Column filterProperty="item">
+                                            <m:Label text="{i18n>料號}"/>
+                                            <t:template>
+                                                <m:Label text="{path: 'item'}"/>
+                                            </t:template>
+                                        </t:Column>
+                                        <t:Column filterProperty="description">
+                                            <m:Label text="{i18n>描述}"/>
+                                            <t:template>
+                                                <m:Label text="{描述}"/>
+                                            </t:template>
+                                        </t:Column>
+                                    </ewm:browseColumns>
+                                    <ewm:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </ewm:layoutData>
+                                </ewm:Input>
+                                <m:layoutData>
+                                    <l:GridData
+                                            span="L6 M6 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>數量}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <ewm:Input
+                                        id="qtyOnHandField"
+                                        type="Text"
+                                        required="true"
+                                        fieldWidth="85%"
+                                        description="{edit>/row/unitOfMeasure}"
+                                        editable="true"
+                                        value="{path: 'edit>/row/qtyOnHand'}"
+                                        liveChange=".onPositiveFloatNumberValidate">
+                                    <ewm:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </ewm:layoutData>
+                                </ewm:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>狀態}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <m:ComboBox
+                                        id="statusField"
+                                        width="100%"
+                                        required="true"
+                                        editable="true"
+                                        items="{
+                                            path: '/statusList',
+                                            sorter: { path: 'status' }
+                                        }"
+                                        selectedKey="{path: 'edit>/row/status'}"
+                                        change="onStatusFieldChange">
+                                    <core:ListItem key="{status}" text="{description}"/>
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:ComboBox>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>生產日期}:" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <m:DatePicker
+                                        id="productionDateField"
+                                        required="true"
+                                        valueFormat="yyyy-MM-dd 00:00:00"
+                                        displayFormat="yyyy-MM-dd"
+                                        value="{path: 'edit>/row/productionDate'}"
+                                        change="onProductionDateFieldChange">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:DatePicker>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>有效日期}:" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:Input
+                                        id="validDurationsField"
+                                        type="Text"
+                                        editable="true"
+                                        value="{edit>/row/validDurations}"
+                                        liveChange=".onPositiveIntNumberValidate">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                                <m:Select
+                                        id="timeUnitField"
+                                        width="5em"
+                                        selectedKey="{edit>/row/timeUnit}">
+                                    <m:items>
+                                        <core:Item key="DAY" text="天"/>
+                                        <core:Item key="HOUR" text="時"/>
+                                        <core:Item key="MINUTE" text="分"/>
+                                    </m:items>
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Select>
+                            </m:HBox>
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.MeasureUnitMatrixMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.MeasureUnitMatrix">
+        <id column="HANDLE" property="handle" />
+        <result column="MEASURE_UNIT" property="measureUnit" />
+        <result column="DEST_MEASURE_UNIT" property="destMeasureUnit" />
+        <result column="TRANSFER_RATE" property="transferRate" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, MEASURE_UNIT, DEST_MEASURE_UNIT, TRANSFER_RATE
+    </sql>
+
+</mapper>

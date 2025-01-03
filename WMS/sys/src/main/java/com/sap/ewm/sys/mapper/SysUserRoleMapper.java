@@ -1,0 +1,26 @@
+
+package com.sap.ewm.sys.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sap.ewm.sys.model.SysUserRole;
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * <p>
+ * 使用者角色表 Mapper 介面
+ * </p>
+ *
+ * @author syngna
+ * @since 2017-10-29
+ */
+public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
+	/**
+	 * 根據使用者Id刪除該使用者的角色關係
+	 *
+	 * @param userId 使用者ID
+	 * @return boolean
+	 * @author Jarvish
+	 * @date 2017年12月7日 16:31:38
+	 */
+	Boolean deleteByUserId(@Param("userId") Integer userId);
+}

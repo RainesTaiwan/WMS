@@ -1,0 +1,134 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.operations.StorageChange"
+        xmlns:l="sap.ui.layout"
+        xmlns:t="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m"
+        xmlns:ewm="com.sap.ewm.control"
+        height="100%">
+    <Page
+            title="棧板轉移"
+            showNavButton="false">
+        <HBox id="msgArea"></HBox>
+        <headerContent>
+            <Button icon="sap-icon://toaster-down" visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}" press="doConfirm" text="確認"></Button>
+        </headerContent>
+        <content>
+            <l:Grid
+                    hSpacing="1"
+                    vSpacing="0"
+                    defaultSpan="L12 M12 S12">
+                <l:content>
+                    <HBox alignItems="Center">
+                        <Label text="棧板編號：" design="Bold" textAlign="Right" width="10em" required="true"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="carrierNoField"
+                                required="true"
+                                value="{path: '/carrier'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="carrier/page"
+                                browseKeyColumn="carrier"
+                                browseTitle="棧板"
+                                browseConfirm="onCarrierNoFieldBrowseConfirm"
+                                change="onCarrierNoFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="carrier">
+                                    <Label text="{i18n>棧板編號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'carrier'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="原儲位編號：" design="Bold" textAlign="Right" width="10em" required="true"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="storageBinField"
+                                required="true"
+                                value="{path: '/storageBin'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="storage-bin/page"
+                                browseKeyColumn="storageBin"
+                                browseTitle="原儲存位置">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="storageBin">
+                                    <Label text="儲位編號"/>
+                                    <t:template>
+                                        <Label text="{path: 'storageBin'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="目標儲位編號：" design="Bold" textAlign="Right" width="10em" required="true"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="targetStorageBinField"
+                                required="true"
+                                value="{path: '/targetStorageBin'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="storage-bin/page"
+                                browseKeyColumn="storageBin"
+                                browseTitle="目標儲存位置">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="storageBin">
+                                    <Label text="儲位編號"/>
+                                    <t:template>
+                                        <Label text="{path: 'storageBin'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                </l:content>
+            </l:Grid>
+        </content>
+    </Page>
+</mvc:View>

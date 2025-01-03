@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ResourceTypeResourceMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.ResourceTypeResource">
+        <id column="HANDLE" property="handle" />
+        <result column="RESOURCE_TYPE_BO" property="resourceTypeBo" />
+        <result column="RESOURCE_BO" property="resourceBo" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, RESOURCE_TYPE_BO, RESOURCE_BO
+    </sql>
+
+</mapper>

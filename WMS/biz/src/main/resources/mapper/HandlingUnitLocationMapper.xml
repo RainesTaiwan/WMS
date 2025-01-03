@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.HandlingUnitLocationMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.HandlingUnitLocation">
+        <id column="HANDLE" property="handle" />
+        <result column="HANDLING_ID" property="handlingId" />
+        <result column="CARRIER_BO" property="carrierBo" />
+        <result column="BIND_CONTEXT_GBO" property="bindContextGbo" />
+        <result column="BIND_TYPE" property="bindType" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR" property="creator" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, HANDLING_ID, CARRIER_BO, BIND_CONTEXT_GBO, BIND_TYPE, CREATE_TIME, CREATOR
+    </sql>
+
+</mapper>

@@ -1,0 +1,78 @@
+#FTP配置
+#ftp:
+#  server: 10.199.199.93
+#  port: 21
+#  username: FTP
+#  password: jzy.123
+#  uploadDir: D:\profile\upload\
+#  downloadDir: D:\profile\download\
+
+#sap jco配置
+#jco:
+#  destination: dev
+#  peak_limit: 1000
+#  pool_capacity: 1000
+#  max_get_client_time: 100
+#  ashost: 10.199.199.90
+#  sysnr: 00
+#  client: 300
+#  user: RFC
+#  passwd: pass1234
+#  lang: ZH
+
+spring:
+  datasource:
+    # 配置間隔多久才進行一次檢測，檢測需要關閉的空閑連線，單位是毫秒
+    time-between-eviction-runs-millis: 18800
+    hikari:
+      # 最小空閑連線數量
+      # minimum-idle: 5
+      # 空閑連線存活最大時間，預設600000（10分鐘）
+      idle-timeout: 60000
+      # 連線池最大連線數，預設是10
+      maximum-pool-size: 20
+      # 此屬性控制從池返回的連線的預設自動提交行為,預設值：true
+      auto-commit: true
+      # 此屬性控制池中連線的最長生命週期，值0表示無限生命週期，預設1800000即30分鐘
+      max-lifetime: 600000
+      # 數據庫連線超時時間,預設30秒，即30000
+      connection-timeout: 60000
+      connection-test-query: SELECT 1
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          #url: jdbc:mysql://192.168.0.100:3306/wms?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://192.168.5.4:3306/wms?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          username: root
+          password: 1qaz@WSX
+          driver-class-name: com.mysql.cj.jdbc.Driver
+  #          url: jdbc:oracle:thin:@192.168.93.109:1521/DEV
+  #          username: wip
+  #          password: wip
+  #          driver-class-name: oracle.jdbc.OracleDriver
+  activemq:
+    #brokerUrl: tcp://104.155.207.150:61616
+    brokerUrl: tcp://192.168.5.4:61616
+    user: admin
+    password: admin
+    brokerName: localhost
+    pool:
+      enabled: true
+
+
+#websocket配置
+websocket:
+  server:
+    port: 8081
+  contextPath: /websocket
+
+#列印伺服器配置
+print:
+  server: http://localhost:8080/CodeSoftPrintWeb/printService
+
+mepapi:
+  server: 192.168.93.109
+  port: 50000
+  username: SITE_ADMIN
+  password: Sap12345

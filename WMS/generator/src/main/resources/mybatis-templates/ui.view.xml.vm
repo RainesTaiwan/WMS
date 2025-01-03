@@ -1,0 +1,151 @@
+#set($dollar="$")
+<mvc:View
+        controllerName="${cfg.package}.${entity}Maintain"
+        xmlns:m="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:t="sap.ui.table"
+        xmlns:tnt="sap.tnt"
+        xmlns:f="sap.f"
+        xmlns:l="sap.ui.layout"
+        xmlns:fm="sap.ui.layout.form"
+        xmlns:ewm="com.sap.ewm.control"
+        displayBlock="true">
+    <f:FlexibleColumnLayout
+            id="fcLayout"
+            layout="OneColumn"
+            backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                    title="{i18n>$!{table.comment}維護}"
+                    showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                            id="createButton"
+                            type="Transparent"
+                            text="{i18n>g.Add}"
+                            icon="sap-icon://add"
+                            tooltip="{i18n>g.Create}"
+                            visible="{=${dollar}{permission>/${table.name}_add}===true ? true : false}"
+                            press="onCreate" />
+                    <m:Button
+                            id="retrieveButton"
+                            type="Transparent"
+                            text="{i18n>g.Retrieve}"
+                            icon="sap-icon://search"
+                            tooltip="{i18n>g.Retrieve}"
+                            press="onRetrieve" />
+                </m:headerContent>
+                <m:content>
+                    <ewm:PaginatorTable
+                            id="${table.entityPath}List"
+                            rows="{/${table.entityPath}List}"
+                            selectionBehavior="RowOnly"
+                            selectionMode="Single"
+                            editable="false"
+                            columnHeaderHeight="30px"
+                            enableSelectAll="true"
+                            visibleRowCountMode="Auto"
+                            rowActionCount="2"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            class="sapUiSizeCondensed">
+                        <ewm:extension>
+                            <m:OverflowToolbar>
+                                <m:Title id="title" text="{i18n>${entity}.BatchList}"/>
+                                <m:ToolbarSpacer/>
+                                <m:Button
+                                        icon="sap-icon://decline"
+                                        tooltip="Clear all filters"
+                                        press="clearAllFilters"/>
+                                <m:ToolbarSeparator/>
+                                <m:SearchField
+                                        placeholder="Filter"
+                                        value="{ui>/globalFilter}"
+                                        search="filterGlobally"
+                                        width="15rem"/>
+                            </m:OverflowToolbar>
+                        </ewm:extension>
+                        <ewm:rowActionTemplate>
+                            <t:RowAction visible="true">
+                                <t:RowActionItem type="Custom" tootip="編輯" icon="sap-icon://edit" visible="{=${dollar}{permission>/${table.name}_edit}===true ? true : false}" press="onEdit"/>
+                                <t:RowActionItem type="Custom" tootip="刪除" icon="sap-icon://delete" visible="{=${dollar}{permission>/${table.name}_delete}===true ? true : false}" press="onDelete"/>
+                            </t:RowAction>
+                        </ewm:rowActionTemplate>
+                        <ewm:columns>
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#else
+                            <t:Column>
+#if("$!field.comment" != "")
+                                <m:Label text="{i18n>${field.comment}}" />
+#end
+                                <t:template>
+                                    <m:Label text="{${field.propertyName}}" />
+                                </t:template>
+                            </t:Column>
+#end
+#end
+                        </ewm:columns>
+                    </ewm:PaginatorTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <m:Page
+                    id="editPage"
+                    title="{=${dollar}{edit>/create} ? ${dollar}{i18n>g.Add} : ${dollar}{i18n>g.Edit}}">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>g.Save}"
+                            tooltip="{i18n>g.Save}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>g.Close}"
+                            tooltip="{i18n>g.Close}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})
+#else
+                                <m:HBox alignItems="Center">
+#if("$!field.comment" != "")
+                                    <m:Label text="{i18n>${field.comment}}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+#else
+                                    <m:Label text="{i18n>${entity}.${field.propertyName}}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+#end
+                                    <ewm:Input
+                                            id="${field.propertyName}Field"
+                                            type="Text"
+                                            required="true"
+#if(${keyPropertyName})
+                                            editable="{edit>/create}"
+#end
+                                            value="{path: 'edit>/row/${field.propertyName}'}">
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+#end
+#end
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

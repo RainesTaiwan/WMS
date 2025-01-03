@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.RoboticArmTaskMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.RoboticArmTask">
+        <id column="HANDLE" property="handle" />
+        <result column="VOUCHER_NO" property="voucherNo" />
+        <result column="WO_SERIAL" property="woSerial" />
+        <result column="WO_QTY" property="woQty" />
+        <result column="DO_QTY" property="doQty" />
+        <result column="FROM_PALLET_QTY" property="fromPalletQty" />
+        <result column="TO_PALLET_QTY" property="toPalletQty" />
+        <result column="RESOURCE" property="resource" />
+        <result column="TYPE" property="type" />
+        <result column="CARRIER" property="carrier" />
+        <result column="STORAGE_BIN" property="storageBin" />
+        <result column="TASK_ORDER" property="taskOrder" />
+        <result column="STATUS" property="status" />
+        <result column="RESULT" property="result" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, VOUCHER_NO, WO_SERIAL, WO_QTY, DO_QTY, FROM_PALLET_QTY, TO_PALLET_QTY, RESOURCE, TYPE
+        , CARRIER, STORAGE_BIN, TASK_ORDER, STATUS, RESULT, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <select id="findRoboticArmTaskByVoucherNo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ROBOTIC_ARM_TASK
+        WHERE 1 = 1
+        <if test="voucherNo != null and voucherNo != ''">
+            AND VOUCHER_NO = #{voucherNo}
+        </if>
+        ORDER BY CREATE_TIME ASC
+    </select>
+
+    <select id="findRoboticArmTaskByWoSerial" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ROBOTIC_ARM_TASK
+        WHERE 1 = 1
+        <if test="woSerial != null and woSerial != ''">
+            AND WO_SERIAL = #{woSerial}
+        </if>
+        ORDER BY CREATE_TIME ASC
+    </select>
+
+    <select id="findRoboticArmTaskByHandle" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ROBOTIC_ARM_TASK
+        WHERE 1 = 1
+        <if test="handle != null and handle != ''">
+            AND HANDLE = #{handle}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <update id="update">
+        UPDATE ROBOTIC_ARM_TASK <trim prefix="SET" suffixOverrides=",">
+        <if test="et.voucherNo!=null">VOUCHER_NO=#{et.voucherNo},</if>
+        <if test="et.woSerial!=null">WO_SERIAL=#{et.woSerial},</if>
+        <if test="et.woQty!=null">WO_QTY=#{et.woQty},</if>
+        <if test="et.doQty!=null">DO_QTY=#{et.doQty},</if>
+        <if test="et.fromPalletQty!=null">FROM_PALLET_QTY=#{et.fromPalletQty},</if>
+        <if test="et.toPalletQty!=null">TO_PALLET_QTY=#{et.toPalletQty},</if>
+        <if test="et.resource!=null">RESOURCE=#{et.resource},</if>
+        <if test="et.type!=null">TYPE=#{et.type},</if>
+        <if test="et.carrier!=null">CARRIER=#{et.carrier},</if>
+        <if test="et.storageBin!=null">STORAGE_BIN=#{et.storageBin},</if>
+        <if test="et.taskOrder!=null">TASK_ORDER=#{et.taskOrder},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.result!=null">RESULT=#{et.result},</if>
+        <if test="et.creator!=null">CREATOR=#{et.creator},</if>
+        <if test="et.createTime!=null">CREATE_TIME=#{et.createTime},</if>
+        <if test="et.updater!=null">UPDATER=#{et.updater},</if>
+        <if test="et.updateTime!=null">UPDATE_TIME=#{et.updateTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.voucherNo!=null"> AND VOUCHER_NO=#{ew.entity.voucherNo}</if>
+                    <if test="ew.entity.woSerial!=null"> AND WO_SERIAL=#{ew.entity.woSerial}</if>
+                    <if test="ew.entity.woQty!=null"> AND WO_QTY=#{ew.entity.woQty}</if>
+                    <if test="ew.entity.doQty!=null"> AND DO_QTY=#{ew.entity.doQty}</if>
+                    <if test="ew.entity.fromPalletQty!=null"> AND FROM_PALLET_QTY=#{ew.entity.fromPalletQty}</if>
+                    <if test="ew.entity.toPalletQty!=null"> AND TO_PALLET_QTY=#{ew.entity.toPalletQty}</if>
+                    <if test="ew.entity.resource!=null"> AND RESOURCE=#{ew.entity.resource}</if>
+                    <if test="ew.entity.type!=null"> AND TYPE=#{ew.entity.type}</if>
+                    <if test="ew.entity.carrier!=null"> AND CARRIER=#{ew.entity.carrier},</if>
+                    <if test="ew.entity.storageBin!=null"> AND STORAGE_BIN=#{ew.entity.storageBin},</if>
+                    <if test="ew.entity.taskOrder!=null"> AND TASK_ORDER=#{ew.entity.taskOrder}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.result!=null"> AND RESULT=#{ew.entity.result}</if>
+                    <if test="ew.entity.creator!=null"> AND CREATOR=#{ew.entity.creator}</if>
+                    <if test="ew.entity.createTime!=null"> AND CREATE_TIME=#{ew.entity.createTime}</if>
+                    <if test="ew.entity.updater!=null"> AND UPDATER=#{ew.entity.updater}</if>
+                    <if test="ew.entity.updateTime!=null"> AND UPDATE_TIME=#{ew.entity.updateTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+
+    <insert id="insert" parameterType="com.sap.ewm.biz.model.RoboticArmTask">
+        INSERT INTO ROBOTIC_ARM_TASK
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="voucherNo!=null">VOUCHER_NO,</if>
+            <if test="woSerial!=null">WO_SERIAL,</if>
+            <if test="woQty!=null">WO_QTY,</if>
+            <if test="doQty!=null">DO_QTY,</if>
+            <if test="fromPalletQty!=null">FROM_PALLET_QTY,</if>
+            <if test="toPalletQty!=null">TO_PALLET_QTY,</if>
+            <if test="resource!=null">RESOURCE,</if>
+            <if test="type!=null">TYPE,</if>
+            <if test="carrier!=null">CARRIER,</if>
+            <if test="storageBin!=null">STORAGE_BIN,</if>
+            <if test="taskOrder!=null">TASK_ORDER,</if>
+            <if test="status!=null">STATUS,</if>
+            <if test="result!=null">RESULT,</if>
+            <if test="creator!=null">CREATOR,</if>
+            <if test="createTime!=null">CREATE_TIME,</if>
+            <if test="updater!=null">UPDATER,</if>
+            <if test="updateTime!=null">UPDATE_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="voucherNo!=null">#{voucherNo},</if>
+            <if test="woSerial!=null">#{woSerial},</if>
+            <if test="woQty!=null">#{woQty},</if>
+            <if test="doQty!=null">#{doQty},</if>
+            <if test="fromPalletQty!=null">#{fromPalletQty},</if>
+            <if test="toPalletQty!=null">#{toPalletQty},</if>
+            <if test="resource!=null">#{resource},</if>
+            <if test="type!=null">#{type},</if>
+            <if test="carrier!=null">#{carrier},</if>
+            <if test="storageBin!=null">#{storageBin},</if>
+            <if test="taskOrder!=null">#{taskOrder},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="result!=null">#{result},</if>
+            <if test="creator!=null">#{creator},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updater!=null">#{updater},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </insert>
+</mapper>

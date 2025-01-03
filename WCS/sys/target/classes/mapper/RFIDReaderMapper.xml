@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.RFIDReaderMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.RFIDReader">
+        <id column="HANDLE" property="handle" />
+        <result column="READER_ID" property="readerID" />
+        <result column="RECEIVE_STATION" property="receiveStation" />
+        <result column="STATION" property="station" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, READER_ID, RECEIVE_STATION, STATION, STATUS, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <update id="updateStatusByReaderID">
+        UPDATE rfid_reader
+        SET STATUS=#{et.status}, UPDATE_USER=#{et.updateUser}, UPDATED_TIME=#{et.updatedTime}
+        WHERE READER_ID = #{readerID}
+    </update>
+
+    <select id="findRFIDReaderID" resultMap="BaseResultMap">
+        SELECT *
+        FROM rfid_reader
+        WHERE RECEIVE_STATION = #{receiveStation} AND STATION = #{station}
+    </select>
+
+    <select id="findReceiveStation" resultMap="BaseResultMap">
+        SELECT *
+        FROM rfid_reader
+        WHERE READER_ID = #{readerID}
+    </select>
+
+</mapper>

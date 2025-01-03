@@ -1,0 +1,202 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.report.StayInReport"
+        xmlns:l="sap.ui.layout"
+        xmlns:t="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m"
+        xmlns:ewm="com.sap.ewm.control"
+        height="100%">
+    <Page
+            title="待入庫查詢報表"
+            showNavButton="false">
+        <HBox id="msgArea"></HBox>
+        <headerContent>
+            <Button icon="sap-icon://search" visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}" press="doRetrieve" text="檢索"></Button>
+            <Button icon="sap-icon://delete" visible="{=${permission>/handling_unit_carrier_unbind}===true ? true : false}" press="doClear" text="清除"></Button>
+        </headerContent>
+        <content>
+            <l:Grid
+                    hSpacing="1"
+                    vSpacing="0"
+                    defaultSpan="L12 M12 S12">
+                <l:content>
+                    <!-- 物料-->
+                    <HBox alignItems="Center">
+                        <Label text="物料編號：" design="Bold" textAlign="Right" width="10em" required="false"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="itemField"
+                                required="true"
+                                value="{path: '/item'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="item/page"
+                                browseKeyColumn="item"
+                                browseTitle="物料"
+                                browseConfirm="onItemFieldBrowseConfirm"
+                                change="onItemFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="item">
+                                    <Label text="{i18n>物料編號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'item'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <!-- 批次編號-->
+                    <HBox alignItems="Center">
+                        <Label text="庫存批號：" design="Bold" textAlign="Right" width="10em" required="false"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="inventoryField"
+                                required="true"
+                                value="{path: '/batchNo'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="inventory/page"
+                                browseKeyColumn="batchNo"
+                                browseTitle="庫存批號"
+                                browseConfirm="onBatchNoFieldConfirm"
+                                change="onBatchNoFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="batchNo">
+                                    <Label text="{i18n>庫存批號}"/>
+                                    <t:template>
+                                        <Label text="{庫存批號}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="vendorBatchNo">
+                                    <Label text="{i18n>供應商批號}"/>
+                                    <t:template>
+                                        <Label text="{供應商批號}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="item">
+                                    <Label text="{i18n>物料編號}"/>
+                                    <t:template>
+                                        <Label text="{物料編號}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column>
+                                    <Label text="{i18n>狀態}"/>
+                                    <t:template>
+                                        <Label text="{狀態}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <!-- 棧板編號-->
+                    <HBox alignItems="Center">
+                        <Label text="棧板編號：" design="Bold" textAlign="Right" width="10em" required="false"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="carrierNoField"
+                                required="true"
+                                value="{path: '/carrier'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="carrier/page"
+                                browseKeyColumn="carrier"
+                                browseTitle="棧板"
+                                browseConfirm="onCarrierNoFieldBrowseConfirm"
+                                change="onCarrierNoFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="carrier">
+                                    <Label text="{i18n>棧板編號}"/>
+                                    <t:template>
+                                        <Label text="{棧板編號}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <core:HTML context="&lt;br&gt;"/>
+
+                    <!-- 橫線-->
+                    <core:HTML content='&lt;hr&gt;' />
+
+                    <!-- 待入庫列表-->
+                    <VBox alignItems="Center">
+                    <t:TreeTable
+                            id="storageTree"
+                            rows="{path:'/storageTree', parameters: {arrayNames:['children']}}"
+                            selectionBehavior="Row"
+                            selectionMode="Single"
+                            editable="false"
+                            columnHeaderHeight="30px"
+                            enableSelectAll="true"
+                            visibleRowCount="20"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            class="sapUiSizeCondensed"
+                            title="待入庫列表">
+                        <t:columns>
+                            <t:Column>
+                                <Label text="棧板編號" />
+                                <t:template>
+                                    <Label text="{carrier}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="庫存批號" />
+                                <t:template>
+                                    <Label text="{path: 'inventoryBo', formatter: '.handleFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="數量" />
+                                <t:template>
+                                    <Label text="{inventoryQty}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="物料編號" />
+                                <t:template>
+                                    <Label text="{item}/{itemDescription}" />
+                                </t:template>
+                            </t:Column>
+                        </t:columns>
+                    </t:TreeTable>
+                    </VBox>
+                </l:content>
+            </l:Grid>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.DashBoardMapper">
+
+    <select id="selectAgvData" resultType="java.util.Map">
+        SELECT A.AGV_NO agvID, A.STATUS status, A.VOLTAGE battery,
+               IFNULL(AK.CATEGORY, '/') operation, IFNULL(AK.CARRIER, '/') tray,
+               IFNULL(AK.TARGET_POSITION, '/') target, IFNULL(AK.HANDLE, '/') task
+        FROM agv A
+        LEFT JOIN agv_task AK ON A.TASK_BO = AK.HANDLE
+        ORDER BY A.AGV_NO
+    </select>
+
+    <select id="selectReceiveStationData" resultType="java.util.Map">
+        SELECT A.RECEIVE_STATION spotId, A.STATUS status, A.FLOW_DIRECTION spotType,
+        IFNULL(B.firstValue, '/') firstValue, IFNULL(B.secondValue, '/') secondValue, IFNULL(B.thirdValue, '/') thirdValue
+        FROM receive_station A
+        LEFT JOIN (
+            SELECT RECEIVE_STATION,
+                   MAX(CASE WHEN STATION = '1' THEN CARRIER ELSE '/' END) AS firstValue,
+                   MAX(CASE WHEN STATION = '2' THEN CARRIER ELSE '/' END) AS secondValue,
+                   MAX(CASE WHEN STATION = '3' THEN CARRIER ELSE '/' END) AS thirdValue
+            FROM wcs.receive_station_bind
+            GROUP BY RECEIVE_STATION
+        ) B ON A.RECEIVE_STATION = B.RECEIVE_STATION
+        ORDER BY A.RECEIVE_STATION
+    </select>
+</mapper>

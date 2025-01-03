@@ -1,0 +1,194 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.master.CarrierMaintain"
+        xmlns:m="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:t="sap.ui.table"
+        xmlns:tnt="sap.tnt"
+        xmlns:f="sap.f"
+        xmlns:l="sap.ui.layout"
+        xmlns:fm="sap.ui.layout.form"
+        xmlns:ewm="com.sap.ewm.control"
+        displayBlock="true">
+    <f:FlexibleColumnLayout
+            id="fcLayout"
+            layout="OneColumn"
+            backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                    title="{i18n>棧板維護}"
+                    showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                            id="createButton"
+                            type="Transparent"
+                            text="{i18n>新增}"
+                            icon="sap-icon://add"
+                            tooltip="{i18n>新增}"
+                            press="onCreate" />
+                    <m:Button
+                            id="editButton"
+                            type="Transparent"
+                            text="{i18n>重新整理}"
+                            icon="sap-icon://refresh"
+                            tooltip="{i18n>重新整理}"
+                            press="onRetrieve" />
+                </m:headerContent>
+                <m:content>
+                    <ewm:PaginatorTable
+                            id="carrierList"
+                            rows="{/carrierList}"
+                            selectionBehavior="RowOnly"
+                            selectionMode="Single"
+                            editable="false"
+                            columnHeaderHeight="30px"
+                            enableSelectAll="true"
+                            visibleRowCountMode="Auto"
+                            rowActionCount="2"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            class="sapUiSizeCondensed">
+                        <ewm:extension>
+                            <m:OverflowToolbar>
+                                <m:Title id="title" text="{i18n>棧板清單}"/>
+                                <m:ToolbarSpacer/>
+                                <m:Button
+                                        icon="sap-icon://decline"
+                                        tooltip="Clear all filters"
+                                        press="clearAllFilters"/>
+                                <m:ToolbarSeparator/>
+                                <m:SearchField
+                                        placeholder="Filter"
+                                        value="{ui>/globalFilter}"
+                                        search="filterGlobally"
+                                        width="15rem"/>
+                            </m:OverflowToolbar>
+                        </ewm:extension>
+                        <ewm:rowActionTemplate>
+                            <t:RowAction visible="true">
+                                <t:RowActionItem type="Custom" tootip="編輯" icon="sap-icon://edit" press="onEdit"/>
+                                <t:RowActionItem type="Custom" tootip="刪除" icon="sap-icon://delete" press="onDelete"/>
+                            </t:RowAction>
+                        </ewm:rowActionTemplate>
+                        <ewm:columns>
+                            <t:Column>
+                                <m:Label text="{i18n>棧板編號}" />
+                                <t:template>
+                                    <m:Label text="{carrier}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>描述}" />
+                                <t:template>
+                                    <m:Label text="{description}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>棧板類型}" />
+                                <t:template>
+                                    <m:Label text="{path:'carrierTypeBo', formatter:'.carrierTypeFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                        </ewm:columns>
+                    </ewm:PaginatorTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <m:Page
+                    id="editPage"
+                    title="建立棧板資料">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>棧板編號}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <ewm:Input
+                                            id="carrierField"
+                                            type="Text"
+                                            required="true"
+                                            editable="{edit>/create}"
+                                            value="{path: 'edit>/row/carrier'}">
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>描述}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <ewm:Input
+                                            id="descriptionField"
+                                            type="Text"
+                                            required="true"
+                                            value="{path: 'edit>/row/description'}">
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>棧板類型}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <ewm:Input
+                                            type="Text"
+                                            id="carrierTypeField"
+                                            required="true"
+                                            value="{path: 'edit>/row/carrierType'}"
+                                            upperCase="true"
+                                            showValueHelp="true"
+                                            browsePageMode="true"
+                                            browseUrl="carrier-type/page"
+                                            browseKeyColumn="carrierType"
+                                            browseTitle="棧板類型">
+                                        <ewm:browseColumns>
+                                            <t:Column filterProperty="item">
+                                                <m:Label text="棧板類型"/>
+                                                <t:template>
+                                                    <m:Label text="{path: 'carrierType'}"/>
+                                                </t:template>
+                                            </t:Column>
+                                            <t:Column filterProperty="description">
+                                                <m:Label text="{i18n>g.Description}"/>
+                                                <t:template>
+                                                    <m:Label text="{description}"/>
+                                                </t:template>
+                                            </t:Column>
+                                        </ewm:browseColumns>
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData
+                                                span="L6 M6 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

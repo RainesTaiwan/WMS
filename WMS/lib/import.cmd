@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=tc~je~usermanagement~api.jar -DgroupId=com.sap.usermanagement.api -DartifactId=sap-usermanagement-api -Dversion=1.0 -Dpackaging=jar

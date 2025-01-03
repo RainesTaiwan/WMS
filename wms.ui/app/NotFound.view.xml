@@ -1,0 +1,9 @@
+<mvc:View
+        controllerName="com.sap.ewm.app.NotFound"
+        xmlns="sap.m"
+        xmlns:mvc="sap.ui.core.mvc">
+    <MessagePage
+            title="{i18n>g.NotFound}"
+            text="{i18n>g.NotFound.text}"
+            description="{i18n>g.NotFound.description}"/>
+</mvc:View>

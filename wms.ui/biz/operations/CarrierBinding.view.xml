@@ -1,0 +1,214 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.operations.CarrierBinding"
+        xmlns:l="sap.ui.layout"
+        xmlns:t="sap.ui.table"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns="sap.m"
+        xmlns:ewm="com.sap.ewm.control"
+        height="100%">
+    <Page
+            title="棧板綁定"
+            showNavButton="false">
+        <HBox id="msgArea"></HBox>
+        <headerContent>
+            <Button icon="sap-icon://toaster-down" visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}" press="doBind" text="綁定"></Button>
+            <Button icon="sap-icon://toaster-up" visible="{=${permission>/handling_unit_carrier_unbind}===true ? true : false}" press="doUnBind" text="解綁"></Button>
+        </headerContent>
+        <content>
+            <l:Grid
+                    hSpacing="1"
+                    vSpacing="0"
+                    defaultSpan="L12 M12 S12">
+                <l:content>
+                    <!-- 批次編號-->
+                    <HBox alignItems="Center">
+                        <Label text="庫存批號：" design="Bold" textAlign="Right" width="10em" required="true"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="batchNoField"
+                                required="true"
+                                value="{path: '/batchNo'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="inventory/page"
+                                browseKeyColumn="batchNo"
+                                browseTitle="庫存批號"
+                                browseConfirm="onBatchNoFieldConfirm"
+                                change="onBatchNoFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="batchNo">
+                                    <Label text="{i18n>庫存批號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'batchNo'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="vendorBatchNo">
+                                    <Label text="{i18n>供應商批號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'vendorBatchNo'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="item">
+                                    <Label text="{i18n>物料編號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'itemBo', formatter: '.itemBoFormatter'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column>
+                                    <Label text="{i18n>狀態}"/>
+                                    <t:template>
+                                        <Label text="{path: 'status', formatter: '.statusFormatter'}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <!-- 棧板編號-->
+                    <HBox alignItems="Center">
+                        <Label text="棧板編號：" design="Bold" textAlign="Right" width="10em" required="true"></Label>
+                        <ewm:Input
+                                type="Text"
+                                id="carrierNoField"
+                                required="true"
+                                value="{path: '/carrier'}"
+                                upperCase="true"
+                                showValueHelp="true"
+                                browsePageMode="true"
+                                browseUrl="carrier/page"
+                                browseKeyColumn="carrier"
+                                browseTitle="棧板"
+                                browseConfirm="onCarrierNoFieldBrowseConfirm"
+                                change="onCarrierNoFieldChange">
+                            <ewm:browseColumns>
+                                <t:Column filterProperty="carrier">
+                                    <Label text="{i18n>棧板編號}"/>
+                                    <t:template>
+                                        <Label text="{path: 'carrier'}"/>
+                                    </t:template>
+                                </t:Column>
+                                <t:Column filterProperty="description">
+                                    <Label text="{i18n>描述}"/>
+                                    <t:template>
+                                        <Label text="{描述}"/>
+                                    </t:template>
+                                </t:Column>
+                            </ewm:browseColumns>
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12" />
+                        </layoutData>
+                    </HBox>
+                    <core:HTML context="&lt;br&gt;"/>
+
+                    <!-- 數量-->
+                    <HBox alignItems="Center">
+                        <Label text="數量：" design="Bold" textAlign="Right" width="10em" visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}" required="true"></Label>
+                        <ewm:Input
+                                id="qtyField"
+                                type="Text"
+                                value="{/qty}"
+                                visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}"
+                                required="true"
+                                liveChange=".onPositiveFloatNumberValidate"
+                                showValueHelp="false">
+                            <ewm:layoutData>
+                                <FlexItemData growFactor="1" />
+                            </ewm:layoutData>
+                        </ewm:Input>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12"/>
+                        </layoutData>
+                    </HBox>
+
+                    <HBox alignItems="Center">
+                        <Label text="{i18n>狀態}：" design="Bold" textAlign="Right" width="10em" visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}" required="true"></Label>
+                        <ComboBox
+                                id="statusField"
+                                width="100%"
+                                visible="{=${permission>/handling_unit_carrier_bind}===true ? true : false}"
+                                required="true"
+                                editable="true"
+                                items="{
+                                            path: '/statusList',
+                                            sorter: { path: 'status' }
+                                        }"
+                                selectedKey="{path: '/status'}"
+                                change="onStatusFieldChange">
+                            <core:ListItem key="{status}" text="{description}"/>
+                            <layoutData>
+                                <FlexItemData growFactor="1"/>
+                            </layoutData>
+                        </ComboBox>
+                        <layoutData>
+                            <l:GridData span="L6 M6 S12"/>
+                        </layoutData>
+                    </HBox>
+
+                    <!-- 橫線-->
+                    <core:HTML content='&lt;hr&gt;' />
+
+                    <!-- 點檢專案-->
+                    <VBox alignItems="Center">
+                    <t:Table
+                            id="carrierBindList"
+                            rows="{/carrierBindList}"
+                            selectionMode="Single"
+                            selectionBehavior="RowOnly"
+                            enableColumnReordering="false"
+                            visibleRowCount="13"
+                            columnHeaderHeight="34"
+                            enableCellFilter="false"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            enableSelectAll="true"
+                            title="已綁定的棧板">
+                        <t:columns>
+                            <t:Column>
+                                <Label text="棧板編號" />
+                                <t:template>
+                                    <Label text="{carrier}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="庫存批號" />
+                                <t:template>	
+                                    <Label text="{batchNo}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="物料編號" />
+                                <t:template>
+                                    <Label text="{path: 'itemBo', formatter: '.itemBoFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="狀態" />
+                                <t:template>
+                                    <Label text="{path: 'status', formatter: '.statusFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <Label text="數量" />
+                                <t:template>
+                                    <Label text="{inventoryQty}" />
+                                </t:template>
+                            </t:Column>
+                        </t:columns>
+                    </t:Table>
+                    </VBox>
+                </l:content>
+            </l:Grid>
+        </content>
+    </Page>
+</mvc:View>

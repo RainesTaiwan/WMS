@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ASRSOrderMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.AsrsOrder">
+        <id column="HANDLE" property="handle" />
+        <result column="MESSAGE_ID" property="messageId" />
+        <result column="WO_SERIAL" property="woSerial" />
+        <result column="WO_TYPE" property="woType" />
+        <result column="ORDER_QTY" property="orderQTY" />
+        <result column="VOUCHER_NO" property="voucherNo" />
+        <result column="ITEM_COUNT" property="itemCount" />
+        <result column="ITEM" property="item" />
+        <result column="CONTAINER" property="container" />
+        <result column="STORAGE_BIN" property="storageBin" />
+        <result column="VALIDATION" property="validation" />
+        <result column="STATUS" property="status" />
+        <result column="RESOURCE" property="resource" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, MESSAGE_ID, WO_SERIAL, WO_TYPE, ORDER_QTY, VOUCHER_NO, ITEM_COUNT, ITEM, CONTAINER, STORAGE_BIN
+        , VALIDATION, STATUS, RESOURCE, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <select id="findASRSOrderByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="findASRSOrderByWoSerial" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="woSerial != null and woSerial != ''">
+            AND WO_SERIAL = #{woSerial}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="findASRSOrderByResourceAndStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="resource != null and resource != ''">
+            AND RESOURCE = #{resource}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="findASRSOrderByMessageId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="messageId != null and messageId != ''">
+            AND MESSAGE_ID = #{messageId}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="findASRSOrderByVoucherNo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="voucherNo != null and voucherNo != ''">
+            AND VOUCHER_NO = #{voucherNo}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <select id="findASRSOrderById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_ORDER
+        WHERE 1 = 1
+        <if test="handle != null and handle != ''">
+            AND HANDLE = #{handle}
+        </if>
+        ORDER BY CREATE_TIME DESC
+    </select>
+
+    <insert id="insert" parameterType="com.sap.ewm.biz.model.AsrsOrder">
+        INSERT INTO ASRS_ORDER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="messageId!=null">MESSAGE_ID,</if>
+            <if test="woSerial!=null">WO_SERIAL,</if>
+            <if test="woType!=null">WO_TYPE,</if>
+            <if test="orderQTY!=null">ORDER_QTY,</if>
+            <if test="voucherNo!=null">VOUCHER_NO,</if>
+            <if test="itemCount!=null">ITEM_COUNT,</if>
+            <if test="item!=null">ITEM,</if>
+            <if test="container!=null">CONTAINER,</if>
+            <if test="storageBin!=null">STORAGE_BIN,</if>
+            <if test="validation!=null">VALIDATION,</if>
+            <if test="status!=null">STATUS,</if>
+            <if test="resource!=null">RESOURCE,</if>
+            <if test="creator!=null">CREATOR,</if>
+            <if test="createTime!=null">CREATE_TIME,</if>
+            <if test="updater!=null">UPDATER,</if>
+            <if test="updateTime!=null">UPDATE_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="messageId!=null">#{messageId},</if>
+            <if test="woSerial!=null">#{woSerial},</if>
+            <if test="woType!=null">#{woType},</if>
+            <if test="orderQTY!=null">#{orderQTY},</if>
+            <if test="voucherNo!=null">#{voucherNo},</if>
+            <if test="itemCount!=null">#{itemCount},</if>
+            <if test="item!=null">#{item},</if>
+            <if test="container!=null">#{container},</if>
+            <if test="storageBin!=null">#{storageBin},</if>
+            <if test="validation!=null">#{validation},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="resource!=null">#{resource},</if>
+            <if test="creator!=null">#{creator},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updater!=null">#{updater},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </insert>
+</mapper>

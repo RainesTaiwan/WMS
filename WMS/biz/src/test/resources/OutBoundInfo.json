@@ -1,0 +1,10 @@
+{
+  "MESSAGE_TYPE": "carrier.outbound.notice.process",
+  "MESSAGE_ID": "REQ_2019061718233263944",
+  "CORRELATION_ID": "1234567890",
+  "SEND_TIME": "2020-07-09 12:12:12",
+  "ACTION_CODE": "1",
+  "CARRIER": "C06",
+  "STORAGE_LOCATION": "SL012",
+  "STORAGE_BIN": "02005"
+}

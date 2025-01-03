@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.RoboticArmMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.RoboticArm">
+        <id column="HANDLE" property="handle" />
+        <result column="ROBOTIC_ARM" property="roboticArm" />
+        <result column="SERVICE_RESOURCE" property="serviceResource" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, ROBOTIC_ARM, SERVICE_RESOURCE, STATUS, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="findRoboticArmByName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Robotic_Arm
+        WHERE 1 = 1
+        <if test="roboticArm != null and roboticArm != ''">
+            AND ROBOTIC_ARM = #{roboticArm}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <update id="update">
+        UPDATE Robotic_Arm <trim prefix="SET" suffixOverrides=",">
+        <if test="et.handle!=null">HANDLE=#{et.handle},</if>
+        <if test="et.serviceResource!=null">SERVICE_RESOURCE=#{et.serviceResource},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    ROBOTIC_ARM=#{ew.entity.roboticArm}
+                    <if test="ew.entity.handle!=null"> AND HANDLE=#{ew.entity.handle}</if>
+                    <if test="ew.entity.serviceResource!=null"> AND SERVICE_RESOURCE=#{ew.entity.serviceResource}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

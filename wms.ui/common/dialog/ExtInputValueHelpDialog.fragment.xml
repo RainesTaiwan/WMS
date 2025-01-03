@@ -1,0 +1,44 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:t="sap.ui.table"
+        xmlns:l="sap.ui.layout"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core">
+    <Dialog resizable="false" draggable="false" stretch="false" horizontalScrolling="false" contentWidth="80%" title="Select">
+        <content>
+            <HBox id="errorMsgArea"></HBox>
+            <l:Grid
+                    hSpacing="1"
+                    vSpacing="0"
+                    defaultSpan="L12 M12 S12">
+                <l:content>
+                    <HBox>
+                        <SearchField
+                                id="searchField"
+                                placeholder="Filter"
+                                search="filterGlobally"
+                                liveChange="filterChange"/>
+                    </HBox>
+                    <VBox alignItems="Center">
+                        <t:Table
+                                id="extInputValueHelpDialogGrid"
+                                rows="{path:'/records'}"
+                                cellClick="onTableCellClick"
+                                busyIndicatorDelay="0"
+                                enableBusyIndicator="true"
+                                filter="onGridFilter">
+                        </t:Table>
+                        <layoutData>
+                            <l:GridData
+                                    span="L12 M12 S12" />
+                        </layoutData>
+                    </VBox>
+                </l:content>
+            </l:Grid>
+        </content>
+        <buttons>
+            <Button text="{i18n>確認}" visible="{/confirmButtonVisible}"  type="Emphasized" press="onConfirm"></Button>
+            <Button text="{i18n>關閉}"  type="Emphasized" press="onClose"></Button>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ReportMapper">
+
+    <!-- 倉庫查詢對映結果 -->
+    <resultMap id="warehouseReportResultMap" type="com.sap.ewm.biz.vo.WarehouseReportVO">
+        <result column="warehouse" property="warehouse" />
+        <result column="storage_location" property="storageLocation" />
+        <result column="storage_location_description" property="storageLocationDescription" />
+        <result column="storage_bin" property="storageBin" />
+        <result column="storage_bin_description" property="storageBinDescription" />
+        <result column="carrier" property="carrier" />
+        <result column="inventory_bo" property="inventoryBo" />
+        <result column="inventory_qty" property="inventoryQty" />
+        <result column="item" property="item" />
+        <result column="item_description" property="itemDescription" />
+        <result column="inventory_status" property="inventoryStatus"/>
+    </resultMap>
+
+    <!-- 待入庫查詢對映結果 -->
+    <resultMap id="stayInReportResultMap" type="com.sap.ewm.biz.vo.StayInReportVO">
+        <result column="carrier" property="carrier" />
+        <result column="inventory_bo" property="inventoryBo" />
+        <result column="inventory_qty" property="inventoryQty" />
+        <result column="item" property="item" />
+        <result column="item_description" property="itemDescription" />
+    </resultMap>
+
+    <!-- 倉庫查詢 -->
+    <select id="selectWarehouseInventoryList" resultMap="warehouseReportResultMap">
+        select *
+        from(
+            select wh.warehouse, sl.storage_location, sl.description as storage_location_description,
+                sb.storage_bin, sb.description as storage_bin_description, c.carrier, inv.handle as inventory_bo,
+                hu.inventory_qty, i.item, i.description as item_description, sbs.status, hu.status as inventory_status
+            from handling_unit_location hul
+            inner join handling_unit hu on hul.handling_id = hu.handling_id
+            inner join carrier c on hu.carrier_bo = c.handle
+            inner join inventory inv on hu.handling_unit_context_gbo = inv.handle
+            inner join item i on inv.item_bo = i.handle
+            inner join storage_bin sb on hul.bind_context_gbo = sb.handle
+            inner join storage_location sl on sb.storage_location_bo = sl.handle
+            inner join warehouse wh on sl.warehouse_bo = wh.handle
+            left join storage_bin_status sbs on sb.handle = sbs.handle
+            order by wh.warehouse, sl.storage_location, sb.storage_bin
+        )t
+        <where>
+            <if test="ew!=null and ew.sqlSegment!=null and ew.nonEmptyOfWhere">
+                ${ew.sqlSegment}
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <!--待入庫查詢-->
+    <select id="selectStayInInventoryList" resultMap="stayInReportResultMap">
+        select *
+        from(
+            select c.carrier, inv.handle as inventory_bo,
+              hu.inventory_qty, i.item, i.description as item_description
+            from handling_unit hu
+            inner join carrier c on hu.carrier_bo = c.handle
+            inner join inventory inv on hu.handling_unit_context_gbo = inv.handle
+            inner join item i on inv.item_bo = i.handle
+            left join handling_unit_location hul on hul.handling_id = hu.handling_id
+            where hul.handle is null
+        )t
+        <where>
+            <if test="ew!=null and ew.sqlSegment!=null and ew.nonEmptyOfWhere">
+                ${ew.sqlSegment}
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+</mapper>

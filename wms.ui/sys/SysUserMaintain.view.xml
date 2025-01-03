@@ -1,0 +1,248 @@
+<mvc:View
+        controllerName="com.sap.ewm.sys.SysUserMaintain"
+        xmlns:m="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:t="sap.ui.table"
+        xmlns:ewm="com.sap.ewm.control"
+        xmlns:f="sap.f"
+        xmlns:l="sap.ui.layout"
+        xmlns:fm="sap.ui.layout.form"
+        xmlns:tnt="sap.tnt"
+        displayBlock="true">
+    <f:FlexibleColumnLayout
+            id="fcLayout"
+            layout="OneColumn"
+            backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                    title="{i18n>帳號管理}"
+                    showNavButton="false">
+                <m:headerContent>
+                    <m:Button
+                            id="retrieveButton"
+                            type="Transparent"
+                            icon="sap-icon://search"
+                            text="{i18n>搜尋}"
+                            press="onRetrieve"/>
+                    <m:Button
+                            id="clearButton"
+                            type="Transparent"
+                            icon="sap-icon://reset"
+                            text="{i18n>清除}"
+                            press="onClear"/>
+                </m:headerContent>
+                <m:content>
+                    <m:HBox id="msgArea"></m:HBox>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>帳號名稱}：" design="Bold" textAlign="Right" width="8em" required="false"></m:Label>
+                                <ewm:Input
+                                        id="usernameField"
+                                        type="Text"
+                                        value="{/username}"
+                                        upperCase="false"
+                                        showValueHelp="false"
+                                        browsePageMode="true"
+                                        browseUrl="user/page"
+                                        browseKeyColumn="username"
+                                        browseTitle="common.Username"
+                                        prepareBrowseDefaultParams="onPrepareOperationBrowseParams"
+                                        browseConfirm="onUsernameBrowseConfirm">
+                                    <!--<biz:browseColumns>
+                                        <t:Column filterProperty="username">
+                                            <m:Label text="{i18n>g.Username}"/>
+                                            <t:template>
+                                                <m:Label text="{username}"/>
+                                            </t:template>
+                                        </t:Column>
+                                        <t:Column filterProperty="description">
+                                            <m:Label text="{i18n>g.FullName}"/>
+                                            <t:template>
+                                                <m:Label text="{lastName}{firstName}"/>
+                                            </t:template>
+                                        </t:Column>
+                                    </biz:browseColumns>-->
+                                    <ewm:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </ewm:layoutData>
+                                </ewm:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L6 M6 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <core:HTML content='&lt;hr&gt;'></core:HTML>
+                            <ewm:PaginatorTable
+                                    id="userList"
+                                    rows="{/userList}"
+                                    selectionBehavior="RowOnly"
+                                    selectionMode="Single"
+                                    editable="false"
+                                    columnHeaderHeight="30px"
+                                    enableSelectAll="true"
+                                    rowActionCount="2"
+                                    visibleRowCount="15"
+                                    rowSelectionChange="onUserSelected"
+                                    busyIndicatorDelay="0"
+                                    enableBusyIndicator="true"
+                                    pageSize="15"
+                                    class="sapUiSizeCondensed">
+                                <ewm:extension>
+                                    <m:Toolbar>
+                                        <m:Title id="title" text="帳號列表"></m:Title>
+                                        <m:ToolbarSpacer/>
+                                        <!--<m:Button
+                                                icon="sap-icon://decline"
+                                                tooltip="Clear all filters"
+                                                press="clearAllFilters"/>-->
+                                    </m:Toolbar>
+                                </ewm:extension>
+                                <ewm:rowActionTemplate>
+                                    <t:RowAction visible="true">
+                                        <t:RowActionItem type="Custom" visible="{=${permission>/sys_user_edit}===true ? true : false}" icon="sap-icon://edit" press="onEdit"/>
+                                        <t:RowActionItem type="Custom" icon="sap-icon://reset" press="onRemovePermissionCache"/>
+                                    </t:RowAction>
+                                </ewm:rowActionTemplate>
+                                <ewm:columns>
+                                    <t:Column sortProperty="id">
+                                        <m:Label text="{i18n>帳號名稱}"/>
+                                        <t:template>
+                                            <m:Label text="{username}"/>
+                                        </t:template>
+                                    </t:Column>
+                                    <t:Column>
+                                        <m:Label text="{i18n>全名}"/>
+                                        <t:template>
+                                            <m:Label text="{lastName}{firstName}"/>
+                                        </t:template>
+                                    </t:Column>
+                                    <t:Column width="6em">
+                                        <m:Label text="{i18n>已鎖定}"/>
+                                        <t:template>
+                                            <m:ObjectStatus inverted="true" text="{path: 'lockFlag', formatter: '.yesNoFormatter'}" state="{=${lockFlag}==='Y' ? 'Error' : 'Success'}"/>
+                                        </t:template>
+                                    </t:Column>
+                                    <t:Column>
+                                        <m:Label text="{i18n>角色}"/>
+                                        <t:template id="roleColumn">
+                                            <!--<m:Label text="{role}"/>-->
+                                           <!-- <m:Label displayOnly="true" colorScheme="7" text="{parts:[
+                                                {path: 'roleList'}
+                                            ],
+                                            formatter: '.roleFormatter'}"/>-->
+                                            <m:MultiComboBox
+                                                    selectedKeys="{parts:[
+                                                        {path: 'roleList'}
+                                                    ],
+                                                    formatter: '.roleFormatter'}"
+                                                    editable="false"
+                                                    items="{
+                                                        path: '/roleList',
+                                                        sorter: { path: 'roleName' }
+                                                    }">
+                                                <core:Item key="{roleId}" text="{roleName}"/>
+                                                <m:layoutData>
+                                                    <m:FlexItemData growFactor="1"/>
+                                                </m:layoutData>
+                                            </m:MultiComboBox>
+                                        </t:template>
+                                    </t:Column>
+                                </ewm:columns>
+                            </ewm:PaginatorTable>
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages>
+            <m:Page
+                    title="編輯">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <fm:Form
+                            id="editorForm"
+                            editable="true">
+                        <fm:layout>
+                            <fm:ResponsiveGridLayout
+                                    labelSpanXL="3"
+                                    labelSpanL="3"
+                                    labelSpanM="3"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="4"
+                                    emptySpanL="4"
+                                    emptySpanM="4"
+                                    emptySpanS="0"
+                                    columnsXL="1"
+                                    columnsL="1"
+                                    columnsM="1"
+                                    singleContainerFullSize="false" />
+                        </fm:layout>
+                        <fm:formContainers>
+                            <fm:FormContainer>
+                                <fm:formElements>
+                                    <fm:FormElement label="{i18n>帳號名稱}">
+                                        <fm:fields>
+                                            <m:Input
+                                                    type="Text"
+                                                    editable="false"
+                                                    value="{edit>/row/username}">
+                                                <m:layoutData>
+                                                    <m:FlexItemData growFactor="1"/>
+                                                </m:layoutData>
+                                            </m:Input>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                    <fm:FormElement label="{i18n>全名}">
+                                        <fm:fields>
+                                            <m:Input
+                                                    type="Text"
+                                                    editable="false"
+                                                    value="{edit>/row/fullName}">
+                                                <m:layoutData>
+                                                    <m:FlexItemData growFactor="1"/>
+                                                </m:layoutData>
+                                            </m:Input>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                    <fm:FormElement label="{i18n>角色}">
+                                        <fm:fields>
+                                            <m:MultiComboBox
+                                                    id="roleField"
+                                                    selectedKeys="{edit>/row/roles}"
+                                                    items="{
+                                                        path: '/roleList',
+                                                        sorter: { path: 'roleName' }
+                                                    }">
+                                                <core:Item key="{roleId}" text="{roleName}"/>
+                                                <m:layoutData>
+                                                    <m:FlexItemData growFactor="1"/>
+                                                </m:layoutData>
+                                            </m:MultiComboBox>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                </fm:formElements>
+                            </fm:FormContainer>
+                        </fm:formContainers>
+                    </fm:Form>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

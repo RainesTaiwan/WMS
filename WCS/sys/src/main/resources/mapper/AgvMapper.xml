@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.AgvMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.Agv">
+        <id column="HANDLE" property="handle" />
+        <result column="AGV_NO" property="agvNo" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="MODE" property="mode" />
+        <result column="POSITION" property="position" />
+        <result column="TASK_ID" property="taskId" />
+        <result column="TASK_TYPE" property="taskType" />
+        <result column="TASK_STARTTIME" property="taskStartTime" />
+        <result column="CAPACITY" property="capacity" />
+        <result column="STATUS" property="status" />
+        <result column="WORKING_TIME" property="workingTime" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, AGV_NO, DESCRIPTION, MODE, POSITION, TASK_ID, TASK_TYPE, TASK_STARTTIME, CAPACITY, STATUS
+        , WORKING_TIME, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="findAgv" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM agv
+        WHERE AGV_NO = #{agvNo}
+    </select>
+
+    <select id="selectCanTransportAgv" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM agv
+        WHERE STATUS = 'IDLE'
+    </select>
+
+    <update id="updateByAgvNo">
+        UPDATE agv SET STATUS = #{et.status}, UPDATE_USER = #{et.updateUser}, UPDATED_TIME = #{et.updatedTime}
+        <if test="et.taskBo != null">, TASK_BO = #{et.taskBo}</if>
+        WHERE AGV_NO = #{agvNo}
+    </update>
+
+    <update id="update">
+        UPDATE agv <trim prefix="SET" suffixOverrides=",">
+        <if test="et.handle!=null">HANDLE=#{et.handle},</if>
+        <if test="et.description!=null">DESCRIPTION=#{et.description},</if>
+        <if test="et.mode!=null">MODE=#{et.mode},</if>
+        <if test="et.position!=null">POSITION=#{et.position},</if>
+        <if test="et.taskId!=null">TASK_ID=#{et.taskId},</if>
+        <if test="et.taskType!=null">TASK_TYPE=#{et.taskType},</if>
+        <if test="et.taskStartTime!=null">TASK_STARTTIME=#{et.taskStartTime},</if>
+        <if test="et.capacity!=null">CAPACITY=#{et.capacity},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.workingTime!=null">WORKING_TIME=#{et.workingTime},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    AGV_NO=#{ew.entity.agvNo}
+                    <if test="ew.entity.handle!=null"> AND HANDLE=#{ew.entity.handle}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.mode!=null"> AND MODE=#{ew.entity.mode},</if>
+                    <if test="ew.entity.position!=null"> AND POSITION=#{ew.entity.position},</if>
+                    <if test="ew.entity.taskId!=null"> AND TASK_ID=#{ew.entity.taskId},</if>
+                    <if test="ew.entity.taskType!=null"> AND TASK_TYPE=#{ew.entity.taskType},</if>
+                    <if test="ew.entity.taskStartTime!=null"> AND TASK_STARTTIME =#{ew.entity.taskStartTime},</if>
+                    <if test="ew.entity.capacity!=null"> AND CAPACITY=#{ew.entity.capacity},</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status},</if>
+                    <if test="ew.entity.workingTime!=null"> AND WORKING_TIME=#{ew.entity.workingTime},</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

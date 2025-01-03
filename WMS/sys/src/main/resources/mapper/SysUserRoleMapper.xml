@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.sys.mapper.SysUserRoleMapper">
+
+	<!-- 通用查詢對映結果 -->
+	<resultMap id="BaseResultMap" type="com.sap.ewm.sys.model.SysUserRole">
+		<id column="user_id" property="userId"/>
+		<result column="role_id" property="roleId"/>
+	</resultMap>
+
+	<!--根據使用者Id刪除該使用者的角色關係-->
+	<delete id="deleteByUserId">
+		DELETE FROM sys_user_role WHERE user_id = #{userId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         version="2.5"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+   <display-name>manufacturing-ui5</display-name>
+
+    <filter>
+        <display-name>CacheControlFilter</display-name>
+        <filter-name>CacheControlFilter</filter-name>
+        <filter-class>com.foreverwin.CacheControlFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CacheControlFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+   <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Touch</web-resource-name>
+        <description>Touch</description>
+            <url-pattern>*.jsp</url-pattern>
+            <url-pattern>/logon_app/*</url-pattern>
+      </web-resource-collection> 
+      <auth-constraint>
+        <description>Need this Access</description>
+        <role-name>EWM_USER</role-name>
+            <role-name>EWM_READONLY</role-name>
+        <role-name>AllowedUser</role-name>
+      </auth-constraint>
+      <user-data-constraint>
+         <description>no description</description>
+          <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+   <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>EWM</web-resource-name>
+            <description>EWM</description>
+
+            <url-pattern>*.jsp</url-pattern>
+            <url-pattern>*.html</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Need this Access</description>
+            <role-name>EWM_USER</role-name>
+            <role-name>EWM_READONLY</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <description>no description</description>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+   <security-role>
+        <role-name>AllowedUser</role-name>
+    </security-role>
+   <security-role>
+        <role-name>EWM_USER</role-name>
+    </security-role>
+   <security-role>
+        <role-name>EWM_READONLY</role-name>
+    </security-role>
+</web-app>

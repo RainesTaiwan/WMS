@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ReportASRSMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.ReportAsrs">
+        <id column="HANDLE" property="handle" />
+        <result column="CARRIER" property="carrier" />
+        <result column="WO_SERIAL" property="woSerial" />
+        <result column="HANDLING_ID" property="handlingId" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR" property="creator" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, CARRIER, WO_SERIAL, HANDLING_ID, CREATE_TIME, CREATOR
+    </sql>
+
+    <select id="findASRSOrderByWoSerial" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM REPORT_ASRS
+        WHERE 1 = 1
+        <if test="woSerial != null and woSerial != ''">
+            AND WO_SERIAL = #{woSerial}
+        </if>
+    </select>
+
+</mapper>

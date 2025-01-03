@@ -1,0 +1,31 @@
+<core:FragmentDefinition
+        controllerName="com.sap.ewm.sys.SysMenuMaintain"
+        xmlns="sap.m"
+        xmlns:core="sap.ui.core">
+    <Popover
+            showHeader="false"
+            contentWidth="320px"
+            contentHeight="500px"
+            placement="Bottom" >
+        <NavContainer
+                id="navCon">
+            <Page
+                    id="master"
+                    title="Menu">
+                <Tree
+                        id="permissionTree"
+                        items="{path: '/root'}"
+                        mode="SingleSelectMaster"
+                        busyIndicatorDelay="0"
+                        enableBusyIndicator="true"
+                        rememberSelections="false"
+                        includeItemInSelection="true"
+                        select="onParentMenuSelect">
+                    <StandardTreeItem
+                            selected="{selected}"
+                            title="{label}"/>
+                </Tree>
+            </Page>
+        </NavContainer>
+    </Popover>
+</core:FragmentDefinition>

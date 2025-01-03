@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.HandlingUnitChangeLogMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.HandlingUnitChangeLog">
+        <id column="HANDLE" property="handle" />
+        <result column="HANDLING_ID" property="handlingId" />
+        <result column="ACTION_CODE" property="actionCode" />
+        <result column="STORAGE_BIN_BO" property="storageBinBo" />
+        <result column="INVENTORY_QTY" property="inventoryQty" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR" property="creator" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, HANDLING_ID, ACTION_CODE, STORAGE_BIN_BO, INVENTORY_QTY, CREATE_TIME, CREATOR
+    </sql>
+
+</mapper>

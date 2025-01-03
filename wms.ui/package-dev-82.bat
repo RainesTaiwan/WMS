@@ -1,0 +1,1 @@
+ant -Dserver_host=http://192.168.5.82:50000/ewm -Dwebsocket_host=http://192.168.5.82:50000/EWM-WEB/servers -Dwar_name=ewm-client.war -Ddeploy_env=dev81

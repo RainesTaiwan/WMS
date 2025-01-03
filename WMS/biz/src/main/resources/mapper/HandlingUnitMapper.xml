@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.HandlingUnitMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.HandlingUnit">
+        <id column="HANDLE" property="handle" />
+        <result column="HANDLING_ID" property="handlingId" />
+        <result column="CARRIER_BO" property="carrierBo" />
+        <result column="STATUS" property="status" />
+        <result column="HANDLING_UNIT_CONTEXT_GBO" property="handlingUnitContextGbo" />
+        <result column="INVENTORY_QTY" property="inventoryQty" />
+        <result column="MIXED" property="mixed" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <resultMap id="FullResultMap" extends="BaseResultMap" type="com.sap.ewm.biz.dto.HandlingUnitDTO">
+        <result column="CARRIER" property="carrier" />
+        <result column="BATCH_NO" property="batchNo" />
+        <result column="ITEM_BO" property="itemBo" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, HANDLING_ID, CARRIER_BO, STATUS, HANDLING_UNIT_CONTEXT_GBO, INVENTORY_QTY, MIXED, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <select id="selectVo" resultMap="FullResultMap">
+        SELECT HU.HANDLE, HU.HANDLING_ID, HU.CARRIER_BO, HU.STATUS, HU.HANDLING_UNIT_CONTEXT_GBO, HU.INVENTORY_QTY, HU.MIXED,
+               INV.BATCH_NO, INV.VENDOR_BATCH_NO, INV.QTY_ON_HAND, INV.ITEM_BO, C.CARRIER
+        FROM (
+            SELECT *
+            FROM HANDLING_UNIT
+            <where>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.nonEmptyOfWhere">
+                    AND ${ew.sqlSegment}
+                </if>
+            </where>
+            <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+                ${ew.sqlSegment}
+            </if>
+        )HU
+        INNER JOIN INVENTORY INV
+        ON INV.HANDLE = HU.HANDLING_UNIT_CONTEXT_GBO
+        INNER JOIN CARRIER C
+        ON C.HANDLE = HU.CARRIER_BO
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HU.HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.carrier!=null"> AND C.CARRIER=#{ew.entity.carrier}</if>
+                    <if test="ew.entity.batchNo!=null"> AND INV.BATCH_NO=#{ew.entity.batchNo}</if>
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="getTotalQtyByInventory" resultType="java.math.BigDecimal">
+        SELECT SUM(INVENTORY_QTY) AS TOTAL
+        FROM HANDLING_UNIT
+        WHERE HANDLING_UNIT_CONTEXT_GBO = #{inventoryBo}
+    </select>
+</mapper>

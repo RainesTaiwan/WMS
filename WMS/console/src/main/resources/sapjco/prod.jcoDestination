@@ -1,0 +1,11 @@
+#for connection
+#Mon Jan 19 10:17:07 CST 2015
+jco.destination.pool_capacity=1000
+jco.client.lang=ZH
+jco.client.ashost=10.199.199.60
+jco.client.user=RFC
+jco.client.sysnr=00
+jco.destination.peak_limit=1000
+jco.client.passwd=pass4321
+jco.destination.max_get_client_time=100
+jco.client.client=800

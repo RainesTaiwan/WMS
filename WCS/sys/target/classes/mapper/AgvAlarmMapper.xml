@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.AgvAlarmMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.AgvAlarm">
+        <id column="HANDLE" property="handle" />
+        <result column="AGV_NO" property="agvNo" />
+        <result column="SEVERITY" property="severity" />
+        <result column="ALARM_CODE" property="alarmCode" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="STATUS" property="status" />
+        <result column="OCCUR_TIME" property="occurTime" />
+        <result column="RELEASE_TIME" property="releaseTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, AGV_NO, SEVERITY, ALARM_CODE, DESCRIPTION, STATUS, OCCUR_TIME, RELEASE_TIME
+    </sql>
+
+    <select id="selectNoCompletedAlarm" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM agv_alarm
+        WHERE AGV_NO = #{agvNo} AND ALARM_CODE = #{alarmCode} AND STATUS = 'true'
+        ORDER BY OCCUR_TIME DESC
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM agv_alarm
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.agvNo!=null"> AND AGV_NO=#{ew.entity.agvNo}</if>
+                    <if test="ew.entity.severity!=null"> AND SEVERITY=#{ew.entity.severity}</if>
+                    <if test="ew.entity.alarmCode!=null"> AND ALARM_CODE=#{ew.entity.alarmCode}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.occurTime!=null"> AND OCCUR_TIME=#{ew.entity.occurTime}</if>
+                    <if test="ew.entity.releaseTime!=null"> AND RELEASE_TIME=#{ew.entity.releaseTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM agv_alarm
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.agvNo!=null"> AND AGV_NO=#{ew.entity.agvNo}</if>
+                    <if test="ew.entity.severity!=null"> AND SEVERITY=#{ew.entity.severity}</if>
+                    <if test="ew.entity.alarmCode!=null"> AND ALARM_CODE=#{ew.entity.alarmCode}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.occurTime!=null"> AND OCCUR_TIME=#{ew.entity.occurTime}</if>
+                    <if test="ew.entity.releaseTime!=null"> AND RELEASE_TIME=#{ew.entity.releaseTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.AgvAlarm">
+        INSERT INTO agv_alarm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="agvNo!=null">AGV_NO,</if>
+            <if test="severity!=null">SEVERITY,</if>
+            <if test="alarmCode!=null">ALARM_CODE,</if>
+            <if test="description!=null">DESCRIPTION,</if>
+            <if test="status!=null">STATUS,</if>
+            <if test="occurTime!=null">OCCUR_TIME,</if>
+            <if test="releaseTime!=null">RELEASE_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="agvNo!=null">#{agvNo},</if>
+            <if test="severity!=null">#{severity},</if>
+            <if test="alarmCode!=null">#{alarmCode},</if>
+            <if test="description!=null">#{description},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="occurTime!=null">#{occurTime},</if>
+            <if test="releaseTime!=null">#{releaseTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertAllColumn" parameterType="com.fw.wcs.sys.model.AgvAlarm">
+        INSERT INTO agv_alarm
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Base_Column_List"></include>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            #{agvNo},
+            #{severity},
+            #{alarmCode},
+            #{description},
+            #{status},
+            #{occurTime},
+            #{releaseTime},
+        </trim>
+    </insert>
+
+
+    <update id="updateById">
+        UPDATE agv_alarm <trim prefix="SET" suffixOverrides=",">
+        <if test="et.agvNo!=null">AGV_NO=#{et.agvNo},</if>
+        <if test="et.severity!=null">SEVERITY=#{et.severity},</if>
+        <if test="et.alarmCode!=null">ALARM_CODE=#{et.alarmCode},</if>
+        <if test="et.description!=null">DESCRIPTION=#{et.description},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.occurTime!=null">OCCUR_TIME=#{et.occurTime},</if>
+        <if test="et.releaseTime!=null">RELEASE_TIME=#{et.releaseTime},</if>
+        </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+
+    <update id="updateAllColumnById">
+        UPDATE agv_alarm <trim prefix="SET" suffixOverrides=",">
+        AGV_NO=#{et.agvNo},
+        SEVERITY=#{et.severity},
+        ALARM_CODE=#{et.alarmCode},
+        DESCRIPTION=#{et.description},
+        STATUS=#{et.status},
+        OCCUR_TIME=#{et.occurTime},
+        RELEASE_TIME=#{et.releaseTime},
+     </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM agv_alarm WHERE HANDLE=#{handle}
+    </delete>
+
+    <delete id="deleteByMap">
+        DELETE FROM agv_alarm
+        <if test="cm!=null and !cm.isEmpty">
+            <where>
+                <foreach collection="cm.keys" item="k" separator="AND">
+                    <if test="cm[k] != null">
+                        ${k} = #{cm[${k}]}
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </delete>
+
+    <delete id="delete">
+        DELETE FROM agv_alarm
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.agvNo!=null"> AND AGV_NO=#{ew.entity.agvNo}</if>
+                    <if test="ew.entity.severity!=null"> AND SEVERITY=#{ew.entity.severity}</if>
+                    <if test="ew.entity.alarmCode!=null"> AND ALARM_CODE=#{ew.entity.alarmCode}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.occurTime!=null"> AND OCCUR_TIME=#{ew.entity.occurTime}</if>
+                    <if test="ew.entity.releaseTime!=null"> AND RELEASE_TIME=#{ew.entity.releaseTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </delete>
+
+    <delete id="deleteBatchIds">
+        DELETE FROM agv_alarm WHERE HANDLE IN (
+        <foreach item="item" index="index" collection="coll" separator=",">#{item}
+        </foreach>)
+    </delete>
+
+</mapper>

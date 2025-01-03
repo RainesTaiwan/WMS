@@ -1,0 +1,69 @@
+<mvc:View
+    controllerName="com.sap.ewm.app.App"
+    xmlns:m="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:tnt="sap.tnt"
+    displayBlock="true">
+    <tnt:ToolPage id="app">
+		<tnt:header>
+			<tnt:ToolHeader>
+				<m:Button
+					id="sideButton"
+					icon="sap-icon://menu2"
+					type="Transparent"
+					press="onSideNavButtonPress">
+					<m:layoutData>
+						<m:OverflowToolbarLayoutData priority="NeverOverflow" />
+					</m:layoutData>
+				</m:Button>
+                <m:Image
+					src="image/app.png"
+					densityAware="false"
+                    width="32px">
+				</m:Image>
+  				<m:Title text="{i18n>自動倉儲資訊管理系統}" />
+                <m:ToolbarSpacer/>
+				<m:ToolbarSpacer/>
+				<m:Button id="loginUser" type="Transparent" press=".onLoginUserPress">
+					<m:layoutData>
+						<m:OverflowToolbarLayoutData priority="NeverOverflow" />
+					</m:layoutData>
+				</m:Button>
+			</tnt:ToolHeader>
+		</tnt:header>
+		<tnt:sideContent>
+			<tnt:SideNavigation
+				expanded="true">
+				<tnt:NavigationList
+                        id = "sys_menu">
+                    <tnt:NavigationListItem
+                        text="{i18n>首頁}"
+						icon="sap-icon://home"
+						key="Home"
+                        select="onItemSelected">
+                    </tnt:NavigationListItem>
+                    <!-- -->
+				</tnt:NavigationList>
+
+                <tnt:fixedItem>
+                    <tnt:NavigationList>
+    					<tnt:NavigationListItem
+                            text="{i18n>關於}"
+    						icon="sap-icon://sys-help"
+    						key="About"
+                            select="onItemSelected" />
+                        <tnt:NavigationListItem
+    						text="{i18n>登出}"
+    						icon="sap-icon://account"
+    						key="Logout"
+							select="onLogOut"/>
+    				</tnt:NavigationList>
+                </tnt:fixedItem>
+			</tnt:SideNavigation>
+		</tnt:sideContent>
+		<tnt:mainContents>
+			<m:App id="mainContents"/>
+		</tnt:mainContents>
+	</tnt:ToolPage>
+</mvc:View>

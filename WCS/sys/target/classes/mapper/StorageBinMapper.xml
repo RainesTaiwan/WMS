@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.StorageBinMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.StorageBin">
+        <id column="HANDLE" property="handle" />
+        <result column="STORAGE_BIN" property="storageBin" />
+        <result column="VMS_STORAGE_BIN" property="vmsStorageBin" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="STORAGE_BIN_TYPE_BO" property="storageBinTypeBo" />
+        <result column="STORAGE_LOCATION_BO" property="storageLocationBo" />
+        <result column="SHELF_ROW" property="shelfRow" />
+        <result column="SHELF_COLUMN" property="shelfColumn" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, STORAGE_BIN, VMS_STORAGE_BIN, DESCRIPTION, STORAGE_BIN_TYPE_BO, STORAGE_LOCATION_BO, SHELF_ROW, SHELF_COLUMN, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="selectStorageBin" resultMap="BaseResultMap">
+        SELECT HANDLE, STORAGE_BIN, VMS_STORAGE_BIN, DESCRIPTION, STORAGE_BIN_TYPE_BO, STORAGE_LOCATION_BO, SHELF_ROW, SHELF_COLUMN, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+        FROM storage_bin
+        WHERE STORAGE_BIN = #{storageBin}
+    </select>
+
+</mapper>

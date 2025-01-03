@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.CarrierTaskMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.CarrierTask">
+        <id column="HANDLE" property="handle" />
+        <result column="CATEGORY" property="category" />
+        <result column="CARRIER" property="carrier" />
+        <result column="START_POSITION" property="startPosition" />
+        <result column="TARGET_POSITION" property="targetPosition" />
+        <result column="STATUS" property="status" />
+        <result column="AGV_NO" property="agvNo" />
+        <result column="VMS_ID" property="vmsId" />
+        <result column="WMS_ID" property="wmsId" />
+        <result column="COMMENTS" property="comments" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, CATEGORY, CARRIER, START_POSITION, TARGET_POSITION, STATUS, AGV_NO, VMS_ID, WMS_ID, COMMENTS, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="findCarrierTask" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM carrier_task
+        WHERE 1 = 1
+        <if test="carrier != null and carrier != ''">
+            AND CARRIER = #{carrier}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <select id="findNoCompletedTask" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM carrier_task
+        WHERE STATUS NOT IN ('CANCEL','COMPLETE')
+        <if test="carrier != null and carrier != ''">
+            AND CARRIER = #{carrier}
+        </if>
+        <if test="category != null and category != ''">
+            AND CATEGORY = #{category}
+        </if>
+        <if test="startPosition != null and startPosition != ''">
+            AND START_POSITION = #{startPosition}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <update id="updateById">
+        UPDATE carrier_task <trim prefix="SET" suffixOverrides=",">
+        <if test="et.category!=null">CATEGORY=#{et.category},</if>
+        <if test="et.carrier!=null">CARRIER=#{et.carrier},</if>
+        <if test="et.startPosition!=null">START_POSITION=#{et.startPosition},</if>
+        <if test="et.targetPosition!=null">TARGET_POSITION=#{et.targetPosition},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.agvNo!=null">AGV_NO=#{et.agvNo},</if>
+        <if test="et.vmsId!=null">VMS_ID=#{et.vmsId},</if>
+        <if test="et.wmsId!=null">WMS_ID=#{et.wmsId},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.CarrierTask">
+        INSERT INTO carrier_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="category!=null">CATEGORY,</if>
+            <if test="carrier!=null">CARRIER,</if>
+            <if test="startPosition!=null">START_POSITION,</if>
+            <if test="targetPosition!=null">TARGET_POSITION,</if>
+            <if test="status!=null">STATUS,</if>
+            <!-- <if test="agvNo!=null">AGV_NO,</if>-->
+            <if test="vmsId!=null">VMS_ID,</if>
+            <if test="wmsId!=null">WMS_ID,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+            <if test="updateUser!=null">UPDATE_USER,</if>
+            <if test="updatedTime!=null">UPDATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="category!=null">#{category},</if>
+            <if test="carrier!=null">#{carrier},</if>
+            <if test="startPosition!=null">#{startPosition},</if>
+            <if test="targetPosition!=null">#{targetPosition},</if>
+            <if test="status!=null">#{status},</if>
+            <!-- <if test="agvNo!=null">#{agvNo},</if>-->
+            <if test="vmsId!=null">#{vmsId},</if>
+            <if test="wmsId!=null">#{wmsId},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+            <if test="updateUser!=null">#{updateUser},</if>
+            <if test="updatedTime!=null">#{updatedTime},</if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        UPDATE carrier_task <trim prefix="SET" suffixOverrides=",">
+        <if test="et.category!=null">CATEGORY=#{et.category},</if>
+        <if test="et.carrier!=null">CARRIER=#{et.carrier},</if>
+        <if test="et.startPosition!=null">START_POSITION=#{et.startPosition},</if>
+        <if test="et.targetPosition!=null">TARGET_POSITION=#{et.targetPosition},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.agvNo!=null">AGV_NO=#{et.agvNo},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.category!=null"> AND CATEGORY=#{ew.entity.category}</if>
+                    <if test="ew.entity.carrier!=null"> AND CARRIER=#{ew.entity.carrier}</if>
+                    <if test="ew.entity.startPosition!=null"> AND START_POSITION=#{ew.entity.startPosition}</if>
+                    <if test="ew.entity.targetPosition!=null"> AND TARGET_POSITION=#{ew.entity.targetPosition}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.agvNo!=null"> AND AGV_NO=#{ew.entity.agvNo}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

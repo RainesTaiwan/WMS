@@ -1,0 +1,1 @@
+ant -Dserver_host=/ewm -Dwebsocket_host=/EWM-WEB/servers -Dwar_name=ewm-client.war -Ddeploy_env=origin

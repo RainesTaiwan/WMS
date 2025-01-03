@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.sys.mapper.MqLogMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.sys.model.MqLog">
+        <id column="HANDLE" property="handle" />
+        <result column="SERVER_ID" property="serverId" />
+        <result column="BROKER" property="broker" />
+        <result column="QUEUE" property="queue" />
+        <result column="MESSAGE_ID" property="messageId" />
+        <result column="MESSAGE_BODY" property="messageBody" />
+        <result column="RESULT" property="result" />
+        <result column="RESPONSE_BODY" property="responseBody"/>
+        <result column="ERROR" property="error" />
+        <result column="MESSAGE_TYPE" property="messageType" />
+        <result column="CREATED_DATE_TIME" property="createdDateTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, SERVER_ID, BROKER, QUEUE, MESSAGE_ID, MESSAGE_BODY, CORRELATION_ID, RESULT, RESPONSE_BODY, ERROR, MESSAGE_TYPE, CREATED_DATE_TIME
+    </sql>
+
+</mapper>

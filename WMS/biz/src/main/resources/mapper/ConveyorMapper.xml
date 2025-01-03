@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ConveyorMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.Conveyor">
+        <id column="HANDLE" property="handle" />
+        <result column="CONVEYOR" property="conveyor" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="PRIORITY" property="priority" />
+        <result column="WORKLOAD" property="workload" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, CONVEYOR, DESCRIPTION, PRIORITY, WORKLOAD, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <select id="findAllConveyor" resultMap="BaseResultMap">
+        SELECT *
+        FROM CONVEYOR
+    </select>
+
+    <select id="findConveyorByName" resultMap="BaseResultMap">
+        SELECT *
+        FROM CONVEYOR
+        WHERE 1 = 1
+        <if test="conveyor != null and conveyor != ''">
+            AND CONVEYOR = #{conveyor}
+        </if>
+    </select>
+
+    <select id="findConveyorWorkload" resultMap="BaseResultMap">
+        SELECT WORKLOAD
+        FROM CONVEYOR
+        WHERE 1 = 1
+        <if test="conveyor != null and conveyor != ''">
+            AND CONVEYOR = #{conveyor}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.sap.ewm.biz.model.Conveyor">
+        INSERT INTO Carrier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="conveyor!=null">CONVEYOR,</if>
+            <if test="description!=null">DESCRIPTION,</if>
+            <if test="priority!=null">PRIORITY,</if>
+            <if test="workload!=null">WORKLOAD,</if>
+            <if test="creator!=null">CREATOR,</if>
+            <if test="createTime!=null">CREATE_TIME,</if>
+            <if test="updater!=null">UPDATER,</if>
+            <if test="updateTime!=null">UPDATE_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="conveyor!=null">#{conveyor},</if>
+            <if test="description!=null">#{description},</if>
+            <if test="priority!=null">#{priority},</if>
+            <if test="workload!=null">#{workload},</if>
+            <if test="creator!=null">#{creator},</if>
+            <if test="createTime!=null">#{createTime},</if>
+            <if test="updater!=null">#{updater},</if>
+            <if test="updateTime!=null">#{updateTime},</if>
+        </trim>
+    </insert>
+</mapper>

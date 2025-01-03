@@ -1,0 +1,190 @@
+<mvc:View
+        controllerName="com.sap.ewm.biz.master.ItemGroupMaintain"
+        xmlns:m="sap.m"
+        xmlns:core="sap.ui.core"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:t="sap.ui.table"
+        xmlns:tnt="sap.tnt"
+        xmlns:f="sap.f"
+        xmlns:l="sap.ui.layout"
+        xmlns:fm="sap.ui.layout.form"
+        xmlns:ewm="com.sap.ewm.control"
+        displayBlock="true">
+    <f:FlexibleColumnLayout
+            id="fcLayout"
+            layout="OneColumn"
+            backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                    title="{i18n>物料組維護}"
+                    showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                            id="createButton"
+                            type="Transparent"
+                            text="{i18n>新增}"
+                            icon="sap-icon://add"
+                            tooltip="{i18n>新增}"
+                            visible="{=${permission>/item_group_add}===true ? true : false}"
+                            press="onCreate" />
+                    <m:Button
+                            id="retrieveButton"
+                            type="Transparent"
+                            text="{i18n>重新整理}"
+                            icon="sap-icon://refresh"
+                            tooltip="{i18n>重新整理}"
+                            press="onRetrieve" />
+                </m:headerContent>
+                <m:content>
+                    <ewm:PaginatorTable
+                            id="itemGroupList"
+                            rows="{/itemGroupList}"
+                            selectionBehavior="RowOnly"
+                            selectionMode="Single"
+                            editable="false"
+                            columnHeaderHeight="30px"
+                            enableSelectAll="true"
+                            visibleRowCountMode="Auto"
+                            rowActionCount="2"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            class="sapUiSizeCondensed">
+                        <ewm:extension>
+                            <m:OverflowToolbar>
+                                <m:Title id="title" text="{i18n>物料組清單}"/>
+                                <m:ToolbarSpacer/>
+                                <m:Button
+                                        icon="sap-icon://decline"
+                                        tooltip="Clear all filters"
+                                        press="clearAllFilters"/>
+                                <m:ToolbarSeparator/>
+                                <m:SearchField
+                                        placeholder="Filter"
+                                        value="{ui>/globalFilter}"
+                                        search="filterGlobally"
+                                        width="15rem"/>
+                            </m:OverflowToolbar>
+                        </ewm:extension>
+                        <ewm:rowActionTemplate>
+                            <t:RowAction visible="true">
+                                <t:RowActionItem type="Custom" icon="sap-icon://edit" visible="{=${permission>/item_group_edit}===true ? true : false}" press="onEdit"/>
+                                <t:RowActionItem type="Custom" icon="sap-icon://delete" visible="{=${permission>/item_group_delete}===true ? true : false}" press="onDelete"/>
+                            </t:RowAction>
+                        </ewm:rowActionTemplate>
+                        <ewm:columns>
+                            <t:Column>
+                                <m:Label text="{i18n>物料組編號}" />
+                                <t:template>
+                                    <m:Label text="{itemGroup}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>描述}" />
+                                <t:template>
+                                    <m:Label text="{description}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>用料模式}" />
+                                <t:template>
+                                    <m:Label text="{path: 'consumptionMode', formatter: '.consumptionModeFormatter'}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>建立日期}" />
+                                <t:template>
+                                    <m:Label text="{createTime}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>更新日期}" />
+                                <t:template>
+                                    <m:Label text="{updateTime}" />
+                                </t:template>
+                            </t:Column>
+                        </ewm:columns>
+                    </ewm:PaginatorTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <m:Page
+                    id="editPage"
+                    title="{=${edit>/create} ? ${i18n>新增} : ${i18n>編輯}}">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>物料組編號}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <ewm:Input
+                                            id="itemGroupField"
+                                            type="Text"
+                                            editable="{edit>/create}"
+                                            required="true"
+                                            value="{path: 'edit>/row/itemGroup'}">
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>描述}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <ewm:Input
+                                            id="descriptionField"
+                                            type="Text"
+                                            required="true"
+                                            value="{path: 'edit>/row/description'}">
+                                        <ewm:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </ewm:layoutData>
+                                    </ewm:Input>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                                <m:HBox alignItems="Center">
+                                    <m:Label text="{i18n>用料模式}：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                    <m:ComboBox
+                                            id="consumptionModeField"
+                                            width="100%"
+                                            required="true"
+                                            editable="true"
+                                            items="{path: 'list>/consumptionModeList',sorter: { path: 'list>consumptionMode'}
+                                        }"
+                                            selectedKey="{path: 'edit>/row/consumptionMode'}">
+                                        <core:ListItem key="{list>consumptionMode}" text="{list>description}"/>
+                                        <m:layoutData>
+                                            <m:FlexItemData growFactor="1"/>
+                                        </m:layoutData>
+                                    </m:ComboBox>
+                                    <m:layoutData>
+                                        <l:GridData span="L12 M12 S12"/>
+                                    </m:layoutData>
+                                </m:HBox>
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

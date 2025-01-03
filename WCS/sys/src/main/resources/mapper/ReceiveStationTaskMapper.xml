@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.ReceiveStationTaskMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.ReceiveStationTask">
+        <id column="HANDLE" property="handle" />
+        <id column="MESSAGE_ID" property="messageId" />
+        <result column="RECEIVE_STATION" property="receiveStation" />
+        <result column="START_STATION" property="startStation" />
+        <result column="END_STATION" property="endStation" />
+        <result column="PALLET" property="pallet" />
+        <result column="PALLET_INFO_CHECK" property="palletInfoCheck" />
+        <result column="TYPE" property="type" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, MESSAGE_ID, RECEIVE_STATION, START_STATION, END_STATION, PALLET, TYPE, PALLET_INFO_CHECK
+        , STATUS, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="findReceiveStationTaskByReceiveStation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Receive_Station_Task
+        WHERE 1 = 1
+        <if test="receiveStation != null and receiveStation != ''">
+            AND RECEIVE_STATION = #{receiveStation}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <select id="findReceiveStationTaskByReceiveStationForStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Receive_Station_Task
+        WHERE 1 = 1
+        <if test="receiveStation != null and receiveStation != ''">
+            AND RECEIVE_STATION = #{receiveStation}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <select id="findReceiveStationTaskByReceiveStationForStatusAndStartStation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Receive_Station_Task
+        WHERE 1 = 1
+        <if test="receiveStation != null and receiveStation != ''">
+            AND RECEIVE_STATION = #{receiveStation}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        <if test="startStation != null and startStation != ''">
+            AND START_STATION = #{startStation}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <select id="findReceiveStationTaskByReceiveStationForStatusAndEndStation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Receive_Station_Task
+        WHERE 1 = 1
+        <if test="receiveStation != null and receiveStation != ''">
+            AND RECEIVE_STATION = #{receiveStation}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        <if test="endStation != null and endStation != ''">
+            AND END_STATION = #{endStation}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <select id="findReceiveStationTaskByMessageId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Receive_Station_Task
+        WHERE 1 = 1
+        <if test="messageId != null and messageId != ''">
+            AND MESSAGE_ID = #{messageId}
+        </if>
+        ORDER BY CREATED_TIME ASC
+    </select>
+
+    <delete id="deleteTask">
+        DELETE FROM Receive_Station_Task
+        WHERE HANDLE = #{handle}
+    </delete>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.ReceiveStationTask">
+        INSERT INTO Receive_Station_Task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="messageId!=null">MESSAGE_ID,</if>
+            <if test="receiveStation!=null">RECEIVE_STATION,</if>
+            <if test="startStation!=null">START_STATION,</if>
+            <if test="endStation!=null">END_STATION,</if>
+            <if test="pallet!=null">PALLET,</if>
+            <if test="palletInfoCheck!=null">PALLET_INFO_CHECK,</if>
+            <if test="type!=null">TYPE,</if>
+            <if test="status!=null">STATUS,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+            <if test="updateUser!=null">UPDATE_USER,</if>
+            <if test="updatedTime!=null">UPDATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="messageId!=null">#{messageId},</if>
+            <if test="receiveStation!=null">#{receiveStation},</if>
+            <if test="startStation!=null">#{startStation},</if>
+            <if test="endStation!=null">#{endStation},</if>
+            <if test="pallet!=null">#{pallet},</if>
+            <if test="palletInfoCheck!=null">#{palletInfoCheck},</if>
+            <if test="type!=null">#{type},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+            <if test="updateUser!=null">#{updateUser},</if>
+            <if test="updatedTime!=null">#{updatedTime},</if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        UPDATE Receive_Station_Task <trim prefix="SET" suffixOverrides=",">
+        <if test="et.messageId!=null">MESSAGE_ID=#{et.messageId},</if>
+        <if test="et.receiveStation!=null">RECEIVE_STATION=#{et.receiveStation},</if>
+        <if test="et.startStation!=null">START_STATION=#{et.startStation},</if>
+        <if test="et.endStation!=null">END_STATION=#{et.endStation},</if>
+        <if test="et.pallet!=null">PALLET=#{et.pallet},</if>
+        <if test="et.palletInfoCheck!=null">PALLET_INFO_CHECK=#{et.palletInfoCheck},</if>
+        <if test="et.type!=null">TYPE=#{et.type},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.messageId!=null"> AND MESSAGE_ID=#{ew.entity.messageId},</if>
+                    <if test="ew.entity.receiveStation!=null"> AND RECEIVE_STATION=#{ew.entity.receiveStation}</if>
+                    <if test="ew.entity.startStation!=null"> AND START_STATION=#{ew.entity.startStation}</if>
+                    <if test="ew.entity.endStation!=null"> AND END_STATION=#{ew.entity.endStation}</if>
+                    <if test="ew.entity.pallet!=null"> AND PALLET=#{ew.entity.pallet}</if>
+                    <if test="ew.entity.palletInfoCheck!=null"> AND PALLET_INFO_CHECK=#{ew.entity.palletInfoCheck},</if>
+                    <if test="ew.entity.type!=null"> AND TYPE=#{ew.entity.type}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

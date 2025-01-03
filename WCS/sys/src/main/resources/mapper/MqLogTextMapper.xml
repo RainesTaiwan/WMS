@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.wcs.sys.mapper.MqLogTextMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.MqLogText">
+        <result column="MQ_LOG_BO" property="mqLogBo" />
+        <result column="REQUEST_TEXT" property="requestText" />
+        <result column="RESPONSE_TEXT" property="responseText" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        MQ_LOG_BO, REQUEST_TEXT, RESPONSE_TEXT
+    </sql>
+
+
+
+</mapper>

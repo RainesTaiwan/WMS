@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.dashboard.mapper.DashboardMapper">
+
+    <resultMap id="CarrierUsageResultMap" type="com.sap.ewm.dashboard.model.CarrierUsage">
+        <result column="TOTAL_COUNT" property="totalCount"/>
+        <result column="USED_COUNT" property="usedCount"/>
+    </resultMap>
+
+    <resultMap id="StorageBinUsageResultMap" type="com.sap.ewm.dashboard.model.StorageLocationUsage">
+        <result column="STORAGE_LOCATION" property="storageLocation"/>
+        <result column="TOTAL_QTY" property="totalQty"/>
+        <result column="USED_QTY" property="usedQty"/>
+    </resultMap>
+
+    <select id="calculateUsage" resultMap="CarrierUsageResultMap">
+        select count(c.HANDLE) as TOTAL_COUNT, count(hu.HANDLE) AS USED_COUNT
+        from carrier c
+                 left join handling_unit hu
+                           on c.handle = hu.CARRIER_BO
+    </select>
+
+    <select id="calculateStorageLocationUsage" resultMap="StorageBinUsageResultMap">
+        select sl.STORAGE_LOCATION, CASE WHEN sb.QTY IS NULL THEN 0 ELSE sb.QTY END AS TOTAL_QTY, CASE WHEN sb_use.QTY IS NULL THEN 0 ELSE sb_use.QTY END as USED_QTY
+        from storage_location sl
+                 left join (
+                select STORAGE_LOCATION_BO, count(1) as QTY
+                from storage_bin
+                group by STORAGE_LOCATION_BO
+            ) sb
+                           on sb.STORAGE_LOCATION_BO = sl.HANDLE
+                 left join (
+                select sb.STORAGE_LOCATION_BO, count(1) as QTY
+                from handling_unit_location hul
+                         inner join storage_bin sb
+                                    on sb.HANDLE = hul.BIND_CONTEXT_GBO
+                group by sb.STORAGE_LOCATION_BO
+            )sb_use
+                           on sb_use.STORAGE_LOCATION_BO = sl.HANDLE
+        order by sl.STORAGE_LOCATION
+    </select>
+</mapper>
+
+

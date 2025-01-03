@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+#if(${enableCache})
+    <!-- 開啟二級快取 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+#end
+#if(${baseResultMap})
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})##產生主鍵排在第一位
+        <id column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+#foreach($field in ${table.commonFields})##產生公共欄位
+    <result column="${field.name}" property="${field.propertyName}" />
+#end
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})##產生普通欄位
+        <result column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+    </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+#foreach($field in ${table.commonFields})
+    #if(${field.name} == ${field.propertyName})${field.name}#else${field.name}#end,
+#end
+        ${table.fieldNames}
+    </sql>
+
+#end
+</mapper>

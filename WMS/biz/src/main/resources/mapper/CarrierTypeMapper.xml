@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.CarrierTypeMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.CarrierType">
+        <id column="HANDLE" property="handle" />
+        <result column="CARRIER_TYPE" property="carrierType" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="MIX_ITEM" property="mixItem" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, CARRIER_TYPE, DESCRIPTION, MIX_ITEM, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <select id="findCarrierTypeByID" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM Carrier_Type
+        WHERE 1 = 1
+        <if test="carrierType != null and carrierType != ''">
+            AND CARRIER_TYPE = #{carrierType}
+        </if>
+    </select>
+
+</mapper>

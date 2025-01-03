@@ -1,0 +1,181 @@
+package ${package.Controller};
+
+import com.fw.wms.core.base.FrontPage;
+import com.fw.wms.core.base.AjaxResult;
+import com.fw.wms.core.utils.CommonMethods;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+#if(${cfg.restControllerStyle})
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+#else
+import org.springframework.stereotype.Controller;
+#end
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import ${package.Service}.${table.serviceName};
+import ${package.Entity}.${entity};
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+/**
+ *
+ * @author ${author}
+ *
+ *
+ */
+#if(${cfg.restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}s#end")
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+    private final Logger logger = LoggerFactory.getLogger(${table.controllerName}.class);
+
+    @Autowired
+    public ${table.serviceName} ${table.entityPath}Service;
+
+    /**
+    * 根據id查詢
+    *
+    * @param id 主鍵
+    * @return
+    */
+    @ResponseBody
+    @GetMapping("/{id:.+}")
+    public AjaxResult get${entity}ById(@PathVariable String id) {
+        ${entity} result;
+        try {
+            result = ${table.entityPath}Service.selectById(id);
+        } catch (Exception e) {
+            logger.error("get${entity}ById -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success(result);
+    }
+
+    /**
+     * 查詢所有數據
+     *
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("")
+    public AjaxResult get${entity}List(${entity} ${table.entityPath}){
+        List<${entity}> result;
+        try {
+            EntityWrapper<${entity}> EntityWrapper = new EntityWrapper<>();
+            EntityWrapper.setEntity(${table.entityPath});
+            result = ${table.entityPath}Service.selectList(EntityWrapper);
+        } catch (Exception e) {
+            logger.error("get${entity}List -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success(result);
+    }
+
+    /**
+     * 分頁查詢數據
+     *
+     * @param frontPage  分頁資訊
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/get${entity}PageList")
+    public AjaxResult get${entity}PageList(FrontPage<${entity}> frontPage, ${entity} ${table.entityPath}){
+        Page result;
+        try {
+            String site = CommonMethods.getSite();
+            ${table.entityPath}.setSite(site);
+            EntityWrapper<${entity}> EntityWrapper = new EntityWrapper<>();
+            EntityWrapper.setEntity(${table.entityPath});
+            if (frontPage.getGlobalQuery() != null && !"".equals(frontPage.getGlobalQuery().trim())) {
+                //TODO modify global query
+                EntityWrapper
+#foreach($field in ${table.fields})
+#if(${field.propertyType.equals("String")})
+#if($!{velocityCount} == 1)
+                    .like("${field.name}", frontPage.getGlobalQuery())
+#else
+                    .or().like("${field.name}", frontPage.getGlobalQuery())
+#end
+#end
+#end
+        ;
+            }
+            result = ${table.entityPath}Service.selectPage(frontPage.getPagePlus(), EntityWrapper);
+        } catch (Exception e) {
+            logger.error("get${entity}PageList -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success(result);
+    }
+
+    /**
+     * 儲存和修改公用
+     * @param ${table.entityPath}  傳遞的實體
+     * @return  null 失敗  實體成功
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/_save")
+    public AjaxResult ${table.entityPath}Save(@RequestBody ${entity} ${table.entityPath}) {
+        String site = CommonMethods.getSite();
+        String user = CommonMethods.getUser();
+        int count;
+        try {
+            count = ${table.entityPath}Service.insertOrUpdate(${table.entityPath}) ? 1 : 0;
+        } catch (Exception e) {
+            logger.error("${table.entityPath}Save -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success(count == 0 ? null : ${table.entityPath});
+    }
+
+    /**
+     * 根據id刪除對像
+     * @param id  實體ID
+     * @return 0 失敗  1 成功
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id:.+}")
+    public AjaxResult ${table.entityPath}Delete(@PathVariable("id") String id){
+        int count;
+        try {
+            count = ${table.entityPath}Service.deleteById(id) ? 1 : 0;
+        } catch (Exception e) {
+            logger.error("${table.entityPath}Delete -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success("count: " + count);
+    }
+
+    /**
+     * 批量刪除對像
+     * @param ids 實體集合ID
+     * @return  0 失敗  1 成功
+     */
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "/_batchDelete")
+    public AjaxResult removeByIds(List<String> ids){
+        int count;
+        try {
+            count = ${table.entityPath}Service.deleteBatchIds(ids) ? 1 : 0;
+        } catch (Exception e) {
+            logger.error("${table.entityPath}BatchDelete -=- {}", e.toString());
+            return AjaxResult.error( e.getMessage() );
+        }
+        return AjaxResult.success("count: " + count);
+    }
+}

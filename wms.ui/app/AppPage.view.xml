@@ -1,0 +1,7 @@
+<mvc:View
+    controllerName="com.sap.ewm.app.AppPage"
+    xmlns:m="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true">
+    <m:App id="mainContents" />
+</mvc:View>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.PLCDataMapper">
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.PLCData">
+        <id column="HANDLE" property="handle" />
+        <result column="PLC_ID" property="plcId" />
+        <result column="DATA" property="data" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, PLC_ID, DATA, CREATE_USER, CREATED_TIME
+    </sql>
+
+    <select id="findPLCDataByConveyor" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM PLC_Data
+        WHERE 1 = 1
+        <if test="plcId != null and plcId != ''">
+            AND PLC_ID = #{plcId}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <delete id="deleteDataByTime">
+        DELETE FROM PLC_Data
+        WHERE CREATED_TIME &lt; #{createdTme}
+    </delete>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.PLCData">
+        INSERT INTO PLC_Data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="plcId!=null">PLC_ID,</if>
+            <if test="data!=null">DATA,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="plcId!=null">#{plcId},</if>
+            <if test="data!=null">#{data},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+        </trim>
+    </insert>
+</mapper>

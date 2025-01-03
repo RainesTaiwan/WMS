@@ -1,0 +1,12 @@
+  {
+    "MESSAGE_TYPE": "handling.unit.info.process",
+    "MESSAGE_ID": "REQ_2019061718233263944",
+    "CORRELATION_ID": "QWERERTWERTWRETREWT3223",
+    "SEND_TIME": "2020-07-09 12:12:12",
+    "CARRIER": "C06",
+    "LENGTH": "317",
+    "WIDTH": "719",
+    "HEIGHT": "902",
+    "WEIGHT": "120",
+    "BUSY_STORAGE_LOCATION_LIST": []
+  }

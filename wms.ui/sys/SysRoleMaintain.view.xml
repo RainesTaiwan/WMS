@@ -1,0 +1,199 @@
+<mvc:View
+    controllerName="com.sap.ewm.sys.SysRoleMaintain"
+    xmlns:m="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:t="sap.ui.table"
+    xmlns:tnt="sap.tnt"
+    xmlns:f="sap.f"
+	xmlns:l="sap.ui.layout"
+	xmlns:fm="sap.ui.layout.form"
+    xmlns:ewm="com.sap.ewm.control"
+    displayBlock="true">
+    <f:FlexibleColumnLayout
+        id="fcLayout"
+        layout="OneColumn"
+        backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                title="{i18n>角色管理}"
+                showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                        id="createButton"
+                        type="Transparent"
+                        text="{i18n>新增}"
+                        icon="sap-icon://add"
+                        tooltip="{i18n>新增}"
+                        press="onCreate" />
+                    <m:Button
+                        id="editButton"
+                        type="Transparent"
+                        text="{i18n>重新整理}"
+                        icon="sap-icon://refresh"
+                        tooltip="{i18n>重新整理}"
+                        press="onRetrieve" />
+                </m:headerContent>
+                <m:content>
+                    <ewm:PaginatorTable
+                        id="roleList"
+                        rows="{/roleList}"
+                        selectionBehavior="Row"
+                        selectionMode="Single"
+                        editable="false"
+                        columnHeaderHeight="30px"
+                        enableSelectAll="true"
+                        visibleRowCountMode="Auto"
+                        rowActionCount="3"
+                        busyIndicatorDelay="0"
+                        enableBusyIndicator="true"
+                        class="sapUiSizeCondensed">
+                        <ewm:toolbar>
+                            <m:Toolbar>
+                                <m:Title id="title" text="角色列表"></m:Title>
+                                <m:ToolbarSpacer />
+                            </m:Toolbar>
+                        </ewm:toolbar>
+                        <ewm:rowActionTemplate>
+                            <t:RowAction visible="true">
+                                <t:RowActionItem type="Custom" icon="sap-icon://edit" text="Edit" press="onEdit"/>
+                                <t:RowActionItem type="Custom" icon="sap-icon://permission" text="Permission" press="onPermissionEdit"/>
+                                <t:RowActionItem type="Custom" icon="sap-icon://delete" text="Delete" press="onDelete"/>
+                            </t:RowAction>
+                        </ewm:rowActionTemplate>
+                        <ewm:columns>
+                            <t:Column width="250px">
+                                <m:Label text="{i18n>角色名稱}" />
+                                <t:template>
+                                    <m:Label text="{roleName}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>角色編號}" />
+                                <t:template>
+                                    <m:Label text="{roleCode}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column>
+                                <m:Label text="{i18n>角色描述}" />
+                                <t:template>
+                                    <m:Label text="{roleDesc}" />
+                                </t:template>
+                            </t:Column>
+                            <!--<t:Column>
+                                <m:Label text="{i18n>g.DsType}" />
+                                <t:template>
+                                    <m:Label text="{dsType}" />
+                                </t:template>
+                            </t:Column>-->
+                        </ewm:columns>
+                    </ewm:PaginatorTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <!--<core:Fragment fragmentName="com.sap.ewm.sys.fragment.RoleEdit" type="XML" />-->
+            <m:Page
+                    id="editPage"
+                    title="編輯">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <fm:Form
+                            id="editorForm"
+                            editable="true">
+                        <fm:title>
+                            <core:Title text="角色" />
+                        </fm:title>
+                        <fm:layout>
+                            <fm:ResponsiveGridLayout
+                                    labelSpanXL="3"
+                                    labelSpanL="3"
+                                    labelSpanM="3"
+                                    labelSpanS="12"
+                                    adjustLabelSpan="false"
+                                    emptySpanXL="4"
+                                    emptySpanL="4"
+                                    emptySpanM="4"
+                                    emptySpanS="0"
+                                    columnsXL="1"
+                                    columnsL="1"
+                                    columnsM="1"
+                                    singleContainerFullSize="false" />
+                        </fm:layout>
+                        <fm:formContainers>
+                            <fm:FormContainer>
+                                <fm:formElements>
+                                    <fm:FormElement label="角色名稱">
+                                        <fm:fields>
+                                            <m:Input id="roleNameField" value="{edit>/row/roleName}"/>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                    <fm:FormElement label="角色編號">
+                                        <fm:fields>
+                                            <ewm:Input upperCase="true" id="roleCodeField" value="{edit>/row/roleCode}" editable="{edit>/create}"/>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                    <fm:FormElement label="角色描述">
+                                        <fm:fields>
+                                            <m:TextArea width="100%" id="roleDescField" value="{edit>/row/roleDesc}"/>
+                                        </fm:fields>
+                                    </fm:FormElement>
+                                    <!--<fm:FormElement label="數據許可權">
+                                        <fm:fields>
+                                            <m:Input id="roleDescField" value="{edit>/roleDesc}"/>
+                                        </fm:fields>
+                                    </fm:FormElement>-->
+                                </fm:formElements>
+                            </fm:FormContainer>
+                        </fm:formContainers>
+                    </fm:Form>
+                </m:content>
+            </m:Page>
+
+            <m:Page
+                    id="permissionPage"
+                    visible="true"
+                    title="許可權">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onPermissionSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <m:Tree
+                            id="permissionTree"
+                            items="{path: 'edit>/root'}"
+                            mode="MultiSelect"
+                            busyIndicatorDelay="0"
+                            enableBusyIndicator="true"
+                            rememberSelections="false"
+                            includeItemInSelection="true"
+                            selectionChange="treeSelectionChange">
+                        <m:StandardTreeItem
+                                selected="{edit>selected}"
+                                title="{edit>label}"/>
+                    </m:Tree>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+   </f:FlexibleColumnLayout>
+ </mvc:View>

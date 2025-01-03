@@ -1,0 +1,67 @@
+<project basedir="." default="publish" name="psb.client">
+
+	<property name="server.host" value="${server_host}" />
+	<property name="websocket.host" value="${websocket_host}" />
+	<property name="print.host" value="${print_host}" />
+	<property name="deploy.env" value="${deploy_env}" />
+	<property name="war.name" value="${war_name}" />
+
+
+	<target name="init">
+		<delete dir="${basedir}/build/${deploy.env}/"/>
+		<copy todir="${basedir}/build/${deploy.env}/">
+			<fileset file="${basedir}/manifest.json"/>
+			<fileset file="${basedir}/index.html"/>
+		</copy>
+	</target>
+
+	<target name="prepare" depends="init">
+		<replaceregexp byline="true">
+			<regexp pattern="&quot;webapi&quot;.*"/>
+			<substitution expression="&quot;webapi&quot;:&quot;${server.host}&quot;,"/>
+			<fileset file="${basedir}/build/${deploy.env}/manifest.json"/>
+		</replaceregexp>
+		<replaceregexp byline="true">
+			<regexp pattern="&quot;websocket&quot;.*"/>
+			<substitution expression="&quot;websocket&quot;:&quot;${websocket.host}&quot;"/>
+			<fileset file="${basedir}/build/${deploy.env}/manifest.json"/>
+		</replaceregexp>
+		<replaceregexp byline="true">
+			<regexp pattern="&quot;printServer&quot;.*"/>
+			<substitution expression="&quot;printServer&quot;:&quot;${print.host}&quot;"/>
+			<fileset file="${basedir}/build/${deploy.env}/manifest.json"/>
+		</replaceregexp>
+
+		<replace file="${basedir}/build/${deploy.env}/index.html" token="resources/sap-ui-core.js" value="/openui5/resources/sap-ui-core.js">
+		</replace>
+	</target>
+
+	<target name="antwar" depends="prepare" description="generate war file">
+		<war  needxmlfile="false" warfile="${basedir}/build/${deploy.env}/${war.name}">
+			<fileset file="${basedir}/build/${deploy.env}/manifest.json"/>
+			<fileset file="${basedir}/build/${deploy.env}/index.html"/>
+			<fileset dir="${basedir}">
+				<exclude name="**/.idea/**"/>
+				<exclude name="**/resources/**"/>
+				<exclude name="**/log/**"/>
+				<exclude name="**/build/**"/>
+				<exclude name="**/deploy/**"/>
+				<exclude name="**/doc/**"/>
+				<exclude name="**/src/**"/>
+				<exclude name="**/work/**"/>
+				<exclude name="**/*-dbg.js"/>
+				<exclude name="manifest.json"/>
+				<exclude name="index.html"/>
+				<exclude name="build.xml"/>
+				<exclude name="*.bat"/>
+			</fileset>
+		</war>
+	</target>
+
+	<target name="publish" depends="antwar">
+		<delete dir="${basedir}/deploy/deployment/sda/"/>
+		<copy todir="${basedir}/deploy/deployment/sda/">
+			<fileset file="${basedir}/build/${deploy.env}/${war.name}"/>
+		</copy>
+	</target>
+</project>

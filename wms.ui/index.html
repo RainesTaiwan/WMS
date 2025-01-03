@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="image/fav.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="image/fav.ico" type="image/x-icon" />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta charset="utf-8" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <title>EWM</title>
+    <script
+        id='sap-ui-bootstrap'
+        src='resources/sap-ui-core.js'
+        data-sap-ui-theme='sap_belize'
+        data-sap-ui-libs="sap.m, sap.tnt"
+        data-sap-ui-bindingSyntax="complex"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-preload="async"
+        data-sap-ui-resourceroots='{
+            "com.sap.ewm": "./",
+            "com.sap.ewm.util":"./util",
+            "util":"./util"
+        }'>
+    </script>
+    <script type="text/javascript">
+        sap.ui.getCore().attachInit(function() {
+            sap.ui.require([
+                "sap/ui/core/ComponentContainer"
+            ], function() {
+                new sap.ui.core.ComponentContainer({
+                    height : "100%",
+                    name : "com.sap.ewm",
+                    settings : {
+                        id : "com.sap.ewm"
+                    }
+                }).placeAt("content");
+            });
+        });
+
+    </script>
+    <script type="text/javascript" src="js/Date.js"></script>
+    <script type="text/javascript" src="js/api/AbstractWebService.js"></script>
+    <script type="text/javascript" src="js/api/SysUserWebService.js"></script>
+    <script type="text/javascript" src="js/api/SysMenuWebService.js"></script>
+    <script type="text/javascript" src="js/api/SysRoleWebService.js"></script>
+    <script type="text/javascript" src="js/api/StatusWebService.js"></script>
+    <link rel="stylesheet" href="app.css" />
+</head>
+<body id='content' class='sapUiBody'>
+</body>
+</html>

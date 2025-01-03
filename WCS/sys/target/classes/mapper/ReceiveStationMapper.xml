@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.ReceiveStationMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.ReceiveStation">
+        <id column="HANDLE" property="handle" />
+        <result column="RECEIVE_STATION" property="receiveStation" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="STATUS" property="status" />
+        <result column="TASK_GOAL" property="taskGoal" />
+        <result column="NOW_TASK" property="nowTask" />
+        <result column="STATE" property="state" />
+        <result column="CV1_DIRECTION" property="cv1Direction" />
+        <result column="CV1_HOLD" property="cv1Hold" />
+        <result column="CV1_MOVE" property="cv1Move" />
+        <result column="CV1_PALLET_SENSOR" property="cv1PalletSensor" />
+        <result column="CV2_DIRECTION" property="cv2Direction" />
+        <result column="CV2_HOLD" property="cv2Hold" />
+        <result column="CV2_MOVE" property="cv2Move" />
+        <result column="CV2_PALLET_SENSOR" property="cv2PalletSensor" />
+        <result column="CV3_DIRECTION" property="cv3Direction" />
+        <result column="CV3_HOLD" property="cv3Hold" />
+        <result column="CV3_MOVE" property="cv3Move" />
+        <result column="CV3_PALLET_SENSOR" property="cv3PalletSensor" />
+        <result column="BUTTON" property="button" />
+        <result column="HEIGHT" property="height" />
+        <result column="WIDTH" property="width" />
+        <result column="LENGTH" property="length" />
+        <result column="WEIGHT" property="weight" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, RECEIVE_STATION, DESCRIPTION, STATUS, TASK_GOAL, NOW_TASK, STATE, CV1_DIRECTION, CV1_HOLD, CV1_MOVE
+        , CV1_PALLET_SENSOR, CV2_DIRECTION, CV2_HOLD, CV2_MOVE, CV2_PALLET_SENSOR, CV3_DIRECTION, CV3_HOLD, CV3_MOVE
+        , CV3_PALLET_SENSOR, BUTTON, HEIGHT, WIDTH, LENGTH, WEIGHT, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+
+    <select id="selectOutboundReceiveStation" resultMap="BaseResultMap">
+        SELECT RS.HANDLE, RS.RECEIVE_STATION, RS.FLOW_DIRECTION
+        FROM receive_station RS
+        LEFT JOIN receive_station_bind RSB ON RS.RECEIVE_STATION = RSB.RECEIVE_STATION
+        WHERE RS.STATUS = 'RUN' AND RS.FLOW_DIRECTION = 'OUT'
+        GROUP BY RS.HANDLE, RS.RECEIVE_STATION, RS.FLOW_DIRECTION
+        ORDER BY COUNT(1)
+    </select>
+
+    <select id="selectReceiveStation" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM receive_station
+        WHERE RECEIVE_STATION = #{receiveStation}
+    </select>
+
+    <update id="update">
+        UPDATE receive_station <trim prefix="SET" suffixOverrides=",">
+        <if test="et.receiveStation!=null">RECEIVE_STATION=#{et.receiveStation},</if>
+        <if test="et.description!=null">DESCRIPTION=#{et.description},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.taskGoal!=null">TASK_GOAL=#{et.taskGoal},</if>
+        <if test="et.nowTask!=null">NOW_TASK=#{et.nowTask},</if>
+        <if test="et.state!=null">STATE=#{et.state},</if>
+        <if test="et.cv1Direction!=null">CV1_DIRECTION=#{et.cv1Direction},</if>
+        <if test="et.cv1Hold!=null">CV1_HOLD=#{et.cv1Hold},</if>
+        <if test="et.cv1Move!=null">CV1_MOVE=#{et.cv1Move},</if>
+        <if test="et.cv1PalletSensor!=null">CV1_PALLET_SENSOR=#{et.cv1PalletSensor},</if>
+        <if test="et.cv2Direction!=null">CV2_DIRECTION=#{et.cv2Direction},</if>
+        <if test="et.cv2Hold!=null">CV2_HOLD=#{et.cv2Hold},</if>
+        <if test="et.cv2Move!=null">CV2_MOVE=#{et.cv2Move},</if>
+        <if test="et.cv2PalletSensor!=null">CV2_PALLET_SENSOR=#{et.cv2PalletSensor},</if>
+        <if test="et.cv3Direction!=null">CV3_DIRECTION=#{et.cv3Direction},</if>
+        <if test="et.cv3Hold!=null">CV3_HOLD=#{et.cv3Hold},</if>
+        <if test="et.cv3Move!=null">CV3_MOVE=#{et.cv3Move},</if>
+        <if test="et.cv3PalletSensor!=null">CV3_PALLET_SENSOR=#{et.cv3PalletSensor},</if>
+        <if test="et.button!=null">BUTTON=#{et.button},</if>
+        <if test="et.height!=null">HEIGHT=#{et.height},</if>
+        <if test="et.width!=null">WIDTH=#{et.width},</if>
+        <if test="et.length!=null">LENGTH=#{et.length},</if>
+        <if test="et.weight!=null">WEIGHT=#{et.weight},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.receiveStation!=null"> AND RECEIVE_STATION=#{ew.entity.receiveStation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.taskGoal!=null"> AND TASK_GOAL=#{ew.entity.taskGoal}</if>
+                    <if test="ew.entity.nowTask!=null"> AND NOW_TASK=#{ew.entity.nowTask},</if>
+                    <if test="ew.entity.state!=null"> AND STATE=#{ew.entity.state}</if>
+                    <if test="ew.entity.cv1Direction!=null"> AND CV1_DIRECTION=#{ew.entity.cv1Direction}</if>
+                    <if test="ew.entity.cv1Hold!=null"> AND CV1_HOLD=#{ew.entity.cv1Hold}</if>
+                    <if test="ew.entity.cv1Move!=null"> AND CV1_MOVE=#{ew.entity.cv1Move}</if>
+                    <if test="ew.entity.cv1PalletSensor!=null"> AND CV1_PALLET_SENSOR=#{ew.entity.cv1PalletSensor},</if>
+                    <if test="ew.entity.cv2Direction!=null"> AND CV2_DIRECTION=#{ew.entity.cv2Direction}</if>
+                    <if test="ew.entity.cv2Hold!=null"> AND CV2_HOLD=#{ew.entity.cv2Hold}</if>
+                    <if test="ew.entity.cv2Move!=null"> AND CV2_MOVE=#{ew.entity.cv2Move}</if>
+                    <if test="ew.entity.cv2PalletSensor!=null"> AND CV2_PALLET_SENSOR=#{ew.entity.cv2PalletSensor},</if>
+                    <if test="ew.entity.cv3Direction!=null"> AND CV3_DIRECTION=#{ew.entity.cv3Direction}</if>
+                    <if test="ew.entity.cv3Hold!=null"> AND CV3_HOLD=#{ew.entity.cv3Hold}</if>
+                    <if test="ew.entity.cv3Move!=null"> AND CV3_MOVE=#{ew.entity.cv3Move}</if>
+                    <if test="ew.entity.cv3PalletSensor!=null"> AND CV3_PALLET_SENSOR=#{ew.entity.cv3PalletSensor},</if>
+                    <if test="ew.entity.button!=null"> AND BUTTON=#{ew.entity.button},</if>
+                    <if test="ew.entity.height!=null"> AND HEIGHT=#{ew.entity.height},</if>
+                    <if test="ew.entity.width!=null"> AND WIDTH=#{ew.entity.width},</if>
+                    <if test="ew.entity.length!=null"> AND LENGTH=#{ew.entity.length},</if>
+                    <if test="ew.entity.weight!=null"> AND WEIGHT=#{ew.entity.weight},</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

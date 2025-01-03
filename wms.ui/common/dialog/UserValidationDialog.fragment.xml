@@ -1,0 +1,66 @@
+<core:FragmentDefinition
+        xmlns="sap.m"
+        xmlns:t="sap.ui.table"
+        xmlns:l="sap.ui.layout"
+        xmlns:mvc="sap.ui.core.mvc"
+        xmlns:core="sap.ui.core"
+        xmlns:fw="com.sap.ewm.control">
+    <Dialog resizable="false"
+            draggable="true"
+            stretch="false"
+            horizontalScrolling="false"
+            contentWidth="50rem"
+            busyIndicatorDelay="0"
+            title=""
+            afterClose="onContainClose">
+        <content>
+            <HBox id="msgArea"></HBox>
+            <l:Grid
+                    hSpacing="1"
+                    vSpacing="0"
+                    defaultSpan="L12 M12 S12">
+                <l:content>
+                    <HBox alignItems="Center">
+                        <Label text="使用者名稱：" design="Bold" textAlign="Right" width="8em" required="true"></Label>
+                        <fw:Input
+                                id="usernameField"
+                                width="100%"
+                                type="Text"
+                                value="{/username}"
+                                enabled="true">
+                            <fw:layoutData>
+                                <FlexItemData growFactor="1" />
+                            </fw:layoutData>
+                        </fw:Input>
+                        <layoutData>
+                            <l:GridData
+                                    span="L12 M12 S12" />
+                        </layoutData>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="密碼：" design="Bold" textAlign="Right" width="8em" required="true"></Label>
+                        <fw:Input
+                                id="passwordField"
+                                type="Text"
+                                width="100%"
+                                value="{/password}"
+                                enabled="true">
+                            <fw:layoutData>
+                                <FlexItemData growFactor="1" />
+                            </fw:layoutData>
+                        </fw:Input>
+                        <layoutData>
+                            <l:GridData
+                                    span="L12 M12 S12" />
+                        </layoutData>
+                    </HBox>
+                </l:content>
+            </l:Grid>
+
+        </content>
+        <buttons>
+            <Button text="提交"  type="Emphasized" press="onContainConfirm"></Button>
+            <Button text="取消"  type="Emphasized" press="onContainClose"></Button>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

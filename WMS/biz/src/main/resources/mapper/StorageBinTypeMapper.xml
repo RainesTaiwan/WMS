@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.StorageBinTypeMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.StorageBinType">
+        <id column="HANDLE" property="handle" />
+        <result column="STORAGE_BIN_TYPE" property="storageBinType" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="WIDTH" property="width" />
+        <result column="LENGTH" property="length" />
+        <result column="HEIGHT" property="height" />
+        <result column="MAX_WEIGHT" property="maxWeight" />
+        <result column="MIX_ITEM" property="mixItem" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, STORAGE_BIN_TYPE, DESCRIPTION, WIDTH, LENGTH, HEIGHT, MAX_WEIGHT, MIX_ITEM, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+</mapper>

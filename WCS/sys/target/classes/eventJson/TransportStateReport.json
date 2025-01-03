@@ -1,0 +1,31 @@
+{
+  "CommandId":"CMD-201709131135001",
+  "VMSId":"VMS0001",
+  "VehicleId":"AGV002",
+  "State":"START",
+  "CarrierId":"C01"
+}
+#
+{
+  "CommandId":"CMD-201709131135001",
+  "VMSId":"VMS0001",
+  "VehicleId":"AGV002",
+  "State":"FROM_LEFT",
+  "CarrierId":"C01"
+}
+#
+{
+  "CommandId":"CMD-201709131135001",
+  "VMSId":"VMS0001",
+  "VehicleId":"AGV002",
+  "State":"TO_LEFT",
+  "CarrierId":"C01"
+}
+#
+{
+  "CommandId":"CMD-201709131135001",
+  "VMSId":"VMS0001",
+  "VehicleId":"AGV002",
+  "State":"END",
+  "CarrierId":"C01"
+}

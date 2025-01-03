@@ -1,0 +1,259 @@
+<mvc:View
+    controllerName="com.sap.ewm.sys.SysMenuMaintain"
+    xmlns:m="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:t="sap.ui.table"
+    xmlns:tnt="sap.tnt"
+    xmlns:f="sap.f"
+	xmlns:l="sap.ui.layout"
+	xmlns:fm="sap.ui.layout.form"
+    xmlns:ewm="com.sap.ewm.control"
+    displayBlock="true">
+    <f:FlexibleColumnLayout
+        id="fcLayout"
+        layout="OneColumn"
+        backgroundDesign="Solid">
+        <f:beginColumnPages>
+            <m:Page
+                title="{i18n>功能表管理}"
+                showNavButton="false">
+                <m:HBox id="msgArea"></m:HBox>
+                <m:headerContent>
+                    <m:Button
+                        id="createButton"
+                        type="Transparent"
+                        text="{i18n>新增}"
+                        icon="sap-icon://add"
+                        tooltip="{i18n>新增}"
+                        press="onCreate" />
+                    <!--<m:Button
+                            id="retrieveButton"
+                            type="Transparent"
+                            text="{i18n>g.Retrieve}"
+                            icon="sap-icon://search"
+                            tooltip="{i18n>g.Retrieve}"
+                            press="onRetrieve" />-->
+                </m:headerContent>
+                <m:content>
+                    <t:TreeTable
+                        id="menuTree"
+                        rows="{path:'/menuTree', parameters: {arrayNames:['children']}}"
+                        selectionBehavior="Row"
+                        selectionMode="Single"
+                        editable="false"
+                        columnHeaderHeight="30px"
+                        enableSelectAll="true"
+                        visibleRowCountMode="Auto"
+                        rowActionCount="3"
+                        busyIndicatorDelay="0"
+                        enableBusyIndicator="true"
+                        class="sapUiSizeCondensed">
+                        <t:toolbar>
+                            <m:Toolbar>
+                                <m:Title id="title" text="功能表列表"></m:Title>
+                                <m:ToolbarSpacer />
+                            </m:Toolbar>
+                        </t:toolbar>
+                        <t:columns>
+                            <t:Column width="250px">
+                                <m:Label text="{i18n>清單名稱}" />
+                                <t:template>
+                                    <m:Label text="{label}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="5em" hAlign="Center">
+                                <m:Label text="{i18n>圖標}" />
+                                <t:template>
+                                    <core:Icon src="{icon}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column hAlign="Center">
+                                <m:Label text="{i18n>分類}" />
+                                <t:template>
+                                    <m:Label text="{sort}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column hAlign="Center">
+                                <m:Label text="{i18n>路徑}" />
+                                <t:template>
+                                    <m:Label text="{path}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column hAlign="Center">
+                                <m:Label text="{i18n>類型}" />
+                                <t:template>
+                                    <tnt:InfoLabel
+                                            text= "{
+                                                parts: [
+                                                    {path: 'type'}
+                                                ],
+                                                formatter: '.menuTypeFormat'
+                                            }"
+                                            colorScheme= "{=${type}==='0' ? 8 : 5}"
+                                    />
+                                </t:template>
+                            </t:Column>
+                            <t:Column hAlign="Center">
+                                <m:Label text="{i18n>許可}" />
+                                <t:template>
+                                    <m:Label text="{i18n>許可}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="3em">
+                                <t:template>
+                                    <m:Button tooltip="{i18n>新增}" icon="sap-icon://add" press="onCreate" width="100%"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="3em">
+                                <t:template>
+                                    <m:Button tooltip="{i18n>編輯}" icon="sap-icon://edit" press="onEdit" width="100%"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="3em">
+                                <t:template>
+                                    <m:Button tooltip="{i18n>刪除}" icon="sap-icon://delete" press="onDelete" width="100%"/>
+                                </t:template>
+                            </t:Column>
+                        </t:columns>
+                    </t:TreeTable>
+                </m:content>
+            </m:Page>
+        </f:beginColumnPages>
+        <f:midColumnPages id="midColumnPages">
+            <!--<core:Fragment fragmentName="com.sap.ewm.sys.fragment.RoleEdit" type="XML" />-->
+            <m:Page
+                    id="editPage"
+                    title="{=${edit>/create} ? ${i18n>新增} : ${i18n>編輯}}">
+                <m:headerContent>
+                    <m:Button
+                            icon="sap-icon://save"
+                            text="{i18n>存檔}"
+                            tooltip="{i18n>存檔}"
+                            press="onSave" />
+                    <m:Button
+                            icon="sap-icon://decline"
+                            text="{i18n>關閉}"
+                            tooltip="{i18n>關閉}"
+                            press="onClose" />
+                </m:headerContent>
+                <m:content>
+                    <l:Grid
+                            class="sapUiSmallMarginTop"
+                            hSpacing="1"
+                            vSpacing="0"
+                            defaultSpan="L12 M12 S12">
+                        <l:content>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="選單名稱：" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:SegmentedButton selectedKey="{edit>/parentMenu}" class="sapUiSmallMarginBottom">
+                                    <m:items>
+                                        <m:SegmentedButtonItem text="選單" key="menu"/>
+                                        <m:SegmentedButtonItem text="按鈕" key="button" />
+                                    </m:items>
+                                </m:SegmentedButton>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="上級選單：" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <m:ComboBox
+                                        id="parentMenuField"
+                                        width="100%"
+                                        type="Text"
+                                        editable="true"
+                                        selectedKey="{edit>/parentId}"
+                                        showValueHelp="true">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:ComboBox>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>圖標}:" visible="{=${edit>/parentMenu}==='menu' ? true : false}" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:Input
+                                        type="Text"
+                                        editable="true"
+                                        visible="{=${edit>/parentMenu}==='menu' ? true : false}"
+                                        value="{edit>/icon}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>清單名稱}:" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <m:Input
+                                        id="roleField"
+                                        type="Text"
+                                        value="{edit>/name}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>路徑}:" visible="{=${edit>/parentMenu}==='menu' ? true : false}" design="Bold" textAlign="Left" width="8em" required="true"></m:Label>
+                                <m:Input
+                                        id="pathField"
+                                        type="Text"
+                                        visible="{=${edit>/parentMenu}==='menu' ? true : false}"
+                                        value="{edit>/path}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>許可}：" visible="{=${edit>/parentMenu}==='button' ? true : false}" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:Input
+                                        id="permissionField"
+                                        type="Text"
+                                        visible="{=${edit>/parentMenu}==='button' ? true : false}"
+                                        value="{edit>/permission}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>分類}:" design="Bold" textAlign="Left" width="8em" required="false"></m:Label>
+                                <m:Input
+                                        id="sortField"
+                                        type="Number"
+                                        value="{edit>/sort}">
+                                    <m:layoutData>
+                                        <m:FlexItemData growFactor="1"/>
+                                    </m:layoutData>
+                                </m:Input>
+                                <m:layoutData>
+                                    <l:GridData span="L12 M12 S12"/>
+                                </m:layoutData>
+                            </m:HBox>
+                            <m:HBox justifyContent="Center">
+                                <m:Button text="{i18n>確認}"  type="Default" press="onSave"></m:Button>
+                                <m:Button text="{i18n>取消}"  type="Default" press="onClose"></m:Button>
+                            </m:HBox>
+                        </l:content>
+                    </l:Grid>
+                </m:content>
+            </m:Page>
+        </f:midColumnPages>
+   </f:FlexibleColumnLayout>
+ </mvc:View>

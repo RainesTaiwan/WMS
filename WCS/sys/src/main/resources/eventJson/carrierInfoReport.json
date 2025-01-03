@@ -1,0 +1,15 @@
+{
+  "MESSAGE_ID" : "RES_20200702205055",
+  "MESSAGE_TYPE" : "carrier.info.report",
+  "RESOURCE" : "TSPT-001",
+  "STATION" : "2",
+  "CARRIER" : "0000 0001 0002 0003 0006",
+  "HEIGHT" : "13.5",
+  "WIDTH" : "14.5",
+  "LENGTH" : "15.5",
+  "WEIGHT" : "16.6",
+  "SEND_TIME" : "2020-07-19 16:13:13",
+  "OTHER_1" : "",
+  "OTHER_2" : "",
+  "OTHER_3" : ""
+}

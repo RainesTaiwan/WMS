@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.MonitoringTaskMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.MonitoringTask">
+        <id column="HANDLE" property="handle" />
+        <result column="RESOURCE" property="resource" />
+        <result column="STORAGE_BIN" property="storageBin" />
+        <result column="TYPE" property="type" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, RESOURCE, STORAGE_BIN, TYPE, STATUS, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="findMonitoringTaskByID" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM monitoring_task
+        WHERE 1 = 1
+        <if test="handle != null and handle != ''">
+            AND HANDLE = #{handle}
+        </if>
+        ORDER BY CREATED_TIME DESC
+    </select>
+
+    <update id="updateMonitoringTaskByID">
+        UPDATE monitoring_task <trim prefix="SET" suffixOverrides=",">
+        <if test="et.resource!=null">RESOURCE=#{et.resource},</if>
+        <if test="et.storageBin!=null">STORAGE_BIN=#{et.storageBin},</if>
+        <if test="et.type!=null">TYPE=#{et.type},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.MonitoringTask">
+        INSERT INTO monitoring_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="resource!=null">RESOURCE,</if>
+            <if test="storageBin!=null">STORAGE_BIN,</if>
+            <if test="type!=null">TYPE,</if>
+            <if test="status!=null">STATUS,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+            <if test="updateUser!=null">UPDATE_USER,</if>
+            <if test="updatedTime!=null">UPDATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="resource!=null">#{resource},</if>
+            <if test="storageBin!=null">#{storageBin},</if>
+            <if test="type!=null">#{type},</if>
+            <if test="status!=null">#{status},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+            <if test="updateUser!=null">#{updateUser},</if>
+            <if test="updatedTime!=null">#{updatedTime},</if>
+        </trim>
+    </insert>
+
+    <update id="update">
+        UPDATE monitoring_task <trim prefix="SET" suffixOverrides=",">
+        <if test="et.resource!=null">RESOURCE=#{et.resource},</if>
+        <if test="et.storageBin!=null">STORAGE_BIN=#{et.storageBin},</if>
+        <if test="et.type!=null">TYPE=#{et.type},</if>
+        <if test="et.status!=null">STATUS=#{et.status},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.resource!=null"> AND RESOURCE=#{ew.entity.resource}</if>
+                    <if test="ew.entity.storageBin!=null"> AND STORAGE_BIN=#{ew.entity.storageBin}</if>
+                    <if test="ew.entity.type!=null"> AND TYPE=#{ew.entity.type}</if>
+                    <if test="ew.entity.status!=null"> AND STATUS=#{ew.entity.status}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+</mapper>

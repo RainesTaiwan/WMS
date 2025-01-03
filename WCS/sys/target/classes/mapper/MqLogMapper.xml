@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.MqLogMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.MqLog">
+        <id column="HANDLE" property="handle" />
+        <result column="QUEUE_NAME" property="queueName" />
+        <result column="MESSAGE_ID" property="messageId" />
+        <result column="CARRIER" property="carrier" />
+        <result column="RESULT" property="result" />
+        <result column="MESSAGE" property="message" />
+        <result column="SEND_TIME" property="sendTime" />
+        <result column="CREATED_TIME" property="createdTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, QUEUE_NAME, MESSAGE_ID, CARRIER, RESULT, MESSAGE, SEND_TIME, CREATED_TIME
+    </sql>
+
+
+
+</mapper>

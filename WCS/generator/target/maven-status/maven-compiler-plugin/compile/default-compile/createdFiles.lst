@@ -1,0 +1,9 @@
+com\fw\wcs\generator\converts\OracleTypeConvert$1.class
+com\fw\wcs\generator\GeneratorApplication.class
+com\fw\wcs\generator\querys\HanaQuery.class
+com\fw\wcs\generator\converts\OracleTypeConvert.class
+com\fw\wcs\generator\MpGenerator$1.class
+com\fw\wcs\generator\converts\HanaTypeConvert$1.class
+com\fw\wcs\generator\MpGenerator$MpGeneratorBuilder.class
+com\fw\wcs\generator\converts\HanaTypeConvert.class
+com\fw\wcs\generator\MpGenerator.class

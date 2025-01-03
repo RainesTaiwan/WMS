@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.StorageLocationMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.StorageLocation">
+        <id column="HANDLE" property="handle" />
+        <result column="STORAGE_LOCATION" property="storageLocation" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, STORAGE_LOCATION, DESCRIPTION, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="selectStorageLocationByBin" resultMap="BaseResultMap">
+        SELECT SL.HANDLE, SL.STORAGE_LOCATION, SL.DESCRIPTION, SL.CREATE_USER, SL.CREATED_TIME, SL.UPDATE_USER, SL.UPDATED_TIME
+        FROM storage_location SL
+        INNER JOIN storage_bin SB ON SB.STORAGE_LOCATION_BO = SL.HANDLE
+        WHERE SB.STORAGE_BIN = #{storageBin}
+    </select>
+
+    <!-- BaseMapper標準查詢/修改/刪除 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include> FROM storage_location WHERE HANDLE=#{handle}
+    </select>
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM storage_location
+        <if test="cm!=null and !cm.isEmpty">
+            <where>
+                <foreach collection="cm.keys" item="k" separator="AND">
+                    <if test="cm[k] != null">
+                        ${k} = #{cm[${k}]}
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </select>
+
+    <select id="selectBatchIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM storage_location WHERE HANDLE IN (
+        <foreach item="item" index="index" collection="coll" separator=",">#{item}
+        </foreach>)
+    </select>
+
+    <select id="selectOne" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include> FROM storage_location
+        <where>
+            <if test="ew.handle!=null">
+              HANDLE=#{ew.handle}
+            </if>
+            <if test="ew.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.storageLocation}</if>
+            <if test="ew.description!=null"> AND DESCRIPTION=#{ew.description}</if>
+            <if test="ew.createUser!=null"> AND CREATE_USER=#{ew.createUser}</if>
+            <if test="ew.createdTime!=null"> AND CREATED_TIME=#{ew.createdTime}</if>
+            <if test="ew.updateUser!=null"> AND UPDATE_USER=#{ew.updateUser}</if>
+            <if test="ew.updatedTime!=null"> AND UPDATED_TIME=#{ew.updatedTime}</if>
+        </where>
+    </select>
+
+    <select id="selectCount" resultType="Integer">
+        SELECT COUNT(1) FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                <if test="ew.entity.handle!=null">
+                    HANDLE=#{ew.entity.handle}
+                </if>
+                <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectMaps" resultType="HashMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectObjs" resultType="Object">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectMapsPage" resultType="HashMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.StorageLocation">
+        INSERT INTO storage_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="storageLocation!=null">STORAGE_LOCATION,</if>
+            <if test="description!=null">DESCRIPTION,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+            <if test="updateUser!=null">UPDATE_USER,</if>
+            <if test="updatedTime!=null">UPDATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="storageLocation!=null">#{storageLocation},</if>
+            <if test="description!=null">#{description},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+            <if test="updateUser!=null">#{updateUser},</if>
+            <if test="updatedTime!=null">#{updatedTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertAllColumn" parameterType="com.fw.wcs.sys.model.StorageLocation">
+        INSERT INTO storage_location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Base_Column_List"></include>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            #{storageLocation},
+            #{description},
+            #{createUser},
+            #{createdTime},
+            #{updateUser},
+            #{updatedTime},
+        </trim>
+    </insert>
+
+
+    <update id="updateById">
+        UPDATE storage_location <trim prefix="SET" suffixOverrides=",">
+        <if test="et.storageLocation!=null">STORAGE_LOCATION=#{et.storageLocation},</if>
+        <if test="et.description!=null">DESCRIPTION=#{et.description},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+        </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+
+    <update id="updateAllColumnById">
+        UPDATE storage_location <trim prefix="SET" suffixOverrides=",">
+        STORAGE_LOCATION=#{et.storageLocation},
+        DESCRIPTION=#{et.description},
+        CREATE_USER=#{et.createUser},
+        CREATED_TIME=#{et.createdTime},
+        UPDATE_USER=#{et.updateUser},
+        UPDATED_TIME=#{et.updatedTime},
+     </trim> WHERE HANDLE=#{et.handle} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+
+
+    <update id="update">
+        UPDATE storage_location <trim prefix="SET" suffixOverrides=",">
+        <if test="et.storageLocation!=null">STORAGE_LOCATION=#{et.storageLocation},</if>
+        <if test="et.description!=null">DESCRIPTION=#{et.description},</if>
+        <if test="et.createUser!=null">CREATE_USER=#{et.createUser},</if>
+        <if test="et.createdTime!=null">CREATED_TIME=#{et.createdTime},</if>
+        <if test="et.updateUser!=null">UPDATE_USER=#{et.updateUser},</if>
+        <if test="et.updatedTime!=null">UPDATED_TIME=#{et.updatedTime},</if>
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    HANDLE=#{ew.entity.handle}
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM storage_location WHERE HANDLE=#{handle}
+    </delete>
+
+    <delete id="deleteByMap">
+        DELETE FROM storage_location
+        <if test="cm!=null and !cm.isEmpty">
+            <where>
+                <foreach collection="cm.keys" item="k" separator="AND">
+                    <if test="cm[k] != null">
+                        ${k} = #{cm[${k}]}
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </delete>
+
+    <delete id="delete">
+        DELETE FROM storage_location
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+                    <if test="ew.entity.handle!=null">
+                        HANDLE=#{ew.entity.handle}
+                    </if>
+                    <if test="ew.entity.storageLocation!=null"> AND STORAGE_LOCATION=#{ew.entity.storageLocation}</if>
+                    <if test="ew.entity.description!=null"> AND DESCRIPTION=#{ew.entity.description}</if>
+                    <if test="ew.entity.createUser!=null"> AND CREATE_USER=#{ew.entity.createUser}</if>
+                    <if test="ew.entity.createdTime!=null"> AND CREATED_TIME=#{ew.entity.createdTime}</if>
+                    <if test="ew.entity.updateUser!=null"> AND UPDATE_USER=#{ew.entity.updateUser}</if>
+                    <if test="ew.entity.updatedTime!=null"> AND UPDATED_TIME=#{ew.entity.updatedTime}</if>
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </delete>
+
+    <delete id="deleteBatchIds">
+        DELETE FROM storage_location WHERE HANDLE IN (
+        <foreach item="item" index="index" collection="coll" separator=",">#{item}
+        </foreach>)
+    </delete>
+    <!-- BaseMapper標準查詢/修改/刪除 -->
+
+</mapper>

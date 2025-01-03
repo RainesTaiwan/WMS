@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+    <Properties>
+        <Property name="log.path">../wcs/logs</Property>
+        <Property name="log.pattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+        </Console>
+
+        <RollingFile name="file_info" fileName="${log.path}/wcs-info.log"
+                     filePattern="${log.path}/$${date:yyyy-MM}/wcs-info.%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="file_error" fileName="${log.path}/wcs-error.log"
+                     filePattern="${log.path}/$${date:yyyy-MM}/wcs-error.%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <logger name="com.fw" level="info">
+            <AppenderRef ref="file_info"/>
+        </logger>
+        <Root level="info">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="file_error"/>
+        </Root>
+    </Loggers>
+
+</Configuration>

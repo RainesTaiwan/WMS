@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.dashboard.mapper.InventorySummaryMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.dashboard.model.InventorySummary">
+        <id column="HANDLE" property="handle" />
+        <result column="ITEM" property="item" />
+        <result column="TOTAL_QTY" property="totalQty" />
+        <result column="INBOUND_QTY" property="inboundQty" />
+        <result column="OUTBOUND_QTY" property="outboundQty" />
+        <result column="STATISTIC_DATE" property="statisticDate" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, ITEM, TOTAL_QTY, INBOUND_QTY, OUTBOUND_QTY, STATISTIC_DATE
+    </sql>
+
+    <update id="inboundQtyUpdate">
+        UPDATE DS_INVENTORY_SUMMARY
+        SET INBOUND_QTY = INBOUND_QTY + #{inboundQty}
+        WHERE ITEM = #{item}
+          AND STATISTIC_DATE = #{date}
+    </update>
+
+    <update id="outboundQtyUpdate">
+        UPDATE DS_INVENTORY_SUMMARY
+        SET OUTBOUND_QTY = OUTBOUND_QTY + #{outboundQty}
+        WHERE ITEM = #{item}
+          AND STATISTIC_DATE = #{date}
+    </update>
+</mapper>

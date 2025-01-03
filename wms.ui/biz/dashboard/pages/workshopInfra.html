@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <title>WCS</title>
+    <link rel="stylesheet" href="../css/dhbd.css" />
+</head>
+
+<body>
+<div class="header">
+    <h1 class="header-title">產線狀態</h1>
+    <div class="header-info header-info-l">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;第506倉庫</div>
+    <div class="header-info header-info-r">資料日期：<span id="updateTime"></span></div>
+</div>
+<audio id="errorId"  autoplay="false"  src="../images/error.wav"   muted></audio>
+<div class="wrapper">
+    <div class="content">
+        <div class="col col-l">
+            <div class="xpanel-wrapper xpanel-wrapper-33">
+                <div class="xpanel xpanel-l-t">
+                    <div class="chart" id="draw_agv_01"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-33">
+                <div class="xpanel xpanel-l-b">
+                    <div class="chart" id="draw_agv_02"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-33">
+                <div class="xpanel xpanel-l-b">
+                    <div class="chart" id="draw_agv_03"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col col-c">
+            <div class="xpanel-wrapper xpanel-wrapper-100">
+                <div class="xpanel xpanel-c-b">
+                    <div class="title">即時狀態</div>
+                    <div class="grid" id="to_do_task">
+                        <dv-scroll-board :config="config" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col col-r">
+            <div class="xpanel-wrapper xpanel-wrapper-20">
+                <div class="xpanel xpanel-r-m">
+                    <div class="chart" id="transport_spot_05"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-20">
+                <div class="xpanel xpanel-r-m">
+                    <div class="chart" id="transport_spot_04"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-20">
+                <div class="xpanel xpanel-r-m">
+                    <div class="chart" id="transport_spot_03"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-20">
+                <div class="xpanel xpanel-r-m">
+                    <div class="chart" id="transport_spot_02"></div>
+                </div>
+            </div>
+            <div class="xpanel-wrapper xpanel-wrapper-20">
+                <div class="xpanel xpanel-r-m">
+                    <div class="chart" id="transport_spot_01"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../scripts/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../scripts/echarts.min.js"></script>
+<script src="../scripts/vue.min.js"></script>
+<script src="../scripts/datav.min.vue.js"></script>
+<script src="../scripts/wrUtil.js"></script>
+<script type="text/javascript" src="../scripts/svg/dmClient.js"></script>
+<script type="text/javascript" src="../scripts/svg/raphael.js"></script>
+<script type="text/javascript" src="../scripts/svg/wrConfig.js"></script>
+<script type="text/javascript" src="../scripts/svg/container.js"></script>
+<script type="text/javascript" src="../scripts/svg/jzyWidget.js"></script>
+<script type="text/javascript" src="../scripts/svg/imageIcon.js"></script>
+<script type="text/javascript">
+    Wee.wr.AgvEuip = function( paper,config )
+    {
+        var agvConfig = {
+            warning:false,
+            audio:null,
+            labelAttr:{
+
+            },
+            valueAttr:{
+                textColor:"#4B4BF9"
+            },
+            imgAttr:{
+                src: "../images/agv.png"
+            },
+            agvIdAttr:{
+                textColor:"#FF6600"
+            },
+            agvStatusColor:{
+                "walking":"#A9EB48",
+                "run":"#00FF66",
+                "down":"#EE6911",
+                "idle":"#F3F350",
+                "charging":"#EE6911"
+            },
+            agvOperationColor:{
+                "in":"#64F141",
+                "out":"#CD9976"
+            },
+            agvBattryColor:{
+                "low":"#F94B4B",
+                "warning":"#F3F350",
+                "high":"#48EB48"
+            },
+            warningMaskAttr:{
+                fill:"#FF4444",
+                stroke:"white",
+                "fill-opacity":.5
+            },
+            warningTextAttr:{
+                fill:"#FFFF44",
+                stroke:"#FFFF44",
+                "font-size":16,
+                "font-weight":"normal",
+                "text-anchor":"middle"
+            }
+        };
+        Wee.wr.AgvEuip.superclass.constructor.call( this, paper, Wee.apply({}, config, agvConfig ) );
+        this.warningMask = this.paper.rect( 0, 0, 1,1 ).attr( this.warningMaskAttr ).hide();
+        this.warningText = this.paper.text(0,0,"").attr( this.warningTextAttr ).hide();
+        this.avgImg = new Wee.wr.ImageIcon( this.paper,Wee.apply({}, this.imgAttr, agvConfig.imgAttr ));
+        this.agvIdLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"無人車ID" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvStausLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"狀態" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvOptLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"操作" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvCarrLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"棧板ID" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvDlLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"電池容量" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvTaLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"目的地" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvTaskLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"任務ID" }, this.labelAttr, agvConfig.labelAttr ));
+        this.agvIdValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({}, this.agvIdAttr, agvConfig.agvIdAttr ));
+        this.agvStausValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({}, this.labelAttr, agvConfig.valueAttr ));
+        this.agvOptValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({}, this.labelAttr, agvConfig.valueAttr ));
+        this.agvCarrValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({ "textAnchor":"start" }, this.labelAttr, agvConfig.valueAttr ));
+        this.agvDlValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({}, this.labelAttr, agvConfig.valueAttr ));
+        this.agvTaValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({}, this.labelAttr, agvConfig.valueAttr ));
+        this.agvTaskValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({ "textAnchor":"start"}, this.labelAttr, agvConfig.valueAttr ));
+    };
+    Wee.extend( Wee.wr.AgvEuip,Wee.wr.Widget );
+
+    Wee.wr.AgvEuip.prototype.drawAction = function()
+    {
+        var me = this, _x = this.x, _y = this.y, _width = this.width, _height = this.height,
+            fontHeight = _height/5,fontWidth = _width / 3.5;
+        this.avgImg.attr({x:_x,y:_y,width:_width/3,height:_height});
+        this.avgImg.drawAction();
+        this.warningMask.attr({x:_x,y:_y,width:_width/3,height:_height});
+        var _trf = "R50,"+ (_x + _width/6 ) + ","+_y+_height/2;
+        this.warningText.attr({x:_x + _width/6,y:_y+_height/2,width:_width/3,height:_height,transform : _trf});
+        //--------------------------------------------------------------------------------------------------------------
+        this.agvIdLabel.attr({x:_x + _width/3.5,y:_y,width:fontWidth,height:fontHeight});
+        this.agvIdLabel.drawAction();
+        this.agvIdValue.attr({x:_x + _width/2,y:_y,width:fontWidth,height:fontHeight});
+        this.agvIdValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.agvStausLabel.attr({x:_x + _width/3.5,y:_y + _height/5,width:fontWidth,height:fontHeight});
+        this.agvStausLabel.drawAction();
+        this.agvStausValue.attr({x:_x + _width/2.4,y:_y + _height/5,width:fontWidth,height:fontHeight});
+        this.agvStausValue.drawAction();
+        this.agvOptLabel.attr({x:_x + _width*2/3.5,y:_y + _height/5,width:fontWidth,height:fontHeight});
+        this.agvOptLabel.drawAction();
+        this.agvOptValue.attr({x:_x + _width/1.45 ,y:_y + _height/5,width:fontWidth,height:fontHeight});
+        this.agvOptValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.agvCarrLabel.attr({x:_x + _width/3.5,y:_y + _height*2/5,width:fontWidth,height:fontHeight});
+        this.agvCarrLabel.drawAction();
+        this.agvCarrValue.attr({x:_x + _width/2,y:_y + _height*2/5,width:fontWidth * 3,height:fontHeight});
+        this.agvCarrValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.agvDlLabel.attr({x:_x + _width/3.5,y:_y + _height*3/5,width:fontWidth,height:fontHeight});
+        this.agvDlLabel.drawAction();
+        this.agvDlValue.attr({x:_x + _width/2.3,y:_y + _height*3/5,width:fontWidth,height:fontHeight});
+        this.agvDlValue.drawAction();
+        this.agvTaLabel.attr({x:_x + _width * 2/3.5,y:_y + _height*3/5,width:fontWidth,height:fontHeight});
+        this.agvTaLabel.drawAction();
+        this.agvTaValue.attr({x:_x + _width/1.35,y:_y + _height*3/5,width:fontWidth,height:fontHeight});
+        this.agvTaValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.agvTaskLabel.attr({x:_x + _width/3.5,y:_y + _height*4/5,width:fontWidth,height:fontHeight});
+        this.agvTaskLabel.drawAction();
+        this.agvTaskValue.attr({x:_x + _width/2,y:_y + _height*4/5,width:fontWidth * 3,height:fontHeight});
+        this.agvTaskValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+    };
+
+
+    Wee.wr.AgvEuip.prototype.loadData = function( obj )
+    {
+        var me = this;
+        this.warning = false;
+        if(obj.agvID) {
+            this.agvIdValue.setText(obj.agvID);
+        }
+        if( obj.status ){
+            this.agvStausValue.setText( obj.status.toUpperCase() );
+            this.agvStausValue.setTextAttr( {"stroke": this.agvStatusColor[obj.status.toLowerCase()]});
+            if( obj.status.toUpperCase() == "DOWN" ){
+                this.warning = true;
+                this.warningTextAttr = "AGV DOWN";
+            }
+        }else{
+            this.agvStausValue.setText( "" );
+        }
+        if( obj.operation ){
+            this.agvOptValue.setText( obj.operation.toUpperCase()  );
+            this.agvOptValue.setTextAttr( {"stroke": this.agvOperationColor[obj.operation.toLowerCase()]});
+        }else{
+            this.agvOptValue.setText( ""  );
+        }
+        this.agvCarrValue.setText( obj.tray );
+        if( obj.battery ){
+            this.agvDlValue.setText( obj.battery + "%" );
+            if( obj.battery > 30 )
+                this.agvDlValue.setTextAttr( {"stroke": this.agvBattryColor.high });
+            else if( obj.battery < 20 ){
+                this.agvDlValue.setTextAttr( {"stroke": this.agvBattryColor.low });
+                if( obj.status.toUpperCase() != "CHARGING" ){
+                    this.warning = true;
+                    this.warningTextAttr = "BATTERY LOW";
+                }
+            }
+            else
+                this.agvDlValue.setTextAttr( {"stroke": this.agvBattryColor.warning });
+        }else{
+            this.agvDlValue.setText( "" );
+        }
+        this.agvTaValue.setText( obj.target );
+        this.agvTaskValue.setText( obj.task );
+        if( this.warning ){
+            this.warningMask.show();
+            this.warningMask.toFront();
+            this.warningText.attr({ "text":this.warningTextAttr }).show();
+            this.warningText.toFront();
+            if(this.audio ){
+                this.audio.muted = false;
+                this.audio.play();
+            }
+        }else{
+            this.warningMask.hide();
+            this.warningText.hide();
+        }
+    }
+
+
+    Wee.wr.SpotEquip = function( paper,config )
+    {
+        var spotEquipConfig = {
+            spotId:"",
+            sportType:"",
+            spotBackAttr:{
+                fillColor: "#444444",
+                borderColor: "#000000",
+                borderStroke: 2,
+                fillOpacity: 1,
+                angleWidth: 0,
+                angleColor: '#89988D',
+                angle:1,
+                angleLength:5,
+                angleRadius:0
+            },
+            labelAttr:{
+                textAnchor:"start",
+                textRatio: 0.5
+            },
+            spotIdAttr:{
+                textAnchor:"start",
+                textColor:"#FF6600",
+                textRatio: 0.5
+            },
+            spotTypeAttr:{
+                in:"#64F141",
+                out:"#CD9976",
+                textAnchor:"start",
+                textColor:"#3131F0",
+                textRatio: 0.5
+            },
+            spotStatusAttr:{
+                textAnchor:"start",
+                textColor:"#89988D",
+                runColor:"#64F141",
+                textRatio: 0.5
+            },
+            spotAttr:{
+                textRatio:0.2,
+                textColor:"#FFFF22",
+                backAttr:{
+                    fill: "#C0C0C0",
+                    stroke: "#C0C0C0",
+                    "stroke-width":1,
+                    "fill-opacity":.2
+                },
+                inAttr:{
+                    stroke: "#64F141",
+                    fill: "#64F141",
+                    "stroke-width":1,
+                    cursor: "pointer",
+                    "fill-opacity":.4
+                },
+                outAttr:{
+                    stroke: "#CD9976",
+                    fill: "#CD9976",
+                    "stroke-width":1,
+                    cursor: "pointer",
+                    "fill-opacity":.4
+                }
+            }
+        };
+
+        Wee.wr.SpotEquip.superclass.constructor.call( this, paper, Wee.apply({}, config, spotEquipConfig ) );
+        this.spotIdLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"輸送帶ID" }, this.labelAttr, spotEquipConfig.labelAttr ));
+        this.spotTypeLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"用途" }, this.labelAttr, spotEquipConfig.labelAttr ));
+        this.spotStatusLabel =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:"狀態" }, this.labelAttr, spotEquipConfig.labelAttr ));
+        this.spotIdValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:this.spotId }, this.spotIdAttr, spotEquipConfig.spotIdAttr ));
+        this.spotTypeValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({ text:this.spotType }, this.spotTypeAttr, spotEquipConfig.spotTypeAttr ));
+        this.spotStatusValue =  new Wee.wr.TextLabel( this.paper,Wee.apply({text:"STOP"}, this.spotStatusAttr, spotEquipConfig.spotStatusAttr ));
+        this.spotBack = new Wee.wr.Widget( this.paper, Wee.apply({ }, this.spotBackAttr, spotEquipConfig.spotBackAttr ));
+        this.firstSpot =  new Wee.wr.TextLabel( this.paper,Wee.apply({ }, this.spotAttr, spotEquipConfig.spotAttr ));
+        this.secondSpot =  new Wee.wr.TextLabel( this.paper,Wee.apply({ }, this.spotAttr, spotEquipConfig.spotAttr ));
+        this.thirdSpot =  new Wee.wr.TextLabel( this.paper,Wee.apply({ }, this.spotAttr, spotEquipConfig.spotAttr ));
+    };
+    Wee.extend( Wee.wr.SpotEquip, Wee.wr.Widget );
+
+    Wee.wr.SpotEquip.prototype.drawAction = function()
+    {
+        var me = this;
+        if( this.spotType.toLowerCase() === "in" ){
+            this.spotTypeValue.setTextAttr({stroke: this.spotTypeAttr.in });
+        }else if( this.spotType.toLowerCase() === "out"  ){
+            this.spotTypeValue.setTextAttr({stroke: this.spotTypeAttr.out });
+        }else{
+            this.spotTypeValue.setTextAttr({stroke: this.spotTypeAttr.textColor });
+        }
+        //--------------------------------------------------------------------------------------------------------------
+        this.spotIdLabel.attr({x:0, y:0, width: this.width * 0.2, height: this.height/4});
+        this.spotIdLabel.drawAction();
+        this.spotIdValue.attr({x:0, y: this.height/6, width: this.width * 0.2, height: this.height/4,text:this.spotId });
+        this.spotIdValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.spotTypeLabel.attr({x:0, y:this.height/3, width: this.width * 0.2, height: this.height/4});
+        this.spotTypeLabel.drawAction();
+        this.spotTypeValue.attr({x:0, y: this.height/2, width: this.width * 0.2, height: this.height/4,text:this.spotType });
+        this.spotTypeValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.spotStatusLabel.attr({x:0, y:this.height*2/3, width: this.width * 0.2, height: this.height/4});
+        this.spotStatusLabel.drawAction();
+        this.spotStatusValue.attr({x:0, y: this.height*5/6, width: this.width * 0.2, height: this.height/4,text:this.spotType });
+        this.spotStatusValue.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.spotBack.attr({ x:this.width * 0.35 , y:this.height*0.15, width: this.width * 0.64, height: this.height*0.7});
+        this.spotBack.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.firstSpot.attr({ x:this.width * 0.36 , y:this.height*0.25, width: this.width * 0.2, height: this.height*0.5});
+        this.firstSpot.drawAction();
+        this.secondSpot.attr({ x:this.width * 0.57 , y:this.height*0.25, width: this.width * 0.2, height: this.height*0.5});
+        this.secondSpot.drawAction();
+        this.thirdSpot.attr({ x:this.width * 0.78 , y:this.height*0.25, width: this.width * 0.2, height: this.height*0.5});
+        this.thirdSpot.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        this.drawWidget();
+    }
+
+    Wee.wr.SpotEquip.prototype.loadData = function( data )
+    {
+        var me = this;
+        if( this.spotType.toLowerCase() === "in" ){
+            this.spotBack.setAttr( this.spotAttr.inAttr );
+        }else if( this.spotType.toLowerCase() === "out"  ){
+            this.spotBack.setAttr( this.spotAttr.outAttr );
+        }
+        this.spotIdValue.setText(data.spotId);
+        this.spotTypeValue.setText(data.spotType);
+        this.spotStatusValue.setText( data.status );
+        this.spotStatusValue.setTextAttr( {"stroke": this.spotStatusAttr.runColor });
+        //--------------------------------------------------------------------------------------------------------------
+        if( data && data.firstValue ){
+            this.firstSpot.setText( data.firstValue );
+            this.firstSpot.setAttr( {"fill-opacity": 0.8 });
+        }else{
+            this.firstSpot.setText( "" );
+            this.firstSpot.setAttr( {"fill-opacity": 0.2 });
+        }
+        //--------------------------------------------------------------------------------------------------------------
+        if( data && data.secondValue ){
+            this.secondSpot.setText( data.secondValue );
+            this.secondSpot.setAttr( {"fill-opacity": 0.8 });
+        }else{
+            this.secondSpot.setText( "" );
+            this.secondSpot.setAttr( {"fill-opacity": 0.2 });
+        }
+        //--------------------------------------------------------------------------------------------------------------
+        if( data && data.thirdValue ){
+            this.thirdSpot.setText( data.thirdValue );
+            this.thirdSpot.setAttr( {"fill-opacity": 0.8 });
+        }else{
+            this.thirdSpot.setText( "" );
+            this.thirdSpot.setAttr( {"fill-opacity": 0.2 });
+        }
+    }
+
+    $(window).resize(function() {
+        window.location.reload();
+    })
+    $(function() {
+        $("#updateTime").html( wrUtil.coverTime( new Date() ) );
+        var audioNode = $("#errorId")[0];
+        //--------------------------------------------------------------------------------------------------------------
+        var _agvObj01 = $("#draw_agv_01");
+        var agvPaper01 = Raphael("draw_agv_01",_agvObj01.width(), _agvObj01.height() );
+        var agvArea01 = new Wee.wr.AgvEuip( agvPaper01,{
+            x:0,
+            y:0,
+            width:_agvObj01.width(),
+            height:_agvObj01.height(),
+            agvIdAttr:{
+                text:"AGV 1號"
+            },
+            audio:audioNode
+        });
+        agvArea01.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _agvObj02 = $("#draw_agv_02");
+        var agvPaper02 = Raphael("draw_agv_02",_agvObj02.width(), _agvObj02.height() );
+        var agvArea02 = new Wee.wr.AgvEuip( agvPaper02,{
+            x:0,
+            y:0,
+            width:_agvObj02.width(),
+            height:_agvObj02.height(),
+            agvIdAttr:{
+                text:"AGV 2號"
+            },
+            audio:audioNode
+        });
+        agvArea02.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _agvObj03 = $("#draw_agv_03");
+        var agvPaper03 = Raphael("draw_agv_03",_agvObj03.width(), _agvObj03.height() );
+        var agvArea03 = new Wee.wr.AgvEuip( agvPaper03,{
+            x:0,
+            y:0,
+            width:_agvObj03.width(),
+            height:_agvObj03.height(),
+            agvIdAttr:{
+                text:"AGV 3號"
+            },
+            audio:audioNode
+        });
+        agvArea03.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        
+		agvArea01.loadData({
+            "status":"run",
+            "operation":"入庫",
+            "tray":"X123456789",
+            "battery":"63",
+            "target":"A010101",
+            "task":"TASK001"
+        });
+        agvArea02.loadData({
+            "status":"down",
+            "operation":"出庫",
+            "tray":"X333333333",
+            "battery":"50",
+            "target":"B0702",
+            "task":"TASK002"
+        });
+        agvArea03.loadData({
+            "status":"IDLE",
+            "operation":"",
+            "tray":"",
+            "battery":"15",
+            "target":"",
+            "task":""
+        });
+		
+        //--------------------------------------------------------------------------------------------------------------
+        /*var orderPlan = new Vue({
+            el: '#to_do_task',
+            data: {
+                config:  {
+                    header: ['棧板', 'AGV', '操作', '狀態'],
+                    columnWidth:[150],
+                    headerBGC:'#0B0F34',
+                    rowNum:10,
+                    data: []
+                }
+            },
+            created: function () {
+                this.loadData();
+            },
+            methods: {
+                loadData: function () {
+                    var me = this;
+                    var _data = [
+                        ['XM2000123', 'AGV01', '入庫', '入庫中'],
+                        ['XM2100123', '', '入庫', '待入庫'],
+                        ['XM2200123', '', '入庫', '待入庫'],
+                        ['XM2400123', '', '入庫', '待入庫'],
+                        ['XM2060123', 'AGV02', '出庫', '出庫中'],
+                        ['XM2080123', 'AGV02', '出庫', '出庫中'],
+                        ['XM2120123', '', '出庫', '待出庫'],
+                        ['XM2450123', '', '出庫', '待出庫'],
+                        ['XM2740123', '', '出庫', '待出庫'],
+                        ['XM2560123', '', '出庫', '待出庫'],
+                        ['XM2150123', '', '出庫', '待出庫'],
+                        ['XM2940123', '', '出庫', '待出庫']
+                    ];
+                    me.analysisData( _data );
+                    //ajaxGetService( "../data/21-orderPlan-01.json", me.analysisData,{ "factory": "ddj-vcp"} )
+                },
+                analysisData: function( data ) {
+                    var fixData = [];
+                    for( var i = 0; i < data.length; i++ ) {
+                        var _row = data[i];
+                        var _fixRow = [];
+                        var _color = "#FF6600";
+                        //----------------------------------------------------------------------------------------------
+                        if( _row[3] == "入庫中" || _row[3] == "出庫中"  ){
+                            _color = "#FF6600";
+                        }else if( _row[2] == "出庫" ){
+                            _color = "#7EC0EE";
+                        }else if( _row[2] == "入庫" ){
+                            _color = "#4DB361";
+                        }
+                        //----------------------------------------------------------------------------------------------
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[0] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[1] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[2] + "</span>" );
+                        _fixRow.push( "<span style=\"color:" + _color + ";\">" + _row[3] + "</span>" );
+                        //----------------------------------------------------------------------------------------------
+                        fixData.push(_fixRow)
+                    }
+                    this.config = {
+                        header: ['棧板', 'AGV', '操作', '狀態'],
+                        headerBGC:'#0B0F34',
+                        rowNum:10,
+                        waitTime:5000,
+                        columnWidth:[150],
+                        data: fixData
+                    };
+                }
+            }
+        });*/
+        //--------------------------------------------------------------------------------------------------------------
+        var _trsptSpotObj01 = $("#transport_spot_01");
+        var _trsptSpotArea01 = Raphael("transport_spot_01",_trsptSpotObj01.width(), _trsptSpotObj01.height() );
+        var _spot01 =  new Wee.wr.SpotEquip(
+            _trsptSpotArea01,
+            {
+                x: 0,
+                y: 0,
+                width:_trsptSpotObj01.width(),
+                height:_trsptSpotObj01.height(),
+                spotId:"Conveyor01",
+                spotType:"入庫用"
+            });
+        _spot01.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _trsptSpotObj02 = $("#transport_spot_02");
+        var _trsptSpotArea02= Raphael("transport_spot_02",_trsptSpotObj02.width(), _trsptSpotObj02.height() );
+        var _spot02 =  new Wee.wr.SpotEquip(
+            _trsptSpotArea02,
+            {
+                x: 0,
+                y: 0,
+                width:_trsptSpotObj02.width(),
+                height:_trsptSpotObj02.height(),
+                spotId:"Conveyor02",
+                spotType:"入庫用"
+            });
+        _spot02.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _trsptSpotObj03 = $("#transport_spot_03");
+        var _trsptSpotArea03 = Raphael("transport_spot_03",_trsptSpotObj03.width(), _trsptSpotObj03.height() );
+        var _spot03 =  new Wee.wr.SpotEquip(
+            _trsptSpotArea03,
+            {
+                x: 0,
+                y: 0,
+                width:_trsptSpotObj03.width(),
+                height:_trsptSpotObj03.height(),
+                spotId:"Conveyor03",
+                spotType:"出庫用"
+            });
+        _spot03.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _trsptSpotObj04 = $("#transport_spot_04");
+        var _trsptSpotArea04 = Raphael("transport_spot_04",_trsptSpotObj04.width(), _trsptSpotObj04.height() );
+        var _spot04 =  new Wee.wr.SpotEquip(
+            _trsptSpotArea04,
+            {
+                x: 0,
+                y: 0,
+                width:_trsptSpotObj04.width(),
+                height:_trsptSpotObj04.height(),
+                spotId:"Conveyor04",
+                spotType:"出庫用"
+            });
+        _spot04.drawAction();
+        //--------------------------------------------------------------------------------------------------------------
+        var _trsptSpotObj05 = $("#transport_spot_05");
+        var _trsptSpotArea05 = Raphael("transport_spot_05",_trsptSpotObj05.width(), _trsptSpotObj05.height() );
+        var _spot05 =  new Wee.wr.SpotEquip(
+            _trsptSpotArea05,
+            {
+                x: 0,
+                y: 0,
+                width:_trsptSpotObj05.width(),
+                height:_trsptSpotObj05.height(),
+                spotId:"Conveyor05",
+                spotType:"入庫/出庫用"
+            });
+        _spot05.drawAction();
+
+        //--------------------------------------------------------------------------------------------------------------
+        var websocket = wrWebSocketUtil.createWebSocket( "channel=dash.board.data" );
+        function resultAction( msg ){
+            var jsonData = $.parseJSON( msg  );
+            //----------------------------------------------------------------------------------------------------------
+            if( !jsonData )return;
+            //----------------------------------------------------------------------------------------------------------
+            if( jsonData["message_type"] == "avg" ){
+                var agvList = jsonData["agv_list"];
+                agvArea01.loadData(agvList[0]);
+                agvArea02.loadData(agvList[1]);
+                agvArea03.loadData(agvList[2]);
+            }else if( jsonData["message_type"] == "receiveStation" ){
+                var spotList = jsonData["receiveS_list"];
+                for(var i = 0; i < spotList.length; i++) {
+                    if(spotList[i].firstValue == "/") {
+                        spotList[i].firstValue = ""
+                    }
+                    if(spotList[i].secondValue == "/") {
+                        spotList[i].secondValue = ""
+                    }
+                    if(spotList[i].thirdValue == "/") {
+                        spotList[i].thirdValue = ""
+                    }
+                }
+                _spot01.loadData(spotList[0]);
+                _spot02.loadData(spotList[1]);
+                _spot03.loadData(spotList[2]);
+                _spot04.loadData(spotList[3]);
+                _spot05.loadData(spotList[4]);
+            }
+        }
+        if( websocket ){
+            wrWebSocketUtil.receiveAction = resultAction;
+        }
+    })
+</script>
+
+</body>
+</html>

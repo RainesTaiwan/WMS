@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.StorageLocationMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.StorageLocation">
+        <id column="HANDLE" property="handle" />
+        <result column="STORAGE_LOCATION" property="storageLocation" />
+        <result column="DESCRIPTION" property="description" />
+        <result column="STORAGE_LOCATION_TYPE_BO" property="storageLocationTypeBo" />
+        <result column="WAREHOUSE_BO" property="warehouseBo" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="CREATOR" property="creator" />
+        <result column="UPDATER" property="updater" />
+    </resultMap>
+
+    <resultMap id="ResultMapWithUsableBinCount" type="com.sap.ewm.biz.dto.StorageLocationDTO" extends="BaseResultMap">
+        <result column="STORAGE_BIN_COUNT" property="storageBinCount"/>
+        <result column="USED_BIN_COUNT" property="usedBinCount"/>
+        <result column="USABLE_COUNT" property="usableCount"/>
+        <result column="USED_PROPORTION" property="usedProportion"/>
+    </resultMap>
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, STORAGE_LOCATION, DESCRIPTION, STORAGE_LOCATION_TYPE_BO, WAREHOUSE_BO, CREATE_TIME, UPDATE_TIME, CREATOR, UPDATER
+    </sql>
+
+    <!--列出可用儲存地點（貨架），如果貨架過多應該考慮只查第一筆的方式，此種方式試用貨架數較少的情況<1000?-->
+    <select id="listUsableStorageLocation" resultMap="ResultMapWithUsableBinCount">
+        SELECT SL.*, SB.STORAGE_BIN_COUNT, SB_USED.USED_BIN_COUNT, SB.STORAGE_BIN_COUNT - SB_USED.USED_BIN_COUNT AS USABLE_COUNT, SB_USED.USED_BIN_COUNT/SB.STORAGE_BIN_COUNT AS USED_PROPORTION
+        FROM STORAGE_LOCATION SL
+                 LEFT JOIN (
+                SELECT STORAGE_LOCATION_BO, COUNT(1) AS STORAGE_BIN_COUNT /*儲存位置對應的貨格數*/
+                FROM STORAGE_BIN
+                GROUP BY STORAGE_LOCATION_BO
+            )SB ON SB.STORAGE_LOCATION_BO = SL.HANDLE
+                 LEFT JOIN (
+                SELECT SB.STORAGE_LOCATION_BO, COUNT(1) AS USED_BIN_COUNT
+                FROM STORAGE_BIN SB /*有放處理單元的貨格*/
+                         INNER JOIN HANDLING_UNIT_LOCATION HUL
+                                    ON HUL.BIND_CONTEXT_GBO = SB.HANDLE AND  HUL.BIND_TYPE = 'STORAGE_BIN'
+                GROUP BY SB.STORAGE_LOCATION_BO
+            )SB_USED ON SB_USED.STORAGE_LOCATION_BO = SL.HANDLE
+        WHERE USED_BIN_COUNT IS NULL OR STORAGE_BIN_COUNT > USED_BIN_COUNT
+    </select>
+
+    <!--列出貨架空貨格-->
+    <select id="listUsableEmptyStorageBin" resultMap="com.sap.ewm.biz.mapper.StorageBinMapper.BaseResultMap">
+        SELECT SB.HANDLE, SB.STORAGE_BIN, SB.DESCRIPTION, SB.STORAGE_BIN_TYPE_BO, SB.STORAGE_LOCATION_BO, SB.SHELF_ROW, SB.SHELF_COLUMN
+        FROM STORAGE_BIN SB
+        INNER JOIN STORAGE_BIN_TYPE SBT
+          ON SBT.HANDLE = SB.STORAGE_BIN_TYPE_BO
+        LEFT JOIN HANDLING_UNIT_LOCATION HUL
+          ON HUL.BIND_CONTEXT_GBO = SB.HANDLE
+        LEFT JOIN STORAGE_BIN_STATUS SBS
+          ON SBS.HANDLE = SB.HANDLE
+        <where>
+            AND (SBS.STATUS IS NULL OR SBS.STATUS = 'IDLE')
+            AND HUL.HANDLE IS NULL
+            AND SB.STORAGE_LOCATION_BO = #{storageLocationBo}
+        <if test="width != null">
+            AND SBT.WIDTH >= #{width}
+        </if>
+        <if test="height != null">
+            AND SBT.HEIGHT >= #{height}
+        </if>
+        <if test="length != null">
+            AND SBT.LENGTH >= #{length}
+        </if>
+        <if test="weight != null">
+            AND SBT.MAX_WEIGHT >= #{weight}
+        </if>
+        <if test="mixItem == 'Y'.toString()">
+            AND SBT.MIX_ITEM = 'Y'
+        </if>
+        </where>
+    </select>
+</mapper>

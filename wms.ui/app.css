@@ -1,0 +1,18 @@
+html.sapUiTheme-sap_hcb {
+    font-size: 14px !important;
+}
+
+html.sapUiTheme-sap_belize {
+    font-size: 14px !important;
+}
+
+html.sapUiTheme-sap_bluecrystal {
+    font-size: 14px !important;
+}
+
+.sapMBtnInner {
+}
+
+.sapMPageHeader::before {
+    border-top: 0rem !important;
+}

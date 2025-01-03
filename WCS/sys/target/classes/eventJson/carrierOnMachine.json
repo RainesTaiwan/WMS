@@ -1,0 +1,29 @@
+{
+  "MESSAGE_ID" : "RES_20200702205055",
+  "MESSAGE_TYPE" : "carrier.on.machine",
+  "RESOURCE" : "TSPT-002",
+  "TYPE" : "IN",
+  "STATION" : "1",
+  "TAG" : "0000 0001 0002 0003 0006",
+  "SEND_TIME" : "2020-07-19 18:06:06"
+}
+#
+{
+  "MESSAGE_ID" : "RES_20200702205055",
+  "MESSAGE_TYPE" : "carrier.on.machine",
+  "RESOURCE" : "TSPT-002",
+  "TYPE" : "IN",
+  "STATION" : "3",
+  "TAG" : "0000 0001 0002 0003 0006",
+  "SEND_TIME" : "2020-07-19 18:06:06"
+}
+#
+{
+"MESSAGE_ID" : "RES_20200702205055",
+"MESSAGE_TYPE" : "carrier.on.machine",
+"RESOURCE" : "TSPT-003",
+"TYPE" : "OUT",
+"STATION" : "3",
+"TAG" : "0000 0001 0002 0003 0004",
+"SEND_TIME" : "2020-07-19 18:06:06"
+}

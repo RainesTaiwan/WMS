@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.StatusMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.Status">
+        <id column="HANDLE" property="handle" />
+        <result column="STATUS" property="status" />
+        <result column="STATUS_GROUP" property="statusGroup" />
+        <result column="DESCRIPTION" property="description" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, STATUS, STATUS_GROUP
+    </sql>
+
+    <select id="listStatusByStatusGroup" resultMap="BaseResultMap">
+        SELECT S.STATUS, CASE WHEN ST.DESCRIPTION IS NOT NULL THEN ST.DESCRIPTION WHEN STEN.DESCRIPTION IS NOT NULL THEN STEN.DESCRIPTION ELSE S.STATUS END AS DESCRIPTION, S.STATUS_GROUP
+        FROM STATUS S
+        LEFT JOIN STATUS_T ST
+          ON S.HANDLE = ST.STATUS_BO AND ST.LOCALE = #{locale}
+        LEFT JOIN STATUS_T STEN
+                  ON S.HANDLE = STEN.STATUS_BO AND STEN.LOCALE = 'en-US'
+        WHERE S.STATUS_GROUP = #{statusGroup}
+    </select>
+</mapper>

@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    hikari:
+      # 最小空閑連線數量
+      # minimum-idle: 5
+      # 空閑連線存活最大時間，預設600000（10分鐘）
+      idle-timeout: 60000
+      # 連線池最大連線數，預設是10
+      maximum-pool-size: 20
+      # 此屬性控制從池返回的連線的預設自動提交行為,預設值：true
+      auto-commit: true
+      # 此屬性控制池中連線的最長生命週期，值0表示無限生命週期，預設1800000即30分鐘
+      max-lifetime: 600000
+      # 數據庫連線超時時間,預設30秒，即30000
+      connection-timeout: 60000
+      connection-test-query: SELECT 1
+    dynamic:
+      primary: wip
+      datasource:
+        wip:
+          #url: jdbc:mysql://192.168.0.100:3306/wcs?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://192.168.5.4:3306/wcs?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+          username: root
+          password: 1qaz@WSX
+          driver-class-name: com.mysql.cj.jdbc.Driver
+  activemq:
+    wms:
+      #brokerUrl: tcp://104.155.207.150:61616?wireFormat.maxInactivityDuration=0
+      brokerUrl: tcp://192.168.5.4:61616?wireFormat.maxInactivityDuration=0
+      username: admin
+      password: admin
+
+
+#列印伺服器配置
+print:
+  server: http://localhost:8080/CodeSoftPrintWeb/printService

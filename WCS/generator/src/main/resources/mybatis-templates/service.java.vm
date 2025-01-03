@@ -1,0 +1,28 @@
+package ${package.Service};
+
+import com.baomidou.mybatisplus.plugins.Page;
+import ${package.Entity}.${entity};
+import com.baomidou.mybatisplus.service.IService;
+import com.fw.wcs.core.base.FrontPage;
+
+import java.util.List;
+
+/**
+ * <p>
+ * $!{table.comment} 服務類
+ * </p>
+ *
+ * @author ${author}
+ *
+ */
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+
+    /**
+     *  分頁查詢
+     * @param frontPage
+     * @return
+     */
+    Page<${entity}> selectPage(FrontPage<${entity}> frontPage, ${entity} ${table.entityPath});
+
+    List<${entity}> selectList(${entity} ${table.entityPath});
+}

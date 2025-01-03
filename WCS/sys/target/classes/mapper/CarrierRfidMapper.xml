@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fw.wcs.sys.mapper.CarrierRfidMapper">
+
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="com.fw.wcs.sys.model.CarrierRfid">
+        <id column="HANDLE" property="handle" />
+        <result column="RFID" property="rfid" />
+        <result column="CARRIER" property="carrier" />
+        <result column="CREATE_USER" property="createUser" />
+        <result column="CREATED_TIME" property="createdTime" />
+        <result column="UPDATE_USER" property="updateUser" />
+        <result column="UPDATED_TIME" property="updatedTime" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, RFID, CARRIER, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+    </sql>
+
+    <select id="selectCarrierByTag" resultMap="BaseResultMap">
+        SELECT HANDLE, RFID, CARRIER, CREATE_USER, CREATED_TIME, UPDATE_USER, UPDATED_TIME
+        FROM carrier_rfid
+        WHERE RFID = #{tag}
+    </select>
+
+    <select id="findCarrierByID" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM carrier_rfid
+        WHERE 1 = 1
+        <if test="carrier != null and carrier != ''">
+            AND CARRIER = #{carrier}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.fw.wcs.sys.model.CarrierRfid">
+        INSERT INTO carrier_rfid
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            HANDLE,
+            <if test="rfid!=null">RFID,</if>
+            <if test="carrier!=null">CARRIER,</if>
+            <if test="createUser!=null">CREATE_USER,</if>
+            <if test="createdTime!=null">CREATED_TIME,</if>
+            <if test="updateUser!=null">UPDATE_USER,</if>
+            <if test="updatedTime!=null">UPDATED_TIME,</if>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{handle},
+            <if test="rfid!=null">#{rfid},</if>
+            <if test="carrier!=null">#{carrier},</if>
+            <if test="createUser!=null">#{createUser},</if>
+            <if test="createdTime!=null">#{createdTime},</if>
+            <if test="updateUser!=null">#{updateUser},</if>
+            <if test="updatedTime!=null">#{updatedTime},</if>
+        </trim>
+    </insert>
+
+</mapper>

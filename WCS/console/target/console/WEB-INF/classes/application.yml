@@ -1,0 +1,51 @@
+server:
+  # 服務埠
+  port: 8080
+  servlet:
+    # 專案contextPath
+    context-path: /
+  tomcat:
+    # tomcat的URI編碼
+    uri-encoding: UTF-8
+    # tomcat最大執行緒數，預設為200
+    max-threads: 800
+    # Tomcat啟動初始化的執行緒數，預設值25
+    min-spare-threads: 30
+ 
+# 日誌配置
+logging:
+  level:
+    com.fw: debug
+    org.springframework: WARN
+    org.spring.springboot.dao: debug
+
+# Spring配置
+spring:
+  jmx:
+    default-domain: wcs
+  # 資源資訊
+  messages:
+    # 國際化資原始檔路徑
+    basename: i18n/messages
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  profiles: 
+    active: local
+  # 服務模組
+  devtools:
+    restart:
+      # 熱部署開關
+      enabled: true
+
+# MyBatis
+mybatis-plus:
+  type-handlers-package: com.fw.wcs.core.mybatisplus.type
+  # 搜索指定包別名
+  #typeAliasesPackage: com.fw.**.model
+  # 配置mapper的掃瞄，找到所有的mapper.xml對應檔案
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 解決updateAllColumn傳空值報錯問題
+  configuration:
+    jdbc-type-for-null: 'null'
+    call-setters-on-nulls: true

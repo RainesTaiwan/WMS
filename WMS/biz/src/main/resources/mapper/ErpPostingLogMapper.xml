@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sap.ewm.biz.mapper.ErpPostingLogMapper">
+
+    <!-- 通用查詢對映結果 -->
+    <resultMap id="BaseResultMap" type="com.sap.ewm.biz.model.ErpPostingLog">
+        <id column="HANDLE" property="handle" />
+        <result column="NAME" property="name" />
+        <result column="TYPE" property="type" />
+        <result column="RESOURCE_BO" property="resourceBo" />
+        <result column="KEY1" property="key1" />
+        <result column="KEY2" property="key2" />
+        <result column="KEY3" property="key3" />
+        <result column="MESSAGE_ID" property="messageId" />
+        <result column="RESULT" property="result" />
+        <result column="MSG" property="msg" />
+        <result column="REQUEST_BODY" property="requestBody" />
+        <result column="RESPONSE_BODY" property="responseBody" />
+        <result column="PROCESS_TIME" property="processTime" />
+        <result column="DATE_CREATE" property="dateCreate" />
+        <result column="CREATOR" property="creator" />
+    </resultMap>
+
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+        HANDLE, NAME, TYPE, RESOURCE_BO, KEY1, KEY2, KEY3, MESSAGE_ID, RESULT, MSG, REQUEST_BODY, RESPONSE_BODY, PROCESS_TIME, DATE_CREATE, CREATOR
+    </sql>
+
+</mapper>

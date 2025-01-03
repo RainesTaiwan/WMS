@@ -1,0 +1,257 @@
+{
+    "_version": "1.8.0",
+    "sap.app": {
+        "id": "com.sap.ewm",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{app.Title}}",
+        "description": "{{app.Description}}",
+        "applicationVersion": {
+            "version": "0.1.0"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        },
+        "supportedThemes": [
+			"sap_hcb",
+			"sap_bluecrystal",
+			"sap_belize"
+		]
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "com.sap.ewm.app.App",
+            "type": "XML",
+            "async": true,
+            "id": "app"
+        },
+        "config": {
+            "webapi":"/ewm",
+            "websocket":"/EWM-WEB/servers"
+        },
+        "dependencies": {
+            "minUI5Version": "1.30",
+            "libs": {
+                "sap.ui.core": {},
+				"sap.m": {},
+				"sap.tnt": {},
+				"sap.ui.layout": {},
+				"sap.uxap": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "com.sap.ewm.i18n.i18n"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "com.sap.ewm",
+                "controlId": "mainContents",
+                "controlAggregation": "pages",
+        		"async": true,
+                "bypassed": {
+                    "target": "notFound"
+                }
+            },
+            "routes": [
+                {
+                    "name": "Home",
+                    "pattern": "",
+                    "target": "about"
+                },
+                {
+                    "name": "About",
+                    "pattern": "about",
+                    "target": "about"
+                },
+                {
+                    "name": "sysUserMaintain",
+                    "pattern": "sys/user",
+                    "target": "sysUserMaintain"
+                },
+                {
+                    "name": "sysRoleMaintain",
+                    "pattern": "sys/role",
+                    "target": "sysRoleMaintain"
+                },
+                {
+                    "name": "sysMenuMaintain",
+                    "pattern": "sys/menu",
+                    "target": "sysMenuMaintain"
+                },
+                {
+                    "name": "inventoryReceive",
+                    "pattern": "biz/inventory-receive",
+                    "target": "inventoryReceive"
+                },
+                {
+                    "name": "carrierBind",
+                    "pattern": "biz/carrier-bind",
+                    "target": "carrierBind"
+                },
+                {
+                    "name": "materialRequisition",
+                    "pattern": "biz/material-requisition",
+                    "target": "materialRequisition"
+                },
+                {
+                    "name": "storageChange",
+                    "pattern": "biz/storage-change",
+                    "target": "storageChange"
+                },
+                {
+                    "name": "carrierMaintain",
+                    "pattern": "biz/carrier-maintain",
+                    "target": "carrierMaintain"
+                },
+                {
+                    "name": "carrierTypeMaintain",
+                    "pattern": "biz/carrier-type-maintain",
+                    "target": "carrierTypeMaintain"
+                },
+                {
+                    "name": "itemGroupMaintain",
+                    "pattern": "biz/item-group-maintain",
+                    "target": "itemGroupMaintain"
+                },
+                {
+                    "name": "itemMaintain",
+                    "pattern": "biz/item-maintain",
+                    "target": "itemMaintain"
+                },
+                {
+                    "name": "resrceMaintain",
+                    "pattern": "biz/resrce-maintain",
+                    "target": "resrceMaintain"
+                },
+                {
+                    "name": "resourceTypeMaintain",
+                    "pattern": "biz/resource-type-maintain",
+                    "target": "resourceTypeMaintain"
+                },
+                {
+                    "name": "storageBinMaintain",
+                    "pattern": "biz/storage-bin-maintain",
+                    "target": "storageBinMaintain"
+                },
+                {
+                    "name": "storageBinTypeMaintain",
+                    "pattern": "biz/storage-bin-type-maintain",
+                    "target": "storageBinTypeMaintain"
+                },
+                {
+                    "name": "storageLocationMaintain",
+                    "pattern": "biz/storage-location-maintain",
+                    "target": "storageLocationMaintain"
+                },
+                {
+                    "name": "warehouseReport",
+                    "pattern": "biz/warehouse-report",
+                    "target": "warehouseReport"
+                },
+                {
+                    "name": "stayInReport",
+                    "pattern": "biz/stay-in-report",
+                    "target": "stayInReport"
+                }
+            ],
+            "targets": {
+                "about": {
+                    "viewID": "aboutView",
+                    "viewName": "app.AboutPage"
+                },
+                "notFound":{
+                    "viewID":"notFound",
+                    "viewName":"app.NotFound"
+                },
+                "sysUserMaintain": {
+                    "viewID": "sysUserView",
+                    "viewName": "sys.SysUserMaintain"
+                },
+                "sysRoleMaintain": {
+                    "viewID": "sysRoleView",
+                    "viewName": "sys.SysRoleMaintain"
+                },
+                "sysMenuMaintain": {
+                    "viewID": "sysMenuView",
+                    "viewName": "sys.SysMenuMaintain"
+                },
+                "inventoryReceive": {
+                    "viewID": "inventoryReceive",
+                    "viewName": "biz.operations.InventoryReceive"
+                },
+                "carrierBind": {
+                    "viewID": "carrierBind",
+                    "viewName": "biz.operations.CarrierBinding"
+                },
+                "materialRequisition": {
+                    "viewID": "materialRequisition",
+                    "viewName": "biz.operations.MaterialRequisition"
+                },
+                "storageChange": {
+                    "viewID": "storageChange",
+                    "viewName": "biz.operations.StorageChange"
+                },
+                "carrierMaintain": {
+                    "viewID": "carrierMaintain",
+                    "viewName": "biz.master.CarrierMaintain"
+                },
+                "carrierTypeMaintain": {
+                    "viewID": "carrierTypeMaintain",
+                    "viewName": "biz.master.CarrierTypeMaintain"
+                },
+                "itemGroupMaintain": {
+                    "viewID": "itemGroupMaintain",
+                    "viewName": "biz.master.ItemGroupMaintain"
+                },
+                "itemMaintain": {
+                    "viewID": "itemMaintain",
+                    "viewName": "biz.master.ItemMaintain"
+                },
+                "resrceMaintain": {
+                    "viewID": "resrceMaintain",
+                    "viewName": "biz.master.ResrceMaintain"
+                },
+                "resourceTypeMaintain": {
+                    "viewID": "resourceTypeMaintain",
+                    "viewName": "biz.master.ResourceTypeMaintain"
+                },
+                "storageBinMaintain": {
+                    "viewID": "storageBinMaintain",
+                    "viewName": "biz.master.StorageBinMaintain"
+                },
+                "storageBinStatusMaintain": {
+                    "viewID": "storageBinStatusMaintain",
+                    "viewName": "biz.master.StorageBinStatusMaintain"
+                },
+                "storageBinTypeMaintain": {
+                    "viewID": "storageBinTypeMaintain",
+                    "viewName": "biz.master.StorageBinTypeMaintain"
+                },
+                "storageLocationMaintain": {
+                    "viewID": "storageLocationMaintain",
+                    "viewName": "biz.master.StorageLocationMaintain"
+                },
+                "warehouseReport": {
+                    "viewID": "warehouseReport",
+                    "viewName": "biz.report.WarehouseReport"
+                },
+                "stayInReport": {
+                    "viewID": "stayInReport",
+                    "viewName": "biz.report.StayInReport"
+                }
+            }
+        }
+    }
+}

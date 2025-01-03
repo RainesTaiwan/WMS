@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+
+#if(${enableCache})
+    <!-- 開啟二級快取 -->
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+
+#end
+#if(${baseResultMap})
+    <!-- 通用查詢對應結果 -->
+    <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
+#foreach($field in ${table.fields})
+#if(${field.keyFlag})##產生主鍵排在第一位
+    #set($keyPropertyName = ${field.propertyName})
+    #set($keyFieldName = ${field.name})
+        <id column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+#foreach($field in ${table.commonFields})##產生公共欄位
+    <result column="${field.name}" property="${field.propertyName}" />
+#end
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})##產生普通欄位
+        <result column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+    </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查詢結果列 -->
+    <sql id="Base_Column_List">
+#foreach($field in ${table.commonFields})
+    #if(${field.name} == ${field.propertyName})${field.name}#else${field.name}#end,
+#end
+        ${table.fieldNames}
+    </sql>
+#end
+
+    <!-- BaseMapper標準查詢/修改/刪除 -->
+#if(${keyPropertyName})
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include> FROM ${table.name} WHERE ${keyFieldName}=#{${keyPropertyName}}
+    </select>
+#end
+
+    <select id="selectByMap" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ${table.name}
+        <if test="cm!=null and !cm.isEmpty">
+            <where>
+                <foreach collection="cm.keys" item="k" separator="AND">
+                    <if test="cm[k] != null">
+                        ${k} = #{cm[${k}]}
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </select>
+
+#if(${keyPropertyName})
+    <select id="selectBatchIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ${table.name} WHERE ${keyFieldName} IN (
+        <foreach item="item" index="index" collection="coll" separator=",">#{item}
+        </foreach>)
+    </select>
+#end
+
+    <select id="selectOne" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include> FROM ${table.name}
+        <where>
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+            <if test="ew.${field.propertyName}!=null">
+              ${field.name}=#{ew.${field.propertyName}}
+            </if>
+#else
+            <if test="ew.${field.propertyName}!=null"> AND ${field.name}=#{ew.${field.propertyName}}</if>
+#end
+#end
+        </where>
+    </select>
+
+    <select id="selectCount" resultType="Integer">
+        SELECT COUNT(1) FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                <if test="ew.entity.${field.propertyName}!=null">
+                    ${field.name}=#{ew.entity.${field.propertyName}}
+                </if>
+#else
+                <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.${field.propertyName}!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectMaps" resultType="HashMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.${field.propertyName}!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectObjs" resultType="Object">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.${field.propertyName}!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.${field.propertyName}!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <select id="selectMapsPage" resultType="HashMap">
+        SELECT <choose><when test="ew != null and ew.sqlSelect != null">${ew.sqlSelect}</when><otherwise><include refid="Base_Column_List"></include></otherwise></choose> FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.${field.propertyName}!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="${package.Entity}.${entity}">
+        INSERT INTO ${table.name}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+            ${field.name},
+#else
+            <if test="${field.propertyName}!=null">${field.name},</if>
+#end
+#end
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+            #{${field.propertyName}},
+#else
+            <if test="${field.propertyName}!=null">#{${field.propertyName}},</if>
+#end
+#end
+        </trim>
+    </insert>
+
+    <insert id="insertAllColumn" parameterType="${package.Entity}.${entity}">
+        INSERT INTO ${table.name}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Base_Column_List"></include>
+        </trim> VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+#foreach($field in ${table.fields})
+            #{${field.propertyName}},
+#end
+        </trim>
+    </insert>
+
+
+#if(${keyPropertyName})
+    <update id="updateById">
+        UPDATE ${table.name} <trim prefix="SET" suffixOverrides=",">
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})
+        <if test="et.${field.propertyName}!=null">${field.name}=#{et.${field.propertyName}},</if>
+#end
+#end
+        </trim> WHERE ${keyFieldName}=#{et.${keyPropertyName}} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+#end
+
+
+#if(${keyPropertyName})
+    <update id="updateAllColumnById">
+        UPDATE ${table.name} <trim prefix="SET" suffixOverrides=",">
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})
+        ${field.name}=#{et.${field.propertyName}},
+#end
+#end
+     </trim> WHERE ${keyFieldName}=#{et.${keyPropertyName}} <if test="et instanceof java.util.Map"><if test="et.MP_OPTLOCK_VERSION_ORIGINAL!=null">and ${et.MP_OPTLOCK_VERSION_COLUMN}=#{et.MP_OPTLOCK_VERSION_ORIGINAL}</if></if>
+    </update>
+#end
+
+
+    <update id="update">
+        UPDATE ${table.name} <trim prefix="SET" suffixOverrides=",">
+#foreach($field in ${table.fields})
+#if(!${field.keyFlag})
+        <if test="et.${field.propertyName}!=null">${field.name}=#{et.${field.propertyName}},</if>
+#end
+#end
+    </trim>
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    ${field.name}=#{ew.entity.${field.propertyName}}
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </update>
+
+#if(${keyPropertyName})
+    <delete id="deleteById">
+        DELETE FROM ${table.name} WHERE ${keyFieldName}=#{${keyPropertyName}}
+    </delete>
+#end
+
+    <delete id="deleteByMap">
+        DELETE FROM ${table.name}
+        <if test="cm!=null and !cm.isEmpty">
+            <where>
+                <foreach collection="cm.keys" item="k" separator="AND">
+                    <if test="cm[k] != null">
+                        ${k} = #{cm[${k}]}
+                    </if>
+                </foreach>
+            </where>
+        </if>
+    </delete>
+
+    <delete id="delete">
+        DELETE FROM ${table.name}
+        <where>
+            <if test="ew!=null">
+                <if test="ew.entity!=null">
+#foreach($field in ${table.fields})
+#if($!{velocityCount} == 1)
+                    <if test="ew.entity.handle!=null">
+                        ${field.name}=#{ew.entity.${field.propertyName}}
+                    </if>
+#else
+                    <if test="ew.entity.${field.propertyName}!=null"> AND ${field.name}=#{ew.entity.${field.propertyName}}</if>
+#end
+#end
+                </if>
+                <if test="ew!=null and ew.sqlSegment!=null and ew.notEmptyOfWhere">
+                    ${ew.sqlSegment}
+                </if>
+            </if>
+        </where>
+        <if test="ew!=null and ew.sqlSegment!=null and ew.emptyOfWhere">
+            ${ew.sqlSegment}
+        </if>
+    </delete>
+
+#if(${keyPropertyName})
+    <delete id="deleteBatchIds">
+        DELETE FROM ${table.name} WHERE ${keyFieldName} IN (
+        <foreach item="item" index="index" collection="coll" separator=",">#{item}
+        </foreach>)
+    </delete>
+#end
+    <!-- BaseMapper標準查詢/修改/刪除 -->
+
+</mapper>
