@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import com.sap.ewm.core.utils.DateUtil;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * 機械手臂任務主數據 服務實現類
  *
@@ -274,7 +276,8 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                 materialRequisitionDTO.setQty(summaryQty);
 
                 List<MaterialRequisitionStorageBinDTO> materialRequisitionStorageBinDTOList = materialRequisitionService.doMaterialRequisition("administrator", materialRequisitionDTO);
-
+                JSONObject jsonObject2 = new JSONObject();
+                try {
                 for (int j=0; j<materialRequisitionStorageBinDTOList.size(); j++) {
                     String handle = DateUtil.getDateTimeWithRandomNum();
                     // 建立機械手臂任務 需設置貨物儲格與棧板
@@ -301,6 +304,11 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                     roboticArmTask.setUpdateTime(LocalDateTime.now());
                     roboticArmTaskService.save(roboticArmTask);
 
+
+                    String startLog = "{\"start\":\"save task message to roboticArm " + jsonObject2 +"\"}";
+                    JSONObject startLogObject = JSONObject.parseObject(startLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
+
                     ShelfOffLog shelfOffLog = new ShelfOffLog();
                     shelfOffLog.setmessageId(handle);
                     shelfOffLog.setCorrelationId(handle);
@@ -314,8 +322,22 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                     shelfOffLog.setCreateTime(LocalDateTime.now());
                     shelfOffLogService.save(shelfOffLog);
 
+                    jsonObject2 = new JSONObject();
+                    startLog = "{\"start\":\"save shelfOffLog message to shelfOffLog " + jsonObject2 +"\"}";
+                    startLogObject = JSONObject.parseObject(startLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
+
                     setOrder = setOrder +1;
                 }
+            
+                } catch (Exception e) {
+                    // 測試失敗日誌
+                    String errorLog = "{\"error\":\"Failed to save " + jsonObject2
+                        + ", Error: " + e.getMessage() + "\"}";
+                    JSONObject errorLogObject = JSONObject.parseObject(errorLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, errorLogObject);
+                }
+
             }//End for(int i=0; i<asrsOrderList.size();i++)
 
             //擇一機械手臂任務執行

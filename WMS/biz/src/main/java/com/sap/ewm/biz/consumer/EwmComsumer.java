@@ -623,7 +623,39 @@ public class EwmComsumer {
                 roboticArmTask.setHandle(DateUtil.getDateTimeWithRandomNum());//"WCS_"+ System.currentTimeMillis()
                 roboticArmTaskService.insertRoboticArmTask(roboticArmTask);
             }
-
+                    JSONObject jsonObject2 = new JSONObject();
+                    jsonObject2.put("MESSAGE_ID", "WcsMagID20250102131353");
+                    jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
+                    jsonObject2.put("TASK_TYPE", "1");
+                    jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
+                    jsonObject2.put("VEHICLE_ID","9999999887");
+                    jsonObject2.put("TO_NODE_NO", "C09R04L1");
+                    jsonObject2.put("FROM_NODE_NO","Conveyor4");
+                    jsonObject2.put("SEND_TIME","GMT+8 2020-10-06 13:30:30:555");
+                    messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
+                    
+                // 測試發送到 Topic
+                try {
+                    // 測試開始日誌
+                    String startLog = "{\"start\":\"Start to publish test message to topic " + "WCS-AGV-2" + jsonObject2 +"\"}";
+                    JSONObject startLogObject = JSONObject.parseObject(startLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
+            
+                    // 發送測試訊息
+                    messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
+            
+                    // 測試成功日誌
+                    String successLog = "{\"success\":\"Successfully published test message to topic " + "WCS-AGV-2" + jsonObject2 +"\"}";
+                    JSONObject successLogObject = JSONObject.parseObject(successLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, successLogObject);
+            
+                } catch (Exception e) {
+                    // 測試失敗日誌
+                    String errorLog = "{\"error\":\"Failed to publish test message to topic: " + "WCS-AGV-2" + jsonObject2
+                        + ", Error: " + e.getMessage() + "\"}";
+                    JSONObject errorLogObject = JSONObject.parseObject(errorLog);
+                    messageSendService.send(CommonConstants.MQ_LOG, errorLogObject);
+                }
             // 在每次要執行機械手臂任務時，才發送RFID清單給WCS(TYPE: ADD)；機械手臂任務結束後，馬上刪除位於WCS的RFID清單(TYPE: DELETE)
             asrsFRIDService.sentRFIDDataToWCS(roboticArmTask.getVoucherNo(), CommonConstants.Operation_DELETE
                     , roboticArmTask.getType(), roboticArmTask.getCarrier());
@@ -680,6 +712,7 @@ public class EwmComsumer {
                         , roboticArmTask.getHandle(), carrier, roboticArmTask.getResource()
                         , "CV3", "CV3", "", "IN-CV3toBIN", "1");
                 boolean doCarrierTaskService = carrierTaskService.deployCarrierTask(roboticArmTask.getHandle(), roboticArmTask.getWoserial());
+
             }
             else if(CommonConstants.Type_OUT.equals(roboticArmTask.getType())){
                 // RFID狀態 STATUS: Processing、OnPallet、BindPallet、IN_STORAGE、OUT_STORAGE、WAIT_OUT_STATION、OUT_STATION_NO_REPORT、OUT_STATION
@@ -696,6 +729,7 @@ public class EwmComsumer {
                 }
 
                 // 要求建立 入庫要求的 CarrierTask "OutStation"
+                  
                 carrierTaskService.insertCarrierTask("", roboticArmTask.getVoucherNo(), roboticArmTask.getWoserial()
                         , roboticArmTask.getHandle(), roboticArmTask.getCarrier(), roboticArmTask.getResource()
                         , "", "", "", "OutStation", "1");
