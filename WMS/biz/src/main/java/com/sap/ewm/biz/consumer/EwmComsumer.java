@@ -146,7 +146,7 @@ public class EwmComsumer {
             alarmJSON.put("MESSAGE_TYPE", CommonConstants.ASRS_RequestAlarm);
             alarmJSON.put("CORRELATION_ID", messageId);
             alarmJSON.put("WO_SERIAL", woSerial);
-            alarmJSON.put("VOUCHER_NO", "");
+            alarmJSON.put("VOUCHER_NO", "7");
             alarmJSON.put("ALARM_TYPE", alarmType);
             alarmJSON.put("MSG", alarmMsg);
             alarmJSON.put("SEND_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis()
