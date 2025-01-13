@@ -1008,7 +1008,7 @@ public class EwmComsumer {
         return result;
     }
 
-
+/*
     // 模擬ASRS
     @JmsListener(destination = "ASRS.Request.Ack")
     public void asrsRequestAck(String text, Message msg, MessageHeaders headers) {
@@ -1019,7 +1019,7 @@ public class EwmComsumer {
     public void conveyorLocationASRS(String text, Message msg, MessageHeaders headers) {
         logger.info("=======訊息佇列[Conveyor.Location.ASRS]，接收到資訊: {}", text);
     }
-
+*/
 /*
     // 模擬ASRS
     @JmsListener(destination = "Info.Report.ASRS")
@@ -1047,7 +1047,7 @@ public class EwmComsumer {
         }
     }
 */
-
+/*
     // 模擬ASRS
     // Device.Status.ASRS
     @JmsListener(destination = "Device.Status.ASRS")
@@ -1061,5 +1061,5 @@ public class EwmComsumer {
     public void woResult(String text, Message msg, MessageHeaders headers) {
         logger.info("=======訊息佇列[WO.Result]，接收到資訊: {}", text);
     }
-
+*/
 }
