@@ -123,41 +123,50 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
     }
 
     // 發送任務 - Request.Robotic.Arm
-    @Override
-    public void sendRequestRoboticArm(RoboticArmTask roboticArmTask){
-        // 透過MQ發送給機械手臂
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("MESSAGE_TYPE", CustomConstants.RequestRobotArm);
-        jsonObject.put("MESSAGE_ID", roboticArmTask.getHandle());
-        jsonObject.put("WO_QTY", roboticArmTask.getWoQty());
-        jsonObject.put("DO_QTY", roboticArmTask.getDoQty());
-        jsonObject.put("FROM_PALLET_QTY", roboticArmTask.getFromPalletQty());
-        jsonObject.put("TO_PALLET_QTY", roboticArmTask.getToPalletQty());
-        jsonObject.put("RESOURCE", roboticArmTask.getRoboticArm());
-        jsonObject.put("UPPER_RESOURCE", roboticArmTask.getResource());
-        jsonObject.put("TYPE", roboticArmTask.getType());
-        jsonObject.put("SEND_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis()
-        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.RequestRobotArm, jsonObject.toJSONString());
+@Override
+public void sendRequestRoboticArm(RoboticArmTask roboticArmTask) {
+    // 透過MQ發送給機械手臂
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("MESSAGE_TYPE", CustomConstants.RequestRobotArm);
+    jsonObject.put("MESSAGE_ID", roboticArmTask.getHandle());
+    jsonObject.put("WO_QTY", roboticArmTask.getWoQty());
+    jsonObject.put("DO_QTY", roboticArmTask.getDoQty());
+    jsonObject.put("FROM_PALLET_QTY", roboticArmTask.getFromPalletQty());
+    jsonObject.put("TO_PALLET_QTY", roboticArmTask.getToPalletQty());
+    jsonObject.put("RESOURCE", roboticArmTask.getRoboticArm());
+    jsonObject.put("UPPER_RESOURCE", roboticArmTask.getResource());
+    jsonObject.put("TYPE", roboticArmTask.getType());
+    jsonObject.put("SEND_TIME", LocalDateTime.now().toString()); // System.currentTimeMillis()
+    activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.RequestRobotArm, jsonObject.toJSONString());
 
-        // 更新輸送帶狀態
-        // 任務1 (使用按鈕): IN-CV1toCV2、IN-CV1toCV3、OutStation、PutPallet、EmptyPallet、PutBasketOnPallet、BasketOutPallet
-        // 任務2 (使用出庫棧板): OUT-BINtoCV1、OUT-BINtoCV2、OUT-BINtoCV3
-        // 任務3 (使用入庫棧板): IN-CV1toBIN、IN-CV2toBIN、IN-CV3toBIN
-        // ● 任務4 (機械手臂): ROBOTIC_ARM
-        // 任務5 (無人運輸車): AGV_TRANS
-        ReceiveStation receiveStation = receiveStationService.getReceiveStation(roboticArmTask.getResource());
-        receiveStation.setNowTask("ROBOTIC_ARM");
-        receiveStationService.updateReceiveStation(receiveStation);
-
-        JSONObject JsonTemp = new JSONObject();
-        JsonTemp.put("QUEUE", CustomConstants.RequestRobotArm);
-        JsonTemp.put("MESSAGE_BODY", jsonObject.toJSONString());
-        JsonTemp.put("CREATED_DATE_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis()
-        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonTemp.toJSONString());
-
-        // 告知ASRS RoboticArm狀態為WORKING
-        roboticArmService.reportASRS(roboticArmTask.getRoboticArm(), CustomConstants.WORKING);
+    // 等待 3 秒
+    try {
+        Thread.sleep(3000); // 單位為毫秒，3000 毫秒等於 3 秒
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // 恢復中斷狀態
+        throw new RuntimeException("Thread was interrupted", e);
     }
+
+    // 更新輸送帶狀態
+    // 任務1 (使用按鈕): IN-CV1toCV2、IN-CV1toCV3、OutStation、PutPallet、EmptyPallet、PutBasketOnPallet、BasketOutPallet
+    // 任務2 (使用出庫棧板): OUT-BINtoCV1、OUT-BINtoCV2、OUT-BINtoCV3
+    // 任務3 (使用入庫棧板): IN-CV1toBIN、IN-CV2toBIN、IN-CV3toBIN
+    // ● 任務4 (機械手臂): ROBOTIC_ARM
+    // 任務5 (無人運輸車): AGV_TRANS
+    ReceiveStation receiveStation = receiveStationService.getReceiveStation(roboticArmTask.getResource());
+    receiveStation.setNowTask("ROBOTIC_ARM");
+    receiveStationService.updateReceiveStation(receiveStation);
+
+    JSONObject JsonTemp = new JSONObject();
+    JsonTemp.put("QUEUE", CustomConstants.RequestRobotArm);
+    JsonTemp.put("MESSAGE_BODY", jsonObject.toJSONString());
+    JsonTemp.put("CREATED_DATE_TIME", LocalDateTime.now().toString()); // System.currentTimeMillis()
+    activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonTemp.toJSONString());
+
+    // 告知ASRS RoboticArm狀態為WORKING
+    roboticArmService.reportASRS(roboticArmTask.getRoboticArm(), CustomConstants.WORKING);
+}
+
 
     // 用MQID找尋任務
     @Override

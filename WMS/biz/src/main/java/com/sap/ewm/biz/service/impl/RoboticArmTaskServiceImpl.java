@@ -23,7 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import com.sap.ewm.core.utils.DateUtil;
 
-import com.alibaba.fastjson.JSONObject;
+import java.math.BigDecimal;
+
 
 /**
  * 機械手臂任務主數據 服務實現類
@@ -274,6 +275,9 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                 materialRequisitionDTO.setItem(asrsOrder.getItem());
                 BigDecimal summaryQty = new BigDecimal(asrsOrder.getItemCount());
                 materialRequisitionDTO.setQty(summaryQty);
+                String startLog = "{\"start\":\"materialRequisitionDTO :" + summaryQty.toString() +"\"}";
+                JSONObject startLogObject = JSONObject.parseObject(startLog);
+                messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
 
                 List<MaterialRequisitionStorageBinDTO> materialRequisitionStorageBinDTOList = materialRequisitionService.doMaterialRequisition("administrator", materialRequisitionDTO);
                 JSONObject jsonObject2 = new JSONObject();
@@ -305,9 +309,9 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                     roboticArmTaskService.save(roboticArmTask);
 
 
-                    String startLog = "{\"start\":\"save task message to roboticArm " + jsonObject2 +"\"}";
-                    JSONObject startLogObject = JSONObject.parseObject(startLog);
-                    messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
+                    //String startLog = "{\"start\":\"save task message to roboticArm " + jsonObject2 +"\"}";
+                    //JSONObject startLogObject = JSONObject.parseObject(startLog);
+                    //messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
 
                     ShelfOffLog shelfOffLog = new ShelfOffLog();
                     shelfOffLog.setmessageId(handle);
