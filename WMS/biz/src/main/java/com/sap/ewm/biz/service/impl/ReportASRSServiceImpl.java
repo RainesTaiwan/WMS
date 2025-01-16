@@ -59,56 +59,63 @@ public class ReportASRSServiceImpl  extends ServiceImpl<ReportASRSMapper, Report
         reportASRS.setCreateTime(LocalDateTime.now());
         reportASRSService.save(reportASRS);
     }
-
     // 回報ASRS指定工單內容WO.Result
     @Override
-    public void reportASRS(String woSerial){
-        //找到滿足woSerial的棧板
-        List<ReportAsrs> carrierList = reportASRSMapper.findASRSOrderByWoSerial(woSerial);
+    public void reportASRS(String woSerial) {
+        try {
+            String startLog = "{\"start\":\"Start to reportASRS message to topic " + jsonObject2 +"\"}";
+            JSONObject startLogObject = JSONObject.parseObject(startLog);
+            messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
 
-        if(carrierList==null || carrierList.size()==0);
-        else{
-            JSONObject JsonReport = new JSONObject();
-            JsonReport.put("MESSAGE_TYPE", CommonConstants.ASRS_WOResult);
-            JsonReport.put("WO_SERIAL", woSerial);
+            List<ReportAsrs> carrierList = reportASRSMapper.findASRSOrderByWoSerial(woSerial);
+                JSONObject JsonReport = new JSONObject();
+                JsonReport.put("MESSAGE_TYPE", CommonConstants.ASRS_WOResult);
+                JsonReport.put("WO_SERIAL", woSerial);
 
-            List<AsrsOrder> asrsOrderList = asrsOrderService.findAsrsOrderByWoSerial(woSerial);
-            JsonReport.put("CORRELATION_ID", asrsOrderList.get(0).getMessageId());
+                List<AsrsOrder> asrsOrderList = asrsOrderService.findAsrsOrderByWoSerial(woSerial);
+                JsonReport.put("CORRELATION_ID", asrsOrderList.get(0).getMessageId());
 
-            JsonReport.put("RESULT", "0"); //0: 成功、1: 失敗
-            JsonReport.put("MSG", "");
+                JsonReport.put("RESULT", "0"); // 0: 成功、1: 失敗
+                JsonReport.put("MSG", "");
 
-            String inOutType = this.woTypeToInOutType(asrsOrderList.get(0).getWoType());
-            String ioType = this.woTypeToIOType(asrsOrderList.get(0).getWoType());
+                String inOutType = this.woTypeToInOutType(asrsOrderList.get(0).getWoType());
+                String ioType = this.woTypeToIOType(asrsOrderList.get(0).getWoType());
 
-            JSONArray groupOutside = new JSONArray();
-            for(int i=0; i<carrierList.size();i++){
-                String carrier = carrierList.get(i).getCarrier();
-                JSONObject groupInside = new JSONObject();
-                // 決定IO類型
-                groupInside.put("IO", ioType);
-                // 棧板
-                groupInside.put("CARRIER", carrier);
-                //RFID
-                JSONArray rfidList = asrsRFIDService.findRFIDByHandlingID(carrierList.get(i).getHandlingId(), inOutType);
-                groupInside.put("RFID", rfidList);
-                // 庫位
-                HandlingUnitLocation handlingUnitLocation = handlingUnitLocationService.getByCarrier(carrier);
-                if(handlingUnitLocation == null){
-                    groupInside.put("STORAGE_BIN", "");
+                JSONArray groupOutside = new JSONArray();
+                for (int i = 0; i < carrierList.size(); i++) {
+                    String carrier = carrierList.get(i).getCarrier();
+                    JSONObject groupInside = new JSONObject();
+                    // 決定IO類型
+                    groupInside.put("IO", ioType);
+                    // 棧板
+                    groupInside.put("CARRIER", carrier);
+                    // RFID
+                    JSONArray rfidList = asrsRFIDService.findRFIDByHandlingID(carrierList.get(i).getHandlingId(), inOutType);
+                    groupInside.put("RFID", rfidList);
+                    // 庫位
+                    HandlingUnitLocation handlingUnitLocation = handlingUnitLocationService.getByCarrier(carrier);
+                    if (handlingUnitLocation == null) {
+                        groupInside.put("STORAGE_BIN", "");
+                    } else {
+                        StorageBin storageBin = storageBinService.findByHandle(handlingUnitLocation.getBindContextGbo());
+                        groupInside.put("STORAGE_BIN", storageBin.getStorageBin());
+                    }
+                    groupOutside.add(groupInside);
                 }
-                else{
-                    StorageBin storageBin = storageBinService.findByHandle(handlingUnitLocation.getBindContextGbo());
-                    groupInside.put("STORAGE_BIN", storageBin.getStorageBin());
-                }
-                groupOutside.add(groupInside);
-            }
-            JsonReport.put("GROUP", groupOutside);
+                JsonReport.put("GROUP", groupOutside);
 
-            messageSendService.send(CommonConstants.ASRS_WOResult, JsonReport);
+                messageSendService.send(CommonConstants.ASRS_WOResult, JsonReport);
+
+        } catch (Exception e) {
+            // 捕捉所有例外並記錄錯誤日誌
+            String errorLog = "{\"error\":\"Failed to publish test message to topic: " + "reportASRS" + jsonObject2
+            + ", Error: " + e.getMessage() + "\"}";
+            JSONObject errorLogObject = JSONObject.parseObject(errorLog);
+            messageSendService.send(CommonConstants.MQ_LOG, errorLogObject);
         }
-
     }
+
+
 
     // IO 類型決定
     @Override
