@@ -126,6 +126,13 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
 @Override
 public void sendRequestRoboticArm(RoboticArmTask roboticArmTask) {
     // 透過MQ發送給機械手臂
+    // 等待 3 秒
+    try {
+        Thread.sleep(3000); // 單位為毫秒，3000 毫秒等於 3 秒
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt(); // 恢復中斷狀態
+        throw new RuntimeException("Thread was interrupted", e);
+    }
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("MESSAGE_TYPE", CustomConstants.RequestRobotArm);
     jsonObject.put("MESSAGE_ID", roboticArmTask.getHandle());
@@ -139,13 +146,7 @@ public void sendRequestRoboticArm(RoboticArmTask roboticArmTask) {
     jsonObject.put("SEND_TIME", LocalDateTime.now().toString()); // System.currentTimeMillis()
     activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.RequestRobotArm, jsonObject.toJSONString());
 
-    // 等待 3 秒
-    try {
-        Thread.sleep(3000); // 單位為毫秒，3000 毫秒等於 3 秒
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt(); // 恢復中斷狀態
-        throw new RuntimeException("Thread was interrupted", e);
-    }
+
 
     // 更新輸送帶狀態
     // 任務1 (使用按鈕): IN-CV1toCV2、IN-CV1toCV3、OutStation、PutPallet、EmptyPallet、PutBasketOnPallet、BasketOutPallet
