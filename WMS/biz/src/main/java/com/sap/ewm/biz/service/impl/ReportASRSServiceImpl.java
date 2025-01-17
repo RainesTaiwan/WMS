@@ -63,6 +63,7 @@ public class ReportASRSServiceImpl  extends ServiceImpl<ReportASRSMapper, Report
     @Override
     public void reportASRS(String woSerial) {
         try {
+            JSONObject jsonObject2 = new JSONObject();
             String startLog = "{\"start\":\"Start to reportASRS message to topic " + jsonObject2 +"\"}";
             JSONObject startLogObject = JSONObject.parseObject(startLog);
             messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
@@ -108,6 +109,7 @@ public class ReportASRSServiceImpl  extends ServiceImpl<ReportASRSMapper, Report
 
         } catch (Exception e) {
             // 捕捉所有例外並記錄錯誤日誌
+            JSONObject jsonObject2 = new JSONObject();
             String errorLog = "{\"error\":\"Failed to publish test message to topic: " + "reportASRS" + jsonObject2
             + ", Error: " + e.getMessage() + "\"}";
             JSONObject errorLogObject = JSONObject.parseObject(errorLog);

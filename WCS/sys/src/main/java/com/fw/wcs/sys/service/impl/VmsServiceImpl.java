@@ -40,7 +40,7 @@ public class VmsServiceImpl implements VmsService {
     private ReceiveStationBindService receiveStationBindService;
     @Autowired
     private ReceiveStationTaskService receiveStationTaskService;
-
+//TODO 串接AGV
     @Override
     public void sendTransportTaskWithTaskID(String taskID, String carrier, String taskType, String startPosition, String targetPosition){
         TransportCommandDto transportCommandDto = new TransportCommandDto();

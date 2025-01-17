@@ -260,7 +260,7 @@ public class RFIDConsumer {
             activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonE.toJSONString());
         }
     }
-
+/*
     //模擬RFID Reader上位機
     //要求開啟/關閉指定的 RFID Reader
     @JmsListener(destination = "Conveyor.Reader", containerFactory = "wmsFactory")
@@ -335,4 +335,5 @@ public class RFIDConsumer {
         String Resource = jsonObject.getString("RESOURCE"); //RFID READER的序號
         String SendTime = jsonObject.getString("SEND_TIME");
     }
+    */
 }

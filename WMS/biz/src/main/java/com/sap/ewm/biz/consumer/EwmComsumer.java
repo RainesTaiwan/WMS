@@ -463,6 +463,7 @@ public class EwmComsumer {
             carrierTask.setStatus(CommonConstants.STATUS_END); // 任務狀態STATUS: NEW、START、END
             carrierTask.setResult("1");
             carrierTaskService.saveOrUpdate(carrierTask);
+            reportASRSService.reportASRS(carrierTask.getWoserial());
 
             // ● 任務1 (使用按鈕Button.Task): IN-CV1toCV2、IN-CV1toCV3、OutStation、PutPallet、EmptyPallet、PutBasketOnPallet、
             //                               BasketOutPallet、PutMaterialInBasket、CheckInventory
