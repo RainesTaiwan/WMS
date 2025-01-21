@@ -1,0 +1,6 @@
+WCS/app/target/wcsapp-1.0-SNAPSHOT.ear
+WCS/app/target/wcsapp-1.0-SNAPSHOT/wcs.war
+WCS/console/target/console.war
+WCS/console/target/console/WEB-INF/lib/core-1.0-SNAPSHOT.jar
+WCS/sys/target/sys-1.0-SNAPSHOT.jar
+WCS/sys/target/classes/com/fw/wcs/sys/consumer/RoboticArmConsumer.class

@@ -624,39 +624,7 @@ public class EwmComsumer {
                 roboticArmTask.setHandle(DateUtil.getDateTimeWithRandomNum());//"WCS_"+ System.currentTimeMillis()
                 roboticArmTaskService.insertRoboticArmTask(roboticArmTask);
             }
-                    JSONObject jsonObject2 = new JSONObject();
-                    jsonObject2.put("MESSAGE_ID", "WcsMagID20250102131353");
-                    jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
-                    jsonObject2.put("TASK_TYPE", "1");
-                    jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
-                    jsonObject2.put("VEHICLE_ID","9999999887");
-                    jsonObject2.put("TO_NODE_NO", "C09R04L1");
-                    jsonObject2.put("FROM_NODE_NO","Conveyor4");
-                    jsonObject2.put("SEND_TIME","GMT+8 2020-10-06 13:30:30:555");
-                    messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
-                    
-                // 測試發送到 Topic
-                try {
-                    // 測試開始日誌
-                    String startLog = "{\"start\":\"Start to publish test message to topic " + "WCS-AGV-2" + jsonObject2 +"\"}";
-                    JSONObject startLogObject = JSONObject.parseObject(startLog);
-                    messageSendService.send(CommonConstants.MQ_LOG, startLogObject);
-            
-                    // 發送測試訊息
-                    messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
-            
-                    // 測試成功日誌
-                    String successLog = "{\"success\":\"Successfully published test message to topic " + "WCS-AGV-2" + jsonObject2 +"\"}";
-                    JSONObject successLogObject = JSONObject.parseObject(successLog);
-                    messageSendService.send(CommonConstants.MQ_LOG, successLogObject);
-            
-                } catch (Exception e) {
-                    // 測試失敗日誌
-                    String errorLog = "{\"error\":\"Failed to publish test message to topic: " + "WCS-AGV-2" + jsonObject2
-                        + ", Error: " + e.getMessage() + "\"}";
-                    JSONObject errorLogObject = JSONObject.parseObject(errorLog);
-                    messageSendService.send(CommonConstants.MQ_LOG, errorLogObject);
-                }
+
             // 在每次要執行機械手臂任務時，才發送RFID清單給WCS(TYPE: ADD)；機械手臂任務結束後，馬上刪除位於WCS的RFID清單(TYPE: DELETE)
             asrsFRIDService.sentRFIDDataToWCS(roboticArmTask.getVoucherNo(), CommonConstants.Operation_DELETE
                     , roboticArmTask.getType(), roboticArmTask.getCarrier());
@@ -671,48 +639,101 @@ public class EwmComsumer {
 
             if(CommonConstants.Type_IN.equals(roboticArmTask.getType())){
                 // RFID狀態 STATUS: Processing、OnPallet、BindPallet、IN_STORAGE、OUT_STORAGE、WAIT_OUT_STATION、OUT_STATION_NO_REPORT、OUT_STATION
-                List<AsrsRfid> asrsRfids = asrsFRIDService.findRFIDByVoucherNoWithStatus(roboticArmTask.getVoucherNo(), CommonConstants.STATUS_ON_PALLET);
+List<AsrsRfid> asrsRfids = asrsFRIDService.findRFIDByVoucherNoWithStatus(roboticArmTask.getVoucherNo(), CommonConstants.STATUS_ON_PALLET);
+JSONObject logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Fetched RFIDs: " + asrsRfids);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
 
-                // 確認數量達到目標數量，入庫是單一物料
-                // 確認入庫數量與RFID一致
-                int[] qtyResult= new int[qty.size()];
-                int getQty = 0;
-                boolean sameQty = true;
-                for(int i=0; i<qty.size();i++){
-                    qtyResult[i] = Integer.parseInt(qty.getString(i));
-                    if(qtyResult[i]>0)   getQty = qtyResult[i];
-                    if(qtyResult[i]>0 && qtyResult[i]!=asrsRfids.size())   sameQty = false;
-                }
+// 確認數量達到目標數量，入庫是單一物料
+// 確認入庫數量與RFID一致
+int[] qtyResult = new int[qty.size()];
+int getQty = 0;
+boolean sameQty = true;
+for (int i = 0; i < qty.size(); i++) {
+    qtyResult[i] = Integer.parseInt(qty.getString(i));
+    if (qtyResult[i] > 0) getQty = qtyResult[i];
+    if (qtyResult[i] > 0 && qtyResult[i] != asrsRfids.size()) sameQty = false;
 
-                BigDecimal summaryQty = BigDecimal.valueOf(getQty);
-                String carrier = asrsRfids.get(0).getCarrier();// 從RFID清單中確認輸送帶CV3上的棧板ID
+    // Log each qtyResult value
+    logUpdate = new JSONObject();
+    logUpdate.put("MESSAGE_BODY", "Processed qtyResult[" + i + "]: " + qtyResult[i]);
+    logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+    messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+}
 
-                // 綁定
-                CarrierBindDTO carrierBindDTO = new CarrierBindDTO();
-                carrierBindDTO.setBatchNo(roboticArmTask.getVoucherNo());
-                carrierBindDTO.setCarrier(carrier);
-                carrierBindDTO.setStatus("AVAILABLE");
-                carrierBindDTO.setQty(summaryQty);
-                handlingUnitService.carrierBind(CommonConstants.CREATE_USER, carrierBindDTO);
+BigDecimal summaryQty = BigDecimal.valueOf(getQty);
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Summary quantity: " + summaryQty);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
 
-                String handlingId = handlingUnitService.getHandlingId(carrier);
+String carrier = asrsRfids.get(0).getCarrier(); // 從RFID清單中確認輸送帶CV3上的棧板ID
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Carrier identified: " + carrier);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
 
-                //更新RFID狀態為BindPallet
-                //狀態：Processing、OnPallet、BindPallet、IN_STORAGE、OUT_STORAGE、WAIT_OUT_STATION、OUT_STATION_NO_REPORT、OUT_STATION
-                List<String> list = new ArrayList<>();
-                for(int i=0; i<asrsRfids.size();i++){
-                    list.add(asrsRfids.get(i).getHandle());
-                }
-                asrsFRIDService.updateRFIDStatus(list, carrier, handlingId, CommonConstants.STATUS_BIND_PALLET);
+// 綁定
+CarrierBindDTO carrierBindDTO = new CarrierBindDTO();
+carrierBindDTO.setBatchNo(roboticArmTask.getVoucherNo());
+carrierBindDTO.setCarrier(carrier);
+carrierBindDTO.setStatus("AVAILABLE");
+carrierBindDTO.setQty(summaryQty);
+handlingUnitService.carrierBind(CommonConstants.CREATE_USER, carrierBindDTO);
 
-                // 紀錄HU與carrier、Woserial之間的關係
-                reportASRSService.saveReportASRS(carrier, roboticArmTask.getWoserial(), handlingId);
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "CarrierBindDTO created: " + carrierBindDTO);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
 
-                // 要求建立 入庫要求的 CarrierTask "IN-CV3toBIN"
-                carrierTaskService.insertCarrierTask("", roboticArmTask.getVoucherNo(), roboticArmTask.getWoserial()
-                        , roboticArmTask.getHandle(), carrier, roboticArmTask.getResource()
-                        , "CV3", "CV3", "", "IN-CV3toBIN", "1");
-                boolean doCarrierTaskService = carrierTaskService.deployCarrierTask(roboticArmTask.getHandle(), roboticArmTask.getWoserial());
+String handlingId = handlingUnitService.getHandlingId(carrier);
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Handling ID retrieved: " + handlingId);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+// 更新RFID狀態為BindPallet
+// 狀態：Processing、OnPallet、BindPallet、IN_STORAGE、OUT_STORAGE、WAIT_OUT_STATION、OUT_STATION_NO_REPORT、OUT_STATION
+List<String> list = new ArrayList<>();
+for (int i = 0; i < asrsRfids.size(); i++) {
+    list.add(asrsRfids.get(i).getHandle());
+
+    // Log each handle value
+    logUpdate = new JSONObject();
+    logUpdate.put("MESSAGE_BODY", "RFID handle added to list: " + asrsRfids.get(i).getHandle());
+    logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+    messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+}
+asrsFRIDService.updateRFIDStatus(list, carrier, handlingId, CommonConstants.STATUS_BIND_PALLET);
+
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "RFID status updated to BindPallet for list: " + list);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+// 紀錄HU與carrier、Woserial之間的關係
+reportASRSService.saveReportASRS(carrier, roboticArmTask.getWoserial(), handlingId);
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Reported ASRS relationship saved: carrier=" + carrier + ", woserial=" + roboticArmTask.getWoserial() + ", handlingId=" + handlingId);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+// 要求建立 入庫要求的 CarrierTask "IN-CV3toBIN"
+carrierTaskService.insertCarrierTask("", roboticArmTask.getVoucherNo(), roboticArmTask.getWoserial()
+        , roboticArmTask.getHandle(), carrier, roboticArmTask.getResource()
+        , "CV3", "CV3", "", "IN-CV3toBIN", "1");
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "CarrierTask inserted: voucherNo=" + roboticArmTask.getVoucherNo() + ", woserial=" + roboticArmTask.getWoserial() + ", handle=" + roboticArmTask.getHandle());
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+boolean doCarrierTaskService = carrierTaskService.deployCarrierTask(roboticArmTask.getHandle(), roboticArmTask.getWoserial());
+logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "CarrierTask deployed: success=" + doCarrierTaskService);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
 
             }
             else if(CommonConstants.Type_OUT.equals(roboticArmTask.getType())){

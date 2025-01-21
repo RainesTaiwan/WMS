@@ -51,7 +51,8 @@ public class VmsConsumer {
 
 
     //AGV上報運輸任務狀態 //原TransportStateReport
-    @JmsListener(destination = "AGV.Report.WCS", containerFactory = "wmsFactory")
+    @JmsListener(destination = "WCS-AGV-4", containerFactory = "wmsFactory")
+    //@JmsListener(destination = "AGV.Report.WCS", containerFactory = "wmsFactory")
     public void transportStateReport(MessageHeaders headers, String text) {
         logger.info("Get AGVReportWCS Text>>> {}", text);
 
@@ -273,9 +274,10 @@ public class VmsConsumer {
             activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonE.toJSONString());
         }
     }
-
+/*
     //模擬VMS //原TransportCommand
-    @JmsListener(destination = "Request.AGV", containerFactory = "wmsFactory")
+    @JmsListener(destination = "WCS-AGV-2", containerFactory = "wmsFactory")
+    //@JmsListener(destination = "Request.AGV", containerFactory = "wmsFactory")
     public void requestAGV(MessageHeaders headers, String text) {
         logger.info("Get RequestAGV Text>>> {}", text);
 
@@ -304,5 +306,5 @@ public class VmsConsumer {
         JsonTemp.put("CREATED_DATE_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis()
         activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonTemp.toJSONString());
     }
-
+*/
 }

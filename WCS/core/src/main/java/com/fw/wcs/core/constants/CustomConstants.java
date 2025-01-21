@@ -31,7 +31,8 @@ public class CustomConstants {
     //WCS<>VMS QUEUE NAME
     public static final String AGVReportWCS = "AGV.Report.WCS";
     public static final String AGVReportWCSAck = "AGV.Report.WCS.Ack";
-    public static final String RequestAGV = "Request.AGV";
+    //public static final String RequestAGV = "Request.AGV";
+    public static final String RequestAGV = "WCS-AGV-2";
     public static final String RequestAGVAck = "Request.AGV.Ack";
     public static final String AGVAlarmWCS = "AGV.Alarm.WCS";
     public static final String AGVAlarmWCSAck = "AGV.Alarm.WCS.Ack";
