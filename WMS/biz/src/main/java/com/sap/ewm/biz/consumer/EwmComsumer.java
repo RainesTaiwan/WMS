@@ -275,7 +275,20 @@ public class EwmComsumer {
             logger.error("Error:", e);
         }
     }
-
+@JmsListener(destination = "Raines.test")
+    public void rainesTest(String text, Message msg, MessageHeaders headers) {
+JSONObject logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        try {
+            reportASRSService.reportASRS("9999999887");
+        } catch (Exception e) {
+logUpdate.put("MESSAGE_BODY", "Error to Raines.test "+ e.getMessage());
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        }
+    }
     /**
      * 監聽WCS 發送完成棧板入庫Conveyor.To.Storage.Bin要求
      */
@@ -738,8 +751,35 @@ messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
             }
             else if(CommonConstants.Type_OUT.equals(roboticArmTask.getType())){
                 // RFID狀態 STATUS: Processing、OnPallet、BindPallet、IN_STORAGE、OUT_STORAGE、WAIT_OUT_STATION、OUT_STATION_NO_REPORT、OUT_STATION
-                List<AsrsRfid> asrsRfids = asrsFRIDService.findRFIDByHandlingIDWithStatus(roboticArmTask.getVoucherNo(), CommonConstants.STATUS_WAIT_OUT_STATION);
+JSONObject logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "Type_OUT report: " + roboticArmTask.getType());
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+                List<AsrsRfid> asrsRfids = asrsFRIDService.findRFIDByHandlingID(roboticArmTask.getVoucherNo());
 
+logUpdate.put("MESSAGE_BODY", "roboticArmTask.getVoucherNo(): " + roboticArmTask.getVoucherNo());
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+                String carrier = asrsRfids.get(0).getCarrier();
+
+logUpdate.put("MESSAGE_BODY", "carrier: " + carrier);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+                String handlingId = handlingUnitService.getHandlingId(carrier);
+
+logUpdate.put("MESSAGE_BODY", "handlingId: " + handlingId);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+                //reportASRSService.saveReportASRS(carrier, roboticArmTask.getWoserial(), handlingId);
+
+logUpdate.put("MESSAGE_BODY", "roboticArmTask.getWoserial(): " + roboticArmTask.getWoserial());
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+
+                reportASRSService.reportASRS(roboticArmTask.getWoserial());
                 // 確認數量達到目標數量
                 int[] qtyResult= new int[qty.size()];
                 int getQty = 0;
@@ -808,7 +848,10 @@ messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
                 }*/
             }
         } catch (Exception e) {
-            logger.error("Error:", e);
+JSONObject logUpdate = new JSONObject();
+logUpdate.put("MESSAGE_BODY", "roboticArmReportWMS error report: " + e);
+logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         }
     }
 /*

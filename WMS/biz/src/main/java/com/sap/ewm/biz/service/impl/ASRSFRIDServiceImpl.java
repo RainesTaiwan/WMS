@@ -229,7 +229,7 @@ public class ASRSFRIDServiceImpl extends ServiceImpl<ASRSFRIDMapper, AsrsRfid> i
                 }
             }
             else if(CommonConstants.Type_OUT.equals(type)){
-                String status = CommonConstants.STATUS_OUT_STATION_NO_REPORT;
+                String status = CommonConstants.STATUS_WAIT_OUT_STATION;
                 ArrayList<String> listdata = new ArrayList<>();
                 for(int i=0; i<list.size();i++){
                     if(list.get(i).getStatus().equals(status)){
