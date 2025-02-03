@@ -12,17 +12,6 @@
     </select>
 
     <select id="selectReceiveStationData" resultType="java.util.Map">
-        SELECT A.RECEIVE_STATION spotId, A.STATUS status, A.FLOW_DIRECTION spotType,
-        IFNULL(B.firstValue, '/') firstValue, IFNULL(B.secondValue, '/') secondValue, IFNULL(B.thirdValue, '/') thirdValue
-        FROM receive_station A
-        LEFT JOIN (
-            SELECT RECEIVE_STATION,
-                   MAX(CASE WHEN STATION = '1' THEN CARRIER ELSE '/' END) AS firstValue,
-                   MAX(CASE WHEN STATION = '2' THEN CARRIER ELSE '/' END) AS secondValue,
-                   MAX(CASE WHEN STATION = '3' THEN CARRIER ELSE '/' END) AS thirdValue
-            FROM wcs.receive_station_bind
-            GROUP BY RECEIVE_STATION
-        ) B ON A.RECEIVE_STATION = B.RECEIVE_STATION
-        ORDER BY A.RECEIVE_STATION
+        select MESSAGE_ID,WO_SERIAL,WO_TYPE,ITEM,STATUS,RESOURCE from wms.asrs_order
     </select>
 </mapper>
