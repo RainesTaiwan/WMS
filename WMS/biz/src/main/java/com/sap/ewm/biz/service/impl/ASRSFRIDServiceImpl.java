@@ -232,10 +232,13 @@ public class ASRSFRIDServiceImpl extends ServiceImpl<ASRSFRIDMapper, AsrsRfid> i
                 String status = CommonConstants.STATUS_WAIT_OUT_STATION;
                 ArrayList<String> listdata = new ArrayList<>();
                 for(int i=0; i<list.size();i++){
-                    if(list.get(i).getStatus().equals(status)){
+                    DATA_LIST.add(list.get(i).getHandle());
+                    listdata.add(list.get(i).getHandle());
+                    /*if(list.get(i).getStatus().equals(status)){
                         DATA_LIST.add(list.get(i).getHandle());
                         listdata.add(list.get(i).getHandle());
                     }
+                    */
                 }
                 this.updateRFIDStatus(listdata, null, null, CommonConstants.STATUS_OUT_STATION);
             }
