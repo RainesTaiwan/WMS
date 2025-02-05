@@ -121,6 +121,12 @@ public class ASRSFRIDServiceImpl extends ServiceImpl<ASRSFRIDMapper, AsrsRfid> i
         return asrsRFIDMapper.findRFIDByHandlingID(handlingId);
     }
 
+    // 找所有符合HandlingID的RFID
+    @Override
+    public List<AsrsRfid> findRFIDByWOSERIAL(String woSerial){
+        return asrsRFIDMapper.findRFIDByWOSERIAL(woSerial);
+    }
+
     // 找所有符合HandlingID+指定狀態的RFID
     @Override
     public List<AsrsRfid> findRFIDByHandlingIDWithStatus(String handlingId, String status){
@@ -217,6 +223,41 @@ public class ASRSFRIDServiceImpl extends ServiceImpl<ASRSFRIDMapper, AsrsRfid> i
     public JSONArray findRFIDByHandlingID(String handlingId, String type){
         JSONArray DATA_LIST = new JSONArray();
         List<AsrsRfid> list = asrsRFIDMapper.findRFIDByHandlingID(handlingId);
+
+        if(list==null || list.size()==0);
+        else{
+            if(CommonConstants.Type_IN.equals(type)){
+                String status = CommonConstants.STATUS_IN_STORAGE;
+                for(int i=0; i<list.size();i++){
+                    DATA_LIST.add(list.get(i).getHandle());
+                    /*if(list.get(i).getStatus().equals(status)){
+                        DATA_LIST.add(list.get(i).getHandle());
+                    }
+                    */
+                }
+            }
+            else if(CommonConstants.Type_OUT.equals(type)){
+                String status = CommonConstants.STATUS_WAIT_OUT_STATION;
+                ArrayList<String> listdata = new ArrayList<>();
+                for(int i=0; i<list.size();i++){
+                    DATA_LIST.add(list.get(i).getHandle());
+                    listdata.add(list.get(i).getHandle());
+                    /*if(list.get(i).getStatus().equals(status)){
+                        DATA_LIST.add(list.get(i).getHandle());
+                        listdata.add(list.get(i).getHandle());
+                    }
+                    */
+                }
+                this.updateRFIDStatus(listdata, null, null, CommonConstants.STATUS_OUT_STATION);
+            }
+        }
+        return DATA_LIST;
+    }
+    // 找所有符合HandlingID的RFID
+    @Override
+    public JSONArray findRFIDByWOSERIAL(String woSerial, String type){
+        JSONArray DATA_LIST = new JSONArray();
+        List<AsrsRfid> list = asrsRFIDMapper.findRFIDByWOSERIAL(woSerial);
 
         if(list==null || list.size()==0);
         else{

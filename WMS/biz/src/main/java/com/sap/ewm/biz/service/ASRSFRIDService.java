@@ -35,6 +35,9 @@ public interface ASRSFRIDService extends IService<AsrsRfid> {
     // 找所有符合HandlingID的RFID
     List<AsrsRfid> findRFIDByHandlingID(String handlingId);
 
+    // 找所有符合HandlingID的RFID
+    List<AsrsRfid> findRFIDByWOSERIAL(String woSerial);
+
     // 找所有不完全出庫還在棧板上的RFID應該有的voucherNo
     String findHandlingIDForRemainRFID(String handlingId);
 
@@ -52,5 +55,9 @@ public interface ASRSFRIDService extends IService<AsrsRfid> {
 
     // 找所有符合HandlingID的RFID
     JSONArray findRFIDByHandlingID(String handlingId, String type);
+    
+    // 找所有符合HandlingID的RFID
+    JSONArray findRFIDByWOSERIAL(String woSerial, String type);
+    
 
 }

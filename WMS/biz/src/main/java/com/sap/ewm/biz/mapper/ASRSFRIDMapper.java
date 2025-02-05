@@ -21,4 +21,5 @@ public interface ASRSFRIDMapper extends BaseMapper<AsrsRfid> {
     List<AsrsRfid> findRFIDByVoucherNoWithStatus(@Param("voucherNo") String voucherNo, @Param("status") String status);
     List<AsrsRfid> findRFIDByCarrierWithStatus(@Param("carrier") String carrier, @Param("status") String status);
     List<AsrsRfid> findRFIDByHandlingID(@Param("handlingId") String handlingId);
+    List<AsrsRfid> findRFIDByWOSERIAL(@Param("woSerial") String woSerial);
 }

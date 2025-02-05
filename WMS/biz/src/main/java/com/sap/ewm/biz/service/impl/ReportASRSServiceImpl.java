@@ -83,7 +83,7 @@ public void reportASRS(String woSerial) {
 
         String inOutType = this.woTypeToInOutType(asrsOrderList.get(0).getWoType());
         String ioType = this.woTypeToIOType(asrsOrderList.get(0).getWoType());
-        JSONArray rfidList1 = asrsRFIDService.findRFIDByHandlingID(carrierList.get(0).getHandlingId(), inOutType);
+        JSONArray rfidList1 = asrsRFIDService.findRFIDByWOSERIAL(woSerial, inOutType);
         logUpdate.put("MESSAGE_BODY", "rfidList: " + rfidList1 + " inOutType" + inOutType);
         logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
         messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
@@ -97,7 +97,7 @@ public void reportASRS(String woSerial) {
             // 棧板
             groupInside.put("CARRIER", carrier);
             // RFID
-            JSONArray rfidList = asrsRFIDService.findRFIDByHandlingID(carrierList.get(i).getHandlingId(), inOutType);
+            JSONArray rfidList = asrsRFIDService.findRFIDByWOSERIAL(woSerial, inOutType);
             groupInside.put("RFID", rfidList);
             if (rfidList != null && !rfidList.isEmpty()) {
                 hasRFID = true; // 如果有非空的 RFID，設定為 true

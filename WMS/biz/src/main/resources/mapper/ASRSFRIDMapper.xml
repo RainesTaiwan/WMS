@@ -8,6 +8,7 @@
         <result column="ASRS_Order_BO" property="asrsOrderBo" />
         <result column="VOUCHER_NO" property="voucherNo" />
         <result column="HANDLING_ID" property="handlingId" />
+        <result column="WO_SERIAL" property="woSerial" />
         <result column="CARRIER" property="carrier" />
         <result column="STATUS" property="status" />
         <result column="MEASURE_UNIT" property="measureUnit" />
@@ -92,6 +93,20 @@
             AND HANDLING_ID = #{handlingId}
         </if>
     </select>
+
+    <select id="findRFIDByWOSERIAL" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"></include>
+        FROM ASRS_RFID
+        WHERE 1 = 1
+        <if test="woSerial != null and woSerial != ''">
+            AND ASRS_order_BO IN (
+                SELECT HANDLE 
+                FROM ASRS_ORDER 
+                WHERE WO_SERIAL = #{woSerial}
+            )
+        </if>
+    </select>
+
 
     <insert id="insert" parameterType="com.sap.ewm.biz.model.AsrsRfid">
         INSERT INTO ASRS_RFID
