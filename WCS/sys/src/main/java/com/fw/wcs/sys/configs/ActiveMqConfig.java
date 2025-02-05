@@ -10,6 +10,8 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 
+import javax.jms.Session;
+
 
 @Configuration
 public class ActiveMqConfig {
@@ -41,6 +43,12 @@ public class ActiveMqConfig {
             @Qualifier("wmsConnectionFactory") ActiveMQConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+
+        factory.setReceiveTimeout(300000L);
+
+        factory.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+
         return factory;
     }
+
 }

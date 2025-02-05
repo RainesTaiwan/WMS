@@ -103,7 +103,7 @@ public class RoboticArmConsumer {
             RoboticArmTask roboticArmTask = roboticArmTaskService.findRoboticArmTaskByID(correlationId);
             // 若任務 RESULT 0: 任務完成、1: 專用儲籃裝滿但任務未完成、2: 物料拿取完畢但任務未完成、
             //              3: 發生異常(斷線、抓取物料失敗、機械手臂視覺故障、沒有感測到專用儲籃、任務錯誤、其他)
-            roboticArmTask.setResult(result);
+            roboticArmTask.setResult("0");
             roboticArmTaskService.updateRoboticArmTask(roboticArmTask);
 
             // 告知ASRS RoboticArm狀態

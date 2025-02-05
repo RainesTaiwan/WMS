@@ -730,10 +730,10 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
 
                     // 機械手臂任務清單建立
                     roboticArmTaskService.listRoboticArmTask(asrsOrder.getWoSerial(), conveyor);
-                    JSONObject logUpdate = new JSONObject();
-                    logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
-                    logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-                    messageSendService.send("Raines.test2", logUpdate);
+                    //JSONObject logUpdate = new JSONObject();
+                    //logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
+                    //logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+                    //messageSendService.send("Raines.test2", logUpdate);
                 }
             }
         }
