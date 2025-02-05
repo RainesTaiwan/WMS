@@ -223,9 +223,11 @@ public class ASRSFRIDServiceImpl extends ServiceImpl<ASRSFRIDMapper, AsrsRfid> i
             if(CommonConstants.Type_IN.equals(type)){
                 String status = CommonConstants.STATUS_IN_STORAGE;
                 for(int i=0; i<list.size();i++){
-                    if(list.get(i).getStatus().equals(status)){
+                    DATA_LIST.add(list.get(i).getHandle());
+                    /*if(list.get(i).getStatus().equals(status)){
                         DATA_LIST.add(list.get(i).getHandle());
                     }
+                    */
                 }
             }
             else if(CommonConstants.Type_OUT.equals(type)){

@@ -275,18 +275,34 @@ public class EwmComsumer {
             logger.error("Error:", e);
         }
     }
-@JmsListener(destination = "Raines.test")
+    @JmsListener(destination = "Raines.test")
     public void rainesTest(String text, Message msg, MessageHeaders headers) {
-JSONObject logUpdate = new JSONObject();
-logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
-logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        JSONObject logUpdate = new JSONObject();
+        logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         try {
-            reportASRSService.reportASRS("9999999887");
+            JSONObject obj = JSONObject.parseObject(text);
+            String messageType = obj.getString("MESSAGE_TYPE");
+            reportASRSService.reportASRS(messageType);
         } catch (Exception e) {
-logUpdate.put("MESSAGE_BODY", "Error to Raines.test "+ e.getMessage());
-logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        logUpdate.put("MESSAGE_BODY", "Error to Raines.test "+ e.getMessage());
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        }
+    }
+    @JmsListener(destination = "Raines.test2")
+    public void rainesTest2(String text, Message msg, MessageHeaders headers) {
+        JSONObject logUpdate = new JSONObject();
+        logUpdate.put("MESSAGE_BODY", "Start to Raines.test ");
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        try {
+            boolean result = roboticArmTaskService.deployRoboticArmTask("9999999887");
+        } catch (Exception e) {
+        logUpdate.put("MESSAGE_BODY", "Error to Raines.test2"+ e.getMessage());
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         }
     }
     /**
@@ -953,6 +969,20 @@ messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
             resultJSONObject.put("STORAGE_BIN", storageBin == null ? "" : storageBin.getStorageBin());
 
             logger.info("OptimalStorageBin: {}", storageBin == null ? "" : storageBin.getStorageBin());
+
+            JSONObject jsonObject1 = new JSONObject();
+            jsonObject1.put("MESSAGE_ID", "WcsMagID20250102131353");
+            jsonObject1.put("MESSAGE_TYPE", "Request.AGV");
+            jsonObject1.put("TASK_TYPE", "1");
+            jsonObject1.put("CARRIER", "ASRS_PALLET_00596");
+            jsonObject1.put("VEHICLE_ID","15905448");
+            jsonObject1.put("TO_NODE_NO", "C09R04L1");
+            jsonObject1.put("FROM_NODE_NO","Conveyor4");
+            jsonObject1.put("SEND_TIME","GMT+8 2025-02-04 10:30:30:555");
+            messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject1);
+            JSONObject jsonObject2 = new JSONObject();
+            jsonObject2.put("MESSAGE_TYPE", "15905448");
+            messageSendService.send("Raines.test", jsonObject2);
         } catch (Exception e) {
             logger.error("Error:", e);
             resultJSONObject.put("RESULT", "2");

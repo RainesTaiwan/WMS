@@ -190,54 +190,106 @@ public class WmsConsumer {
 
     //要求機械手臂工作
     @JmsListener(destination = "WMS.Request.Robotic.Arm", containerFactory="wmsFactory")
-    public void wmsRequestRoboticArmTask(MessageHeaders headers, String text) {
-        logger.info("Get WMS.Request.Robotic.Arm Data >>> {}", text);
+public void wmsRequestRoboticArmTask(MessageHeaders headers, String text) {
+    long startTime = System.currentTimeMillis();
+    String methodName = "wmsRequestRoboticArmTask";
+    
+    // 記錄開始執行的時間和收到的數據
+    JSONObject logStart = new JSONObject();
+    logStart.put("QUEUE", "WMS.Request.Robotic.Arm");
+    logStart.put("METHOD", methodName);
+    logStart.put("STATUS", "START");
+    logStart.put("MESSAGE_BODY", text);
+    logStart.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+    activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, logStart.toJSONString());
+    
+    logger.info("Get WMS.Request.Robotic.Arm Data >>> {}", text);
+    
+    try {
+        // 解析 JSON
         JSONObject jsonObject = JSON.parseObject(text);
+        
+        // 記錄 JSON 解析時間
+        long parseTime = System.currentTimeMillis();
+        JSONObject logParse = new JSONObject();
+        logParse.put("QUEUE", "WMS.Request.Robotic.Arm");
+        logParse.put("METHOD", methodName);
+        logParse.put("STEP", "JSON_PARSE");
+        logParse.put("DURATION", parseTime - startTime);
+        logParse.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, logParse.toJSONString());
 
-        JSONObject JsonTemp = new JSONObject();
-        JsonTemp.put("QUEUE", "WMS.Request.Robotic.Arm");
-        JsonTemp.put("MESSAGE_BODY", text);
-        JsonTemp.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonTemp.toJSONString());
-
-        try {
-            String messageType = jsonObject.getString("MESSAGE_TYPE");
-            String messageId = jsonObject.getString("MESSAGE_ID");
-            String voucherNo = jsonObject.getString("VOUCHER_NO");
-            String woSerial = jsonObject.getString("WO_SERIAL");
+        // 提取所需數據
+        String messageType = jsonObject.getString("MESSAGE_TYPE");
+        String messageId = jsonObject.getString("MESSAGE_ID");
+        String voucherNo = jsonObject.getString("VOUCHER_NO");
+        String woSerial = jsonObject.getString("WO_SERIAL");
             JSONArray woQty = jsonObject.getJSONArray("WO_QTY"); // 目標處理量
             JSONArray doQty = jsonObject.getJSONArray("DO_QTY"); // 要求處理量
             JSONArray fromPalletQty = jsonObject.getJSONArray("FROM_PALLET_QTY"); //來料棧板上數量(出庫用)
             JSONArray toPalletQty = jsonObject.getJSONArray("TO_PALLET_QTY"); //機械手臂放置物料的棧板，目前的數量
             String type = jsonObject.getString("TYPE"); //出入庫類型
             String resource = jsonObject.getString("RESOURCE"); //輸送帶ID
-            String SendTime = jsonObject.getString("SEND_TIME");
+        String SendTime = jsonObject.getString("SEND_TIME");
 
-            // 更新輸送帶目標任務
+        // 更新輸送帶狀態前記錄時間
+        long beforeUpdateStation = System.currentTimeMillis();
+        
+        // 更新輸送帶目標任務
             // 任務1 (使用按鈕): IN-CV1toCV2、IN-CV1toCV3、OutStation、PutPallet、EmptyPallet、PutBasketOnPallet、BasketOutPallet
             // 任務2 (使用出庫棧板): OUT-BINtoCV1、OUT-BINtoCV2、OUT-BINtoCV3
             // 任務3 (使用入庫棧板): IN-CV1toBIN、IN-CV2toBIN、IN-CV3toBIN
             // ● 任務4 (機械手臂): ROBOTIC_ARM
             // 任務5 (無人運輸車): AGV_TRANS
-            ReceiveStation receiveStation = receiveStationService.getReceiveStation(resource);
+        ReceiveStation receiveStation = receiveStationService.getReceiveStation(resource);
             receiveStation.setTaskGoal("ROBOTIC_ARM");
             receiveStationService.updateReceiveStation(receiveStation);
+        
 
-            //建立任務
-            //String taskmessageId = "WCS_"+DateUtil.getDateTimemessageId();
-            roboticArmTaskService.createRoboticArmTask(messageId, voucherNo, woSerial, woQty.toString(), doQty.toString()
+        // 記錄更新輸送帶狀態的時間
+        long afterUpdateStation = System.currentTimeMillis();
+        JSONObject logStation = new JSONObject();
+        logStation.put("QUEUE", "WMS.Request.Robotic.Arm");
+        logStation.put("METHOD", methodName);
+        logStation.put("STEP", "UPDATE_STATION");
+        logStation.put("DURATION", afterUpdateStation - beforeUpdateStation);
+        logStation.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, logStation.toJSONString());
+
+        // 建立任務前記錄時間
+        long beforeCreateTask = System.currentTimeMillis();
+
+        // 建立任務
+             roboticArmTaskService.createRoboticArmTask(messageId, voucherNo, woSerial, woQty.toString(), doQty.toString()
                     , fromPalletQty.toString(), toPalletQty.toString(), resource, type);
-        } catch (Exception e) {
-            logger.error("WMS Provide WCS With RFID Tags failed: {}", e.getMessage());
+        
 
-            JSONObject JsonE = new JSONObject();
-            JsonE.put("QUEUE", "WMS.Request.Robotic.Arm -e");
-            JsonE.put("MESSAGE_BODY", e.getMessage());
-            JsonE.put("CREATED_DATE_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis()
-            activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonE.toJSONString());
+        // 記錄完成時間和總執行時間
+        long endTime = System.currentTimeMillis();
+        JSONObject logEnd = new JSONObject();
+        logEnd.put("QUEUE", "WMS.Request.Robotic.Arm");
+        logEnd.put("METHOD", methodName);
+        logEnd.put("STATUS", "COMPLETE");
+        logEnd.put("TOTAL_DURATION", endTime - startTime);
+        logEnd.put("CREATE_TASK_DURATION", endTime - beforeCreateTask);
+        logEnd.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, logEnd.toJSONString());
+
+    } catch (Exception e) {
+        logger.error("WMS Provide WCS With RFID Tags failed: {}", e.getMessage());
+        
+        // 記錄錯誤信息
+        JSONObject JsonE = new JSONObject();
+        JsonE.put("QUEUE", "WMS.Request.Robotic.Arm");
+        JsonE.put("METHOD", methodName);
+        JsonE.put("STATUS", "ERROR");
+        JsonE.put("ERROR_MESSAGE", e.getMessage());
+        JsonE.put("DURATION", System.currentTimeMillis() - startTime);
+        JsonE.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        activeMqSendService.sendMsgNoResponse4Wms(CustomConstants.MQLOG, JsonE.toJSONString());
         }
         //wmsActivemqTemplate.convertAndSend((Queue) headers.get("jms_replyTo"), text);
-    }
+}
 
     //要求輸送帶按鈕協助的任務
     @JmsListener(destination = "Button.Task", containerFactory="wmsFactory")

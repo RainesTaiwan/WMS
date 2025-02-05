@@ -63,14 +63,14 @@ public class ReportASRSServiceImpl  extends ServiceImpl<ReportASRSMapper, Report
 @Override
 public void reportASRS(String woSerial) {
     try {
-JSONObject logUpdate = new JSONObject();
-logUpdate.put("MESSAGE_BODY", "Start to reportASRS message to woSerial: " + woSerial);
-logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        JSONObject logUpdate = new JSONObject();
+        logUpdate.put("MESSAGE_BODY", "Start to reportASRS message to woSerial: " + woSerial);
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         List<ReportAsrs> carrierList = reportASRSMapper.findASRSOrderByWoSerial(woSerial);
-logUpdate.put("MESSAGE_BODY", "carrierList.get(i).getHandlingId(): " + carrierList.get(0).getHandlingId());
-logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        logUpdate.put("MESSAGE_BODY", "carrierList.get(i).getHandlingId(): " + carrierList.get(0).getHandlingId());
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         JSONObject JsonReport = new JSONObject();
         JsonReport.put("MESSAGE_TYPE", CommonConstants.ASRS_WOResult);
         JsonReport.put("WO_SERIAL", woSerial);
@@ -83,10 +83,10 @@ messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
 
         String inOutType = this.woTypeToInOutType(asrsOrderList.get(0).getWoType());
         String ioType = this.woTypeToIOType(asrsOrderList.get(0).getWoType());
-JSONArray rfidList1 = asrsRFIDService.findRFIDByHandlingID(carrierList.get(0).getHandlingId(), inOutType);
-logUpdate.put("MESSAGE_BODY", "rfidList: " + rfidList1);
-logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
-messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
+        JSONArray rfidList1 = asrsRFIDService.findRFIDByHandlingID(carrierList.get(0).getHandlingId(), inOutType);
+        logUpdate.put("MESSAGE_BODY", "rfidList: " + rfidList1 + " inOutType" + inOutType);
+        logUpdate.put("CREATED_DATE_TIME", LocalDateTime.now().toString());
+        messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
         JSONArray groupOutside = new JSONArray();
         boolean hasRFID = false; // 用於檢查是否有非空的 RFID
         for (int i = 0; i < carrierList.size(); i++) {
