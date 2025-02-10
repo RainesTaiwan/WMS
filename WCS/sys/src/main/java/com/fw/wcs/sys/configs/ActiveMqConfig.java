@@ -50,5 +50,15 @@ public class ActiveMqConfig {
 
         return factory;
     }
+    
+    @Bean(name = "wmrFactory")
+    public JmsListenerContainerFactory wmrFactory(
+            @Qualifier("wmsConnectionFactory") ActiveMQConnectionFactory connectionFactory) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setReceiveTimeout(300000L);
+        factory.setPubSubDomain(true); //2024
+        return factory;
+    }
 
 }

@@ -51,7 +51,7 @@ public class VmsConsumer {
 
 
     //AGV上報運輸任務狀態 //原TransportStateReport
-    @JmsListener(destination = "WCS-AGV-4", containerFactory = "wmsFactory")
+    @JmsListener(destination = "WCS-AGV-4", containerFactory = "wmrFactory")
     //@JmsListener(destination = "AGV.Report.WCS", containerFactory = "wmsFactory")
     public void transportStateReport(MessageHeaders headers, String text) {
         logger.info("Get AGVReportWCS Text>>> {}", text);

@@ -82,8 +82,7 @@ public class ConveyorSerivceImpl extends ServiceImpl<ConveyorMapper, Conveyor> i
 
         int select = 0;
         // WO1 整棧入庫 WO5理貨入庫  WO6單箱出庫:可選擇1、2、4、5
-        if(woType.equals(CommonConstants.OrderType1)
-                || woType.equals(CommonConstants.OrderType5)
+        if(woType.equals(CommonConstants.OrderType5)
                 || woType.equals(CommonConstants.OrderType6)){
             for(int i=0;i<5;i++){
                 if(i!=2 && conveyorWorkload[select]>=conveyorWorkload[i] && conveyorPriority[select]<=conveyorPriority[i]){
@@ -92,7 +91,9 @@ public class ConveyorSerivceImpl extends ServiceImpl<ConveyorMapper, Conveyor> i
             }
         }
         // WO2 整棧出庫  WO7盤點:可選擇1、2、3、4、5
-        else if(woType.equals(CommonConstants.OrderType2) || woType.equals(CommonConstants.OrderType7)){
+        else if(woType.equals(CommonConstants.OrderType2) 
+                    || woType.equals(CommonConstants.OrderType7)
+                    || woType.equals(CommonConstants.OrderType1)){
             for(int i=0;i<5;i++){
                 if(conveyorWorkload[select]>=conveyorWorkload[i] && conveyorPriority[select]<=conveyorPriority[i]){
                     select = i;
