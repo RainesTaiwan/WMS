@@ -67,6 +67,7 @@ public class VmsConsumer {
         String ackCode = "0";
         String reason = "";
         try {
+
             JSONObject jsonObject = JSON.parseObject(text);
             String messageType = jsonObject.getString("MESSAGE_TYPE");
             messageId = jsonObject.getString("MESSAGE_ID");
@@ -78,6 +79,34 @@ public class VmsConsumer {
             reason = jsonObject.getString("MSG");
             String sendTime = jsonObject.getString("SEND_TIME");
 
+            if(taskStatus == "END") {
+                JSONObject JsonTemp2 = new JSONObject();
+                JsonTemp2.put("MESSAGE_ID", DateUtil.getDateTime());
+                JsonTemp2.put("MESSAGE_TYPE", "conveyor.trans");
+                JsonTemp2.put("RESOURCE", "Conveyor4");
+                JsonTemp2.put("PALLET_ID", "ASRS_PALLET_00010");
+                JsonTemp2.put("START_STATION", "CV3");
+                JsonTemp2.put("END_STATION", "CV2");
+                JsonTemp2.put("SEND_TIME", LocalDateTime.now().toString());
+                activeMqSendService.sendMsgNoResponse4Wms("conveyor.trans", JsonTemp2.toJSONString());
+                JSONObject JsonTemp3 = new JSONObject();
+                JsonTemp3.put("MESSAGE_ID", DateUtil.getDateTime());
+                JsonTemp3.put("MESSAGE_TYPE", "conveyor.trans");
+                JsonTemp3.put("RESOURCE", "Conveyor4");
+                JsonTemp3.put("PALLET_ID", "ASRS_PALLET_00010");
+                JsonTemp3.put("START_STATION", "CV2");
+                JsonTemp3.put("END_STATION", "CV3");
+                JsonTemp3.put("SEND_TIME", LocalDateTime.now().toString());
+                activeMqSendService.sendMsgNoResponse4Wms("conveyor.trans", JsonTemp3.toJSONString());
+                JSONObject JsonTemp4 = new JSONObject();
+                JsonTemp4.put("MESSAGE_TYPE", "Storage.Bin.To.Conveyor.Ack");
+                JsonTemp4.put("CORRELATION_ID", messageId);
+                JsonTemp4.put("STORAGE_BIN", "C09R04L1");
+                JsonTemp4.put("RESOURCE", "Conveyor4");
+                JsonTemp4.put("PALLET_ID", "ASRS_PALLET_00596");
+                JsonTemp3.put("SEND_TIME", LocalDateTime.now().toString());
+                activeMqSendService.sendMsgNoResponse4Wms("Storage.Bin.To.Conveyor.Ack", JsonTemp4.toJSONString());
+            }
             //運輸任務狀態記錄
             //vmsService.agvTransportState(vehicleId, taskStatus, carrier);
 

@@ -408,6 +408,15 @@ public class ReceiveStationTaskServiceImpl extends ServiceImpl<ReceiveStationTas
             plcWriteIntArray[10] = 1;
             plcWriteIntArray[11] = plcDataIntList[81]+1;
         }
+        // 在原有條件判斷結構中新增以下區塊
+        else if(("CV3".equals(startStation))&&("CV3".equals(endStation))){
+        // CV3控制寄存器地址對應陣列索引8-11
+            plcWriteIntArray[8] = 1;    // D3108 DIRECTION (保持原有方向設定)
+            plcWriteIntArray[9] = 0;    // D3109 HOLD 解除設備遏制
+            plcWriteIntArray[10] = 1;   // D3110 MOVE 觸發短距離移動
+            plcWriteIntArray[11] = plcDataIntList[81]+1; // 更新操作計數器
+        }
+
 
         // 形成指定PLC資料，交由PLC執行
         plcDataService.writePLCData(lenNum, plcWriteIntArray);
