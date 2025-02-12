@@ -272,9 +272,9 @@ public class PLCDataServiceImpl extends ServiceImpl<PLCDataMapper, PLCData> impl
             // 檢查 ReceiveStationTask
             receiveStationService.plcCheckReceiveStation(conveyor, "CV1");
         }
-        else if("OutStation".equals(receiveStation.getTaskGoal()) && plcDataIntList[61]==0){
+        /*else if("OutStation".equals(receiveStation.getTaskGoal()) && plcDataIntList[61]==0){
             pressButtonService.endPressButtonTask(conveyor);
-        }
+        }*/
         // 確認是否有任務要在席SENSOR CV2
         if(plcDataIntList[62]==7 || plcDataIntList[62]==14 || plcDataIntList[62]==15){
             // 檢查 ReceiveStationTask
@@ -300,8 +300,13 @@ public class PLCDataServiceImpl extends ServiceImpl<PLCDataMapper, PLCData> impl
                         "BasketOutPallet".equals(buttonTask.getType())){
                     pressButtonService.endPressButtonTask(conveyor);
                 }
+                else if("WO01".equals(buttonTask.getType()) || "WO02".equals(buttonTask.getType())
+                        || "test".equals(buttonTask.getType())){
+                pressButtonService.endPressButtonTask(conveyor);
+                }
             }
         }
+        /*
         else if(plcDataIntList[64]==8){
             ButtonTask buttonTask = pressButtonService.findButtonTask(conveyor);
             if((buttonTask!=null)&&(CustomConstants.START.equals(buttonTask.getStatus()))){
@@ -313,6 +318,7 @@ public class PLCDataServiceImpl extends ServiceImpl<PLCDataMapper, PLCData> impl
                 }
             }
         }
+        */
     }
 
     // plcData進行書寫判斷處理

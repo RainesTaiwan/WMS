@@ -115,11 +115,14 @@ public class PressButtonServiceImpl extends ServiceImpl<ButtonTaskMapper, Button
         if(CustomConstants.START.equals(status)){
             if("IN-CV1toCV2".equals(type))    plcWriteIntArray[12] = 2;
             else if("IN-CV1toCV3".equals(type))    plcWriteIntArray[12] = 2;
-            else if("OutStation".equals(type))    plcWriteIntArray[12] = 8; //沒有亮燈，給個值使流程順暢
+            else if("OutStation".equals(type))    plcWriteIntArray[12] = 2; //沒有亮燈，給個值使流程順暢
             else if("PutPallet".equals(type))    plcWriteIntArray[12] = 2;
             else if("EmptyPallet".equals(type))    plcWriteIntArray[12] = 2;
             else if("PutBasketOnPallet".equals(type))    plcWriteIntArray[12] = 2;
             else if("BasketOutPallet".equals(type))    plcWriteIntArray[12] = 2;
+            else if("test".equals(type))    plcWriteIntArray[12] = 2;
+            else if("WO01".equals(type))    plcWriteIntArray[12] = 2;
+            else if("WO02".equals(type))    plcWriteIntArray[12] = 2;
             // 更新輸送帶目前任務
             ReceiveStation rs = receiveStationService.getReceiveStation(receiveStation);
             rs.setStatus(CustomConstants.WORKING);
@@ -129,6 +132,7 @@ public class PressButtonServiceImpl extends ServiceImpl<ButtonTaskMapper, Button
             receiveStationService.reportASRS(receiveStation, CustomConstants.WORKING);
         }
         else if(CustomConstants.COMPLETE.equals(status)){
+
             plcWriteIntArray[12] = 0;
         }
         // 形成指定PLC資料，交由PLC執行
@@ -138,7 +142,7 @@ public class PressButtonServiceImpl extends ServiceImpl<ButtonTaskMapper, Button
 
     // 結束任務
     @Override
-    public void endPressButtonTask(String receiveStation){
+    public void endPressButtonTask(String receiveStation){p[-0;]
         ButtonTask buttonTask = this.findButtonTask(receiveStation);
         String handle = buttonTask.getHandle();
         String type = buttonTask.getType();
@@ -202,6 +206,43 @@ public class PressButtonServiceImpl extends ServiceImpl<ButtonTaskMapper, Button
         else if("OutStation".equals(type)){
             this.reportButtonTaskResult(handle);
         }
+        else if("test".equals(type)){
+            JSONObject requestPLC = new JSONObject();
+            requestPLC.put("MESSAGE_ID", DateUtil.getDateTimemessageId());
+            requestPLC.put("MESSAGE_TYPE", "conveyor.trans.4");   //MX 編號
+            requestPLC.put("RESOURCE", "Conveyor4");        //點位區域
+            requestPLC.put("PALLET_ID", "ASRS_PALLET_00010");    //起始點位
+            requestPLC.put("START_STATION", "CV3");     //資料長度
+            requestPLC.put("END_STATION", "CV1");  //設備編號
+            requestPLC.put("SEND_TIME", DateUtil.getDateTime());
+            String mqName = "conveyor.trans.4";
+            String plcResponse = activeMqSendService.sendMsgNeedResponse4Wms(mqName, requestPLC.toJSONString());  
+        }
+        else if("WO01".equals(type)){
+            JSONObject requestPLC = new JSONObject();
+            requestPLC.put("MESSAGE_ID", DateUtil.getDateTimemessageId());
+            requestPLC.put("MESSAGE_TYPE", "conveyor.trans.4");   //MX 編號
+            requestPLC.put("RESOURCE", "Conveyor4");        //點位區域
+            requestPLC.put("PALLET_ID", "ASRS_PALLET_00010");    //起始點位
+            requestPLC.put("START_STATION", "CV1");     //資料長度
+            requestPLC.put("END_STATION", "CV3");  //設備編號
+            requestPLC.put("SEND_TIME", DateUtil.getDateTime());
+            String mqName = "conveyor.trans.4";
+            String plcResponse = activeMqSendService.sendMsgNeedResponse4Wms(mqName, requestPLC.toJSONString());  
+        }
+        else if("WO02".equals(type)){
+            JSONObject requestPLC = new JSONObject();
+            requestPLC.put("MESSAGE_ID", DateUtil.getDateTimemessageId());
+            requestPLC.put("MESSAGE_TYPE", "conveyor.trans.4");   //MX 編號
+            requestPLC.put("RESOURCE", "Conveyor4");        //點位區域
+            requestPLC.put("PALLET_ID", "ASRS_PALLET_00010");    //起始點位
+            requestPLC.put("START_STATION", "CV3");     //資料長度
+            requestPLC.put("END_STATION", "CV1");  //設備編號
+            requestPLC.put("SEND_TIME", DateUtil.getDateTime());
+            String mqName = "conveyor.trans.4";
+            String plcResponse = activeMqSendService.sendMsgNeedResponse4Wms(mqName, requestPLC.toJSONString());  
+        }
+
     }
 
     // 告知WMS完成

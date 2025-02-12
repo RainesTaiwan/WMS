@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sap.ewm.core.utils.DateUtil;
 /**
  * 訂單主數據 服務實現類
  *
@@ -778,6 +780,24 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     // 確認指定ASRS ORDER狀態為PROCESSING，若沒有則改狀態
                     // asrsOrder Status(狀態：NEW、ASSIGN、PROCESSING、COMPLETE, UNCOMPLETE)
                     asrsOrderService.updateASRSOrderInfo(asrsOrder.getWoSerial(), null, CommonConstants.STATUS_PROCESSING);
+                    JSONObject jsonObject2 = new JSONObject();
+                    jsonObject2.put("MESSAGE_ID", "WcsMagID20250102131353");
+                    jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
+                    jsonObject2.put("TASK_TYPE", "1");
+                    jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
+                    jsonObject2.put("VEHICLE_ID","9999999887");
+                    jsonObject2.put("TO_NODE_NO", "Conveyor4");
+                    jsonObject2.put("FROM_NODE_NO","C09R04L1");
+                    jsonObject2.put("SEND_TIME","GMT+8 2025-02-04 13:30:30:555");
+                    messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
+
+                    JSONObject alarmJSON = new JSONObject();
+                    alarmJSON.put("MESSAGE_ID", DateUtil.getDateTimeWithRandomNum());
+                    alarmJSON.put("MESSAGE_TYPE", "Button.Task");
+                    alarmJSON.put("TYPE", "WO02");
+                    alarmJSON.put("RESOURCE", "Conveyor4");
+                    alarmJSON.put("SEND_TIME", LocalDateTime.now().toString()); //System.currentTimeMillis());
+                    messageSendService.send(CommonConstants.ASRS_RequestAlarm, alarmJSON); 
                 }
 
                 // CarrierTask任務建立
