@@ -142,7 +142,7 @@ public class PressButtonServiceImpl extends ServiceImpl<ButtonTaskMapper, Button
 
     // 結束任務
     @Override
-    public void endPressButtonTask(String receiveStation){p[-0;]
+    public void endPressButtonTask(String receiveStation){
         ButtonTask buttonTask = this.findButtonTask(receiveStation);
         String handle = buttonTask.getHandle();
         String type = buttonTask.getType();
