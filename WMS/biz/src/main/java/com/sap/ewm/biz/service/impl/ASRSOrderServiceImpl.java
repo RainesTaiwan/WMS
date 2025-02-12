@@ -622,7 +622,33 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
         // 錯誤類型8: 程序錯誤
         return alarmMsg;
     }
+    // 執行WO1工令
+    @Override
+    public void asrsOrderWO1(String messageId){
+        List<AsrsOrder> asrsOrderList = asrsOrderMapper.findASRSOrderByMessageId(messageId);
+        if(asrsOrderList.size()!=0){
+            for(int j=0;j<asrsOrderList.size();j++){
+                AsrsOrder asrsOrder = asrsOrderList.get(j);
+                // 選擇輸送帶
+                String conveyor = asrsOrder.getResource();
+                if("".equals(asrsOrder.getResource()) || asrsOrder.getResource()==null){
+                    conveyor = this.selectASRSConveyor(asrsOrder.getMessageId(), asrsOrder.getWoSerial(), asrsOrder.getWoType());
 
+                    // 找到工單 PROCESSING 且 輸送帶一樣 則等待先不拆工單
+                    List<AsrsOrder> asrsOrderDoList = asrsOrderMapper.findASRSOrderByResourceAndStatus(conveyor, CommonConstants.STATUS_PROCESSING);
+                    if(asrsOrderDoList==null || asrsOrderDoList.size()==0){
+                        // 確認指定ASRS ORDER狀態為PROCESSING，若沒有則改狀態
+                        // asrsOrder Status(狀態：NEW、ASSIGN、PROCESSING、COMPLETE, UNCOMPLETE)
+                        asrsOrderService.updateASRSOrderInfo(asrsOrder.getWoSerial(), null, CommonConstants.STATUS_PROCESSING);
+
+                        // 機械手臂任務清單建立
+                        roboticArmTaskService.listRoboticArmTask(asrsOrder.getWoSerial(), conveyor);
+                    }
+                    
+                }
+            }
+        }
+    }
     // 執行理貨入庫
     @Override
     public void asrsOrderInStorageBox(String messageId){
@@ -720,14 +746,14 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     asrsOrderService.updateASRSOrderInfo(asrsOrder.getWoSerial(), null, CommonConstants.STATUS_PROCESSING);
 
                     JSONObject jsonObject2 = new JSONObject();
-                    jsonObject2.put("MESSAGE_ID", "WcsMagID20250102131353");
+                    jsonObject2.put("MESSAGE_ID", asrsOrder.getMessageId());
                     jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
                     jsonObject2.put("TASK_TYPE", "1");
                     jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
-                    jsonObject2.put("VEHICLE_ID","9999999887");
-                    jsonObject2.put("TO_NODE_NO", "Conveyor4");
-                    jsonObject2.put("FROM_NODE_NO","C09R04L1");
-                    jsonObject2.put("SEND_TIME","GMT+8 2025-02-04 13:30:30:555");
+                    jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
+                    jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
+                    jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
+                    jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
                     messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
 
                     // 機械手臂任務清單建立
@@ -781,16 +807,15 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     // asrsOrder Status(狀態：NEW、ASSIGN、PROCESSING、COMPLETE, UNCOMPLETE)
                     asrsOrderService.updateASRSOrderInfo(asrsOrder.getWoSerial(), null, CommonConstants.STATUS_PROCESSING);
                     JSONObject jsonObject2 = new JSONObject();
-                    jsonObject2.put("MESSAGE_ID", "WcsMagID20250102131353");
+                    jsonObject2.put("MESSAGE_ID", asrsOrder.getMessageId());
                     jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
                     jsonObject2.put("TASK_TYPE", "1");
                     jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
-                    jsonObject2.put("VEHICLE_ID","9999999887");
-                    jsonObject2.put("TO_NODE_NO", "Conveyor4");
-                    jsonObject2.put("FROM_NODE_NO","C09R04L1");
-                    jsonObject2.put("SEND_TIME","GMT+8 2025-02-04 13:30:30:555");
+                    jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
+                    jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
+                    jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
+                    jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
                     messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
-
                     JSONObject alarmJSON = new JSONObject();
                     alarmJSON.put("MESSAGE_ID", DateUtil.getDateTimeWithRandomNum());
                     alarmJSON.put("MESSAGE_TYPE", "Button.Task");

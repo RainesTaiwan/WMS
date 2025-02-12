@@ -101,7 +101,7 @@ public class VmsConsumer {
                 JSONObject JsonTemp4 = new JSONObject();
                 JsonTemp4.put("MESSAGE_TYPE", "Storage.Bin.To.Conveyor.Ack");
                 JsonTemp4.put("CORRELATION_ID", messageId);
-                JsonTemp4.put("STORAGE_BIN", "C09R04L1");
+                JsonTemp4.put("STORAGE_BIN", "C01R07L4");
                 JsonTemp4.put("RESOURCE", "Conveyor4");
                 JsonTemp4.put("PALLET_ID", "ASRS_PALLET_00596");
                 JsonTemp3.put("SEND_TIME", LocalDateTime.now().toString());

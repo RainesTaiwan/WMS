@@ -45,6 +45,8 @@ public interface ASRSOrderService extends IService<AsrsOrder> {
     void asrsOrderOutStorageBox(String messageId);
     // 執行散貨出庫 (未完成)
     void asrsOrderOutStoragePart(String messageId);
+    //WO1工令
+    void asrsOrderWO1(String messageId);
 
     // 透過ID找尋ASRSOrder
     //ASRSOrder findAsrsOrderByID(String handle);

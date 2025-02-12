@@ -976,7 +976,7 @@ messageSendService.send(CommonConstants.MQ_LOG, logUpdate);
             jsonObject1.put("TASK_TYPE", "1");
             jsonObject1.put("CARRIER", "ASRS_PALLET_00596");
             jsonObject1.put("VEHICLE_ID","15905448");
-            jsonObject1.put("TO_NODE_NO", "C09R04L1");
+            jsonObject1.put("TO_NODE_NO", storageBin == null ? "" : storageBin.getStorageBin());
             jsonObject1.put("FROM_NODE_NO","Conveyor4");
             jsonObject1.put("SEND_TIME","GMT+8 2025-02-04 10:30:30:555");
             messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject1);
