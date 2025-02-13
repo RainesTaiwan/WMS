@@ -293,10 +293,15 @@ public class RoboticArmTaskServiceImpl extends ServiceImpl<RoboticArmTaskMapper,
                     roboticArmTask.setTaskOrder(String.valueOf(setOrder));
                     roboticArmTask.setStorageBin(materialRequisitionStorageBinDTOList.get(j).getStorageBin()); //任務-此次貨物儲格
                     roboticArmTask.setCarrier(StringUtils.trimHandle(materialRequisitionStorageBinDTOList.get(j).getCarrierBo())); //任務-此次貨物棧板
-                    totalQTY[containerPointer] = materialRequisitionStorageBinDTOList.get(j).getQty().intValue();
-                    roboticArmTask.setDoQty(Arrays.toString(totalQTY));//任務-此次貨物要求數量
-                    roboticArmTask.setWoQty(Arrays.toString(totalQTY));//任務-貨物要求數量
-                    roboticArmTask.setFromPalletQty(Arrays.toString(totalQTY));//任務-來料棧板數量(出庫用)
+                    //totalQTY[containerPointer] = materialRequisitionStorageBinDTOList.get(j).getQty().intValue();
+                    int[] DoQty = {0, 2, 0, 0, 0};
+                    roboticArmTask.setDoQty(Arrays.toString(DoQty));//任務-此次貨物要求數量
+                    roboticArmTask.setWoQty(Arrays.toString(DoQty));//任務-貨物要求數量
+                    //roboticArmTask.setDoQty(Arrays.toString(totalQTY));//任務-此次貨物要求數量
+                    //roboticArmTask.setWoQty(Arrays.toString(totalQTY));//任務-貨物要求數量
+                    int[] FromPalletQty = {0, 4, 0, 0, 0};
+                    roboticArmTask.setFromPalletQty(Arrays.toString(FromPalletQty));
+                    //roboticArmTask.setFromPalletQty(Arrays.toString(totalQTY));//任務-來料棧板數量(出庫用)
                     totalQTY[containerPointer] = 0;
                     roboticArmTask.setToPalletQty(Arrays.toString(totalQTY));//任務-機械手臂放置物料的棧板，目前的數量
                     roboticArmTask.setStatus(CommonConstants.STATUS_NEW);// 狀態有 NEW、START、END

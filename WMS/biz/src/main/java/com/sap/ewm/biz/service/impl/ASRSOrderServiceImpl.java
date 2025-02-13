@@ -355,6 +355,7 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
         String messageId = obj.getString("MESSAGE_ID");
         String woSerial = obj.getString("WO_SERIAL");
         String woType = obj.getString("WO_TYPE");
+        String storageBin = obj.getString("STORAGE_BIN");
         try {
             String sendTime = obj.getString("SEND_TIME");
             String goodsCount = obj.getString("GOODS_COUNT"); // 表示有多少憑單
@@ -446,6 +447,8 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                 asrsOrder.setValidation(CommonConstants.VERIFY_INVALID);
                 asrsOrder.setCreator(CommonConstants.CREATE_USER);
                 asrsOrder.setCreateTime( now );
+                //storageBin
+                asrsOrder.setStorageBin( storageBin );
                 asrsOrderService.save(asrsOrder);
                 //asrsOrderMapper.insert(asrsOrder);
             }else{
@@ -466,6 +469,8 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     asrsOrder.setValidation(CommonConstants.VERIFY_VALID);
                     asrsOrder.setCreator(CommonConstants.CREATE_USER);
                     asrsOrder.setCreateTime( now );
+                    //storageBin
+                    asrsOrder.setStorageBin( storageBin );
                     asrsOrderService.save(asrsOrder);
                     //asrsOrderMapper.insert(asrsOrder);
                 }// End for (int i = 0; i < Integer.parseInt(goodsCount); i++)
@@ -750,11 +755,14 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
                     jsonObject2.put("TASK_TYPE", "1");
                     jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
-                    jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
-                    jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
-                    jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
+                    //jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
+                    //jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
+                    //jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
+                    jsonObject2.put("TO_NODE_NO", "Conveyor4");
+                    jsonObject2.put("FROM_NODE_NO","C01R07L4");
                     jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
                     messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
+                    messageSendService.sendMessage4Topic("MQ_LOG", jsonObject2);
 
                     // 機械手臂任務清單建立
                     roboticArmTaskService.listRoboticArmTask(asrsOrder.getWoSerial(), conveyor);
