@@ -37,7 +37,7 @@ public class PLCConsumer {
 
     @Autowired
     private PLCDataService plcDataService;
-
+//20250213 更新後這裡報錯作業逾時
     @JmsListener(destination = "plc.reader.sync.process", containerFactory = "wmsFactory")
     public void plcInfoProcess(MessageHeaders headers, String text) {
         List<String> dataList = new ArrayList<>();
@@ -53,7 +53,7 @@ public class PLCConsumer {
             //資料只讀取D000~D3099的資料 共100個點位
             for (int i = 0; i < data.size(); i++){
                 dataList.add(data.getString(i));
-            }
+            }\
             String sendTime = obj.getString("SEND_TIME");
 
             Date date = new Date();

@@ -646,8 +646,14 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                         // asrsOrder Status(狀態：NEW、ASSIGN、PROCESSING、COMPLETE, UNCOMPLETE)
                         asrsOrderService.updateASRSOrderInfo(asrsOrder.getWoSerial(), null, CommonConstants.STATUS_PROCESSING);
 
-                        // 機械手臂任務清單建立
-                        roboticArmTaskService.listRoboticArmTask(asrsOrder.getWoSerial(), conveyor);
+                        JSONObject jsonObject2 = new JSONObject();
+                        jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
+                        jsonObject2.put("MESSAGE_ID", asrsOrder.getMessageId());
+                        jsonObject2.put("MESSAGE_TYPE", "Button.Task");
+                        jsonObject2.put("TYPE", "WO01");
+                        jsonObject2.put("RESOURCE", "Conveyor4");
+                        messageSendService.sendMessage4Topic("Button.Task", jsonObject2);
+
                     }
                     
                 }
@@ -755,12 +761,12 @@ public class ASRSOrderServiceImpl extends ServiceImpl<ASRSOrderMapper, AsrsOrder
                     jsonObject2.put("MESSAGE_TYPE", "Request.AGV");
                     jsonObject2.put("TASK_TYPE", "1");
                     jsonObject2.put("CARRIER", "ASRS_PALLET_00001");
-                    //jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
-                    //jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
-                    //jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
-                    jsonObject2.put("TO_NODE_NO", "Conveyor4");
-                    jsonObject2.put("FROM_NODE_NO","C01R07L4");
-                    jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
+                    jsonObject2.put("VEHICLE_ID",asrsOrder.getWoSerial());
+                    jsonObject2.put("TO_NODE_NO", asrsOrder.getResource());
+                    jsonObject2.put("FROM_NODE_NO",asrsOrder.getStorageBin());
+                    //jsonObject2.put("TO_NODE_NO", "Conveyor4");
+                    //jsonObject2.put("FROM_NODE_NO","C09R04L1");
+                    //jsonObject2.put("SEND_TIME",LocalDateTime.now().toString());
                     messageSendService.sendMessage4Topic("WCS-AGV-2", jsonObject2);
                     messageSendService.sendMessage4Topic("MQ_LOG", jsonObject2);
 
